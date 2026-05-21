@@ -1,0 +1,18 @@
+{
+  "name": "@pokeatlas/pipelines",
+  "version": "0.1.0",
+  "main": "src/index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "sync": "bun run --elide-lines=0 src/cli"
+  },
+  "dependencies": {
+    "@inquirer/core": "^11.1.10",
+    "@inquirer/prompts": "^8.4.3",
+    "@pokeatlas/database": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.3.14"
+  }
+}
