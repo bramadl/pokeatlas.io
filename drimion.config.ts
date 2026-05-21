@@ -5,21 +5,21 @@ export default {
 		naming: "kebab-case",
 		targets: {
 			aggregate: {
-				ct: "./packages/domain/CollectionsTracking/aggregates",
-				gm: "./packages/domain/GameMaster/aggregates",
+				ct: "./packages/contexts/src/collections-tracking/domain/aggregates",
+				gm: "./packages/contexts/src/game-masters/domain/aggregates",
 			},
 			entity: {
-				ct: "./packages/domain/CollectionsTracking/entities",
-				gm: "./packages/domain/GameMaster/entities",
+				ct: "./packages/contexts/src/collections-tracking/domain/entities",
+				gm: "./packages/contexts/src/game-masters/domain/entities",
 			},
 			repository: {
-				ct: "./packages/domain/CollectionsTracking/repositories",
-				gm: "./packages/domain/GameMaster/repositories",
+				ct: "./packages/contexts/src/collections-tracking/domain/repositories",
+				gm: "./packages/contexts/src/game-masters/domain/repositories",
 			},
 			usecase: {},
 			valueObject: {
-				ct: "./packages/domain/CollectionsTracking/value-objects",
-				gm: "./packages/domain/GameMaster/value-objects",
+				ct: "./packages/contexts/src/collections-tracking/domain/value-objects",
+				gm: "./packages/contexts/src/game-masters/domain/value-objects",
 			},
 		},
 	},
