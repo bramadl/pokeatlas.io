@@ -14,7 +14,8 @@
     "db:generate": "bun run --filter @pokeatlas/database db:generate",
     "db:migrate": "bun run --filter @pokeatlas/database db:migrate",
     "db:migrate:resolve": "bun run --filter @pokeatlas/database db:migrate:resolve",
-    "db:studio": "bun run --filter @pokeatlas/database db:studio"
+    "db:studio": "bun run --filter @pokeatlas/database db:studio",
+    "etl:game": "cd packages/pipelines && bun run sync"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.15",
