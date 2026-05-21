@@ -1,0 +1,19 @@
+﻿Name,Epic,Priority,Status
+US-001 — Browse Pokédex,Collection Tracking,P0,Not started
+US-002 — Search Pokémon,Collection Tracking,P0,Not started
+US-003 — Switch Collection Mode,Collection Tracking,P0,Not started
+US-004 — Mark Pokémon as Owned,Collection Tracking,P0,Not started
+US-005 — Unmark Pokémon,Collection Tracking,P0,Not started
+US-006 — See Missing Pokémon,Collection Tracking,P1,Not started
+US-007 — Filter Collection,Collection Tracking,P1,Not started
+US-008 — View Collection Progress,Collection Tracking,P0,Not started
+US-009 — View Region Progress,Collection Tracking,P0,Not started
+US-010 — Identify Closest Completion,Collection Tracking,P1,Not started
+US-011 — View Category Completion,Collection Tracking,P1,Not started
+US-012 — Get Lightweight Insights,Progress & Insights,P1,Not started
+US-013 — Feel Progress Reward,Progress & Insights,P1,Not started
+US-014 — Keep My Progress,Persistence,P0,Not started
+US-015 — Configure Preferences,Settings,P2,Not started
+US-016 — Search While Filtering,Collection Tracking,P2,Not started
+US-017 — Fast Session Updating,Collection Tracking,P2,Not started
+US-018 — Recover From Mistakes,Collection Tracking,P1,Not started
