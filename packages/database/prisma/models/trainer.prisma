@@ -1,0 +1,34 @@
+model Trainer {
+  id String @id @default(uuid()) @db.Uuid
+
+  name String
+
+  trackedPokemons TrackedPokemon[]
+
+  @@map("trainers")
+  @@schema("trainer")
+}
+
+model TrackedPokemon {
+  id String @id @default(uuid()) @db.Uuid
+
+  pokemonId String @map("pokemon_id")
+  trainerId String @map("trainer_id") @db.Uuid
+
+  isShinyTracked           Boolean @map("is_shiny_tracked")
+  isShadowTracked          Boolean @map("is_shadow_tracked")
+  isPurifiedTracked        Boolean @map("is_purified_tracked")
+  isLuckyTracked           Boolean @map("is_lucky_tracked")
+  isHundoTracked           Boolean @map("is_hundo_tracked")
+  isShinyShadowTracked     Boolean @map("is_shiny_shadow_tracked")
+  isShinyPurifiedTracked   Boolean @map("is_shiny_purified_tracked")
+  isShinyLuckyTracked      Boolean @map("is_shiny_lucky_tracked")
+  isShinyHundoTracked      Boolean @map("is_shiny_hundo_tracked")
+  isShinyLuckyHundoTracked Boolean @map("is_shiny_lucky_hundo_tracked")
+
+  pokemon PokemonForm @relation(fields: [pokemonId], references: [form], onDelete: Cascade)
+  trainer Trainer     @relation(fields: [trainerId], references: [id], onDelete: Cascade)
+
+  @@map("tracked_pokemons")
+  @@schema("trainer")
+}
