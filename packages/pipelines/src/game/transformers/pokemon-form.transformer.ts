@@ -6,7 +6,7 @@ import { toTitleCase } from "../utils/string";
 import { SPECIES_REGEX } from "./pokemon-species.transformer";
 
 const SPRITE_BASE =
-	"https://raw.githubusercontent.com/PokeMiners/pogo_assets/master/Images/Pokemon/Addressable%20Assets";
+	"https://raw.githubusercontent.com/PokeMiners/pogo_assets/master/Images/Pokemon%20-%20256x256/Addressable%20Assets";
 
 function formSortKey(f: TransformedPokemonForm): number {
 	if (f.isTemporaryEvolution) return 3;
@@ -17,9 +17,14 @@ function formSortKey(f: TransformedPokemonForm): number {
 }
 
 function formSuffix(formSlug: string, pokemonId: string): string | null {
-	const withoutSpecies = formSlug.startsWith(pokemonId)
-		? formSlug.slice(pokemonId.length + 1)
-		: formSlug;
+	const baseIdToken = pokemonId.split("_")[0] as string;
+
+	let withoutSpecies = formSlug;
+	if (formSlug.startsWith(pokemonId)) {
+		withoutSpecies = formSlug.slice(pokemonId.length + 1);
+	} else if (formSlug.startsWith(baseIdToken)) {
+		withoutSpecies = formSlug.slice(baseIdToken.length + 1);
+	}
 
 	return withoutSpecies === "NORMAL" || withoutSpecies === ""
 		? null
@@ -30,7 +35,7 @@ function resolveSprites(
 	dex: number,
 	formSlug: string,
 	pokemonId: string,
-	isCostume: boolean,
+	_isCostume: boolean,
 	tempEvoId?: string,
 ): { regularSprite: string; shinySprite: string } {
 	let base: string;
@@ -46,9 +51,8 @@ function resolveSprites(
 			base = `pm${dex}.icon.png`;
 			shiny = `pm${dex}.s.icon.png`;
 		} else {
-			const prefix = isCostume ? "c" : "f";
-			base = `pm${dex}.${prefix}${suffix}.icon.png`;
-			shiny = `pm${dex}.${prefix}${suffix}.s.icon.png`;
+			base = `pm${dex}.f${suffix}.icon.png`;
+			shiny = `pm${dex}.f${suffix}.s.icon.png`;
 		}
 	}
 
@@ -188,7 +192,7 @@ export function transformForms(
 				isCostume,
 				isTemporaryEvolution: false,
 				name,
-				primaryTypeId: settings.type ?? null,
+				primaryTypeId: settings.type,
 				regularSprite: sprites.regularSprite,
 				secondaryTypeId: settings.type2 ?? null,
 				shinySprite: sprites.shinySprite,
@@ -272,7 +276,7 @@ export function transformForms(
 				isCostume: false,
 				isTemporaryEvolution: true,
 				name: evoName,
-				primaryTypeId: evo.typeOverride1 ?? settings.type ?? null,
+				primaryTypeId: evo.typeOverride1 ?? settings.type,
 				regularSprite: evoSprites.regularSprite,
 				secondaryTypeId: evo.typeOverride2 ?? settings.type2 ?? null,
 				shinySprite: evoSprites.shinySprite,

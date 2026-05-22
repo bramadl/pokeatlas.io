@@ -28,7 +28,7 @@ export async function loadForms(
 		};
 	}
 
-	const existingRows = await prisma.pokemonForm.findMany({
+	const existingRows = await prisma.pokemonFormModel.findMany({
 		select: { form: true },
 	});
 	const existingFormSlugs = new Set(existingRows.map((r) => r.form));
@@ -44,7 +44,7 @@ export async function loadForms(
 
 		await Promise.all(
 			batch.map((form) =>
-				prisma.pokemonForm
+				prisma.pokemonFormModel
 					.upsert({
 						create: form,
 						update: {

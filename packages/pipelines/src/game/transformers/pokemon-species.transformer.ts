@@ -36,7 +36,7 @@ export function transformSpecies(
 			isShadowAvailable: !!settings.shadow,
 			name,
 			pokedexNumber,
-			pokemonClass: settings.pokemonClass
+			pokemonClassification: settings.pokemonClass
 				? (POKEMON_CLASS_MAP[settings.pokemonClass] ?? null)
 				: null,
 			pokemonId: settings.pokemonId,

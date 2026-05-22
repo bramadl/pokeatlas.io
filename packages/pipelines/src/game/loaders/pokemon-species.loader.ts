@@ -28,7 +28,7 @@ export async function loadSpecies(
 		};
 	}
 
-	const countBefore = await prisma.pokemonSpecies.count();
+	const countBefore = await prisma.pokemonSpeciesModel.count();
 
 	const batches = [...chunk(data, BATCH_SIZE)];
 	const batchTotal = batches.length;
@@ -39,14 +39,14 @@ export async function loadSpecies(
 
 		await Promise.all(
 			batch.map((sp) =>
-				prisma.pokemonSpecies.upsert({
+				prisma.pokemonSpeciesModel.upsert({
 					create: sp,
 					update: {
 						familyId: sp.familyId,
 						isShadowAvailable: sp.isShadowAvailable,
 						name: sp.name,
 						pokedexNumber: sp.pokedexNumber,
-						pokemonClass: sp.pokemonClass,
+						pokemonClassification: sp.pokemonClassification,
 					},
 					where: { pokemonId: sp.pokemonId },
 				}),
@@ -80,7 +80,7 @@ export async function loadSpecies(
 	}
 
 	// ----- Reconciliation -----------------------------------------------------
-	const countAfter = await prisma.pokemonSpecies.count();
+	const countAfter = await prisma.pokemonSpeciesModel.count();
 
 	if (countAfter < data.length) {
 		throw new Error(

@@ -33,7 +33,7 @@ export interface GmPokemonSettings {
 	shadow?: unknown;
 	stats?: { baseAttack: number; baseDefense: number; baseStamina: number };
 	tempEvoOverrides?: GmTempEvoOverride[];
-	type?: string;
+	type: string;
 	type2?: string;
 }
 
@@ -67,7 +67,7 @@ export interface TransformedPokemonForm {
 	isCostume: boolean;
 	isTemporaryEvolution: boolean;
 	name: string;
-	primaryTypeId: string | null;
+	primaryTypeId: string;
 	regularSprite: string | null;
 	secondaryTypeId: string | null;
 	shinySprite: string | null;
@@ -81,7 +81,7 @@ export interface TransformedPokemonSpecies {
 	isShadowAvailable: boolean;
 	name: string;
 	pokedexNumber: number;
-	pokemonClass: "LEGENDARY" | "MYTHIC" | null;
+	pokemonClassification: "LEGENDARY" | "MYTHIC" | null;
 	pokemonId: string;
 }
 

@@ -27,12 +27,12 @@ export async function loadTypes(
 		};
 	}
 
-	const countBefore = await prisma.pokemonType.count();
+	const countBefore = await prisma.pokemonTypeModel.count();
 
 	for (const batch of chunk(data, BATCH_SIZE)) {
 		await Promise.all(
 			batch.map((type) =>
-				prisma.pokemonType.upsert({
+				prisma.pokemonTypeModel.upsert({
 					create: type,
 					update: { name: type.name },
 					where: { templateId: type.templateId },
@@ -42,7 +42,7 @@ export async function loadTypes(
 	}
 
 	// ----- Reconciliation -----------------------------------------------------
-	const countAfter = await prisma.pokemonType.count();
+	const countAfter = await prisma.pokemonTypeModel.count();
 
 	if (countAfter < data.length) {
 		throw new Error(
