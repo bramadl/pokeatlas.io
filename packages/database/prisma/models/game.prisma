@@ -1,45 +1,44 @@
-enum PokemonClass {
+enum PokemonClassification {
   LEGENDARY
   MYTHIC
 
-  @@map("pokemon_class")
+  @@map("pokemon_classification")
   @@schema("game")
 }
 
-model PokemonType {
+model PokemonTypeModel {
   templateId String @id @map("template_id")
 
   name String
 
   syncedAt DateTime @updatedAt @map("synced_at")
 
-  pokemonHavingAsPrimaryType   PokemonForm[] @relation(name: "PrimaryType")
-  pokemonHavingAsSecondaryType PokemonForm[] @relation(name: "SecondaryType")
+  pokemonHavingAsPrimaryType   PokemonFormModel[] @relation(name: "PrimaryType")
+  pokemonHavingAsSecondaryType PokemonFormModel[] @relation(name: "SecondaryType")
 
   @@map("pokemon_types")
   @@schema("game")
 }
 
-model PokemonSpecies {
+model PokemonSpeciesModel {
   pokemonId String @id @map("pokemon_id")
+  familyId  String @map("family_id")
 
   name String
 
-  pokedexNumber Int           @map("pokedex_number")
-  pokemonClass  PokemonClass? @map("pokemon_class")
-
-  familyId          String  @map("family_id")
-  isShadowAvailable Boolean @map("is_shadow_available")
+  pokedexNumber         Int                    @map("pokedex_number")
+  pokemonClassification PokemonClassification? @map("pokemon_classification")
+  isShadowAvailable     Boolean                @map("is_shadow_available")
 
   syncedAt DateTime @updatedAt @map("synced_at")
 
-  forms PokemonForm[]
+  forms PokemonFormModel[]
 
   @@map("pokemon_species")
   @@schema("game")
 }
 
-model PokemonForm {
+model PokemonFormModel {
   form String @id
 
   templateId String @map("template_id")
@@ -50,7 +49,7 @@ model PokemonForm {
   regularSprite String? @map("default_sprite")
   shinySprite   String? @map("shiny_sprite")
 
-  primaryTypeId   String? @map("primary_type_id")
+  primaryTypeId   String  @map("primary_type_id")
   secondaryTypeId String? @map("secondary_type_id")
 
   baseAttack  Int @map("base_attack")
@@ -65,10 +64,10 @@ model PokemonForm {
 
   syncedAt DateTime @updatedAt @map("synced_at")
 
-  species         PokemonSpecies   @relation(fields: [speciesId], references: [pokemonId], onDelete: Cascade)
-  primaryType     PokemonType?     @relation(name: "PrimaryType", fields: [primaryTypeId], references: [templateId], onDelete: SetNull)
-  secondaryType   PokemonType?     @relation(name: "SecondaryType", fields: [secondaryTypeId], references: [templateId], onDelete: SetNull)
-  trackedPokemons TrackedPokemon[]
+  species         PokemonSpeciesModel   @relation(fields: [speciesId], references: [pokemonId], onDelete: Cascade)
+  primaryType     PokemonTypeModel      @relation(name: "PrimaryType", fields: [primaryTypeId], references: [templateId], onDelete: Restrict)
+  secondaryType   PokemonTypeModel?     @relation(name: "SecondaryType", fields: [secondaryTypeId], references: [templateId], onDelete: SetNull)
+  trackedPokemons TrackedPokemonModel[]
 
   @@map("pokemon_forms")
   @@schema("game")
