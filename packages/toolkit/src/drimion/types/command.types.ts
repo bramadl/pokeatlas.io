@@ -8,8 +8,13 @@ import type { IResult } from "./result.types";
  * @template Output The output type.
  * @template Error The error types if any–defaults to string.
  */
-export interface ICommand<Input = void, Output = void, Error = string> {
-	execute(input: Input): Promise<IResult<Output, Error>>;
+export interface ICommand<
+	Input = void,
+	Output = void,
+	Error = string,
+	MetaData = unknown,
+> {
+	execute(input: Input): Promise<IResult<Output, Error, MetaData>>;
 }
 
 /**
@@ -21,8 +26,13 @@ export interface ICommand<Input = void, Output = void, Error = string> {
  * @template Output The returned data type.
  * @template Error The error types if any–defaults to string.
  */
-export interface IQuery<Input = void, Output = void, Error = string> {
-	execute(input: Input): Promise<IResult<Output, Error>>;
+export interface IQuery<
+	Input = void,
+	Output = void,
+	Error = string,
+	MetaData = unknown,
+> {
+	execute(input: Input): Promise<IResult<Output, Error, MetaData>>;
 }
 
 /**
@@ -35,8 +45,9 @@ export interface IQuery<Input = void, Output = void, Error = string> {
  * @template Output The output type.
  * @template Error The error types if any–defaults to string.
  */
-export type IUseCase<Input = void, Output = void, Error = string> = ICommand<
-	Input,
-	Output,
-	Error
->;
+export type IUseCase<
+	Input = void,
+	Output = void,
+	Error = string,
+	MetaData = unknown,
+> = ICommand<Input, Output, Error, MetaData>;
