@@ -1,7 +1,17 @@
 # dependencies (bun install)
 node_modules
 
+.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
 # output
+.next
+build
 out
 dist
 *.tgz
@@ -9,6 +19,12 @@ dist
 # code coverage
 coverage
 *.lcov
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
 
 # logs
 logs
@@ -27,11 +43,19 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 .cache
 *.tsbuildinfo
 
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# vercel
+.vercel
+
 # IntelliJ based IDEs
 .idea
 
 # Finder (MacOS) folder config
 .DS_Store
+*.pem
 
 # Generated prisma outputs
 packages/database/src/prisma-client
@@ -44,3 +68,4 @@ packages/pipelines/src/game/previews
 
 # Repomix output files
 repomix-*
+.todo

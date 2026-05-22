@@ -1,3 +1,15 @@
 {
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "incremental": true,
+    "isolatedModules": true,
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "module": "esnext",
+    "plugins": [
+      { "name": "next" }
+    ],
+    "resolveJsonModule": true,
+    "target": "ES2017"
+  },
   "extends": ["./tsconfig.base.json"]
 }

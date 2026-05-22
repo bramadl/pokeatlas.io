@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "paths": {
+      "@atlas/*": ["./src/*"],
+
+      "@collection/application/*": ["../../packages/contexts/src/collection/application/*"],
+      "@collection/domain/*": ["../../packages/contexts/src/collection/domain/*"],
+      "@collection/infrastructure/*": ["../../packages/contexts/src/collection/infrastructure/*"],
+
+      "@game/application/*": ["../../packages/contexts/src/game/application/*"],
+      "@game/domain/*": ["../../packages/contexts/src/game/domain/*"],
+      "@game/infrastructure/*": ["../../packages/contexts/src/game/infrastructure/*"],
+
+      "@shared/*": ["../../packages/contexts/src/shared/*"]
+    },
+  },
+  "exclude": ["node_modules"],
+  "extends": "../../packages/config/typescript/tsconfig.next.json",
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts",
+    "**/*.mts"
+  ]
+}
