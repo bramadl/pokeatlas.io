@@ -8,6 +8,9 @@
     "packages/*"
   ],
   "scripts": {
+    "app:dev": "bun run --filter @pokeatlas/app.pokeatlas.io --smol dev",
+    "app:build": "bun run --filter @pokeatlas/app.pokeatlas.io --smol build",
+    "app:start": "bun run --filter @pokeatlas/app.pokeatlas.io --smol start",
     "biome:check": "biome check .",
     "biome:format": "biome format . --write",
     "biome:lint": "biome lint .",
@@ -15,6 +18,7 @@
     "db:generate": "bun run --filter @pokeatlas/database db:generate",
     "db:migrate": "bun run --filter @pokeatlas/database db:migrate",
     "db:migrate:resolve": "bun run --filter @pokeatlas/database db:migrate:resolve",
+    "db:seed": "bun run --filter @pokeatlas/database db:seed",
     "db:studio": "bun run --filter @pokeatlas/database db:studio",
     "etl:game": "cd packages/pipelines && bun run sync"
   },
