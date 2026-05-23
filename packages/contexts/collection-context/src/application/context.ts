@@ -14,7 +14,9 @@ export interface ICollectionContext {
 }
 
 export interface CollectionContextDeps {
-	service: IBrowsePokedexQueryService;
+	queries: {
+		browsePokedex: IBrowsePokedexQueryService;
+	};
 }
 
 export class CollectionContext implements ICollectionContext {
@@ -23,6 +25,8 @@ export class CollectionContext implements ICollectionContext {
 	public async browsePokedex(
 		input: BrowsePokedexInput,
 	): Promise<IResult<BrowsePokedexOutput>> {
-		return new BrowsePokedexHandler(this.deps.service).execute(input);
+		return new BrowsePokedexHandler(this.deps.queries.browsePokedex).execute(
+			input,
+		);
 	}
 }

@@ -18,10 +18,13 @@ import { PokeAtlas } from "./client";
 const container = ContainerBuilder.create()
 	// ----- Layer: Collection BC -------------------------------------------------
 	.add("QueryService:Pokedex", () => new PrismaTrainerPokedexQueryService())
-	.add(
-		"collection",
-		(r) => new CollectionContext({ service: r["QueryService:Pokedex"] }),
-	)
+	.add("collection", (r) => {
+		return new CollectionContext({
+			queries: {
+				browsePokedex: r["QueryService:Pokedex"],
+			},
+		});
+	})
 
 	// ----- Layer: Poke Atlas ----------------------------------------------------
 	.add("atlas", (r) => new PokeAtlas({ collection: r.collection }))
