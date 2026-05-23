@@ -14,10 +14,6 @@ export type TypeRef = Brand<string, "TypeRef">;
 
 export namespace TypeRef {
 	export function from(value: string): TypeRef {
-		if (!value.includes("POKEMON_TYPE_")) {
-			throw new Error(`invalid TypeRef: ${value}`);
-		}
-
 		return value as TypeRef;
 	}
 }

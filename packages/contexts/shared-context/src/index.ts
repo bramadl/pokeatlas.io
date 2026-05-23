@@ -1,3 +1,5 @@
+export * from "./errors/application/pokemon-not-found.error";
+
 export * from "./errors/infra/data-corruption.error";
 
 export * from "./refs/pokemon-ref";

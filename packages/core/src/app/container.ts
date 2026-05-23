@@ -1,6 +1,11 @@
-import { CollectionContext } from "@context/collection";
-import { PrismaPokedexQueryService } from "@pokeatlas/database";
-import { ContainerBuilder } from "@pokeatlas/toolkit";
+import { CollectionContext, PokemonTracked } from "@context/collection";
+import {
+	handlePokemonTracked,
+	PrismaPokedexQueryService,
+	PrismaPokedexRepositoryAdapter,
+	PrismaPokemonCatalogAdapter,
+} from "@pokeatlas/database";
+import { ContainerBuilder, EventBus } from "@pokeatlas/toolkit";
 
 import { PokeAtlas } from "./client";
 
@@ -16,12 +21,28 @@ import { PokeAtlas } from "./client";
  * and internal bounded context structures from the outer presentation layers.
  */
 const container = ContainerBuilder.create()
+	// ----- Layer: Infrastructure ------------------------------------------------
+	.add("EventBus", () => {
+		const bus = new EventBus();
+
+		bus.subscribe(PokemonTracked.type, handlePokemonTracked);
+
+		return bus;
+	})
+
 	// ----- Layer: Collection BC -------------------------------------------------
 	.add("QueryService:Pokedex", () => new PrismaPokedexQueryService())
+	.add("QueryService:PokemonCatalog", () => new PrismaPokemonCatalogAdapter())
+	.add("Repository:Pokedex", () => new PrismaPokedexRepositoryAdapter())
 	.add("collection", (r) => {
 		return new CollectionContext({
+			eventBus: r.EventBus,
 			queries: {
-				browsePokedex: r["QueryService:Pokedex"],
+				pokedex: r["QueryService:Pokedex"],
+				pokemonCatalog: r["QueryService:PokemonCatalog"],
+			},
+			repositories: {
+				pokedex: r["Repository:Pokedex"],
 			},
 		});
 	})

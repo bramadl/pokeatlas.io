@@ -15,11 +15,12 @@ model TrackedPokemonModel {
   pokemonForm String @map("pokemon_form")
   trainerId   String @map("trainer_id") @db.Uuid
 
-  isTracked Boolean @default(false) @map("is_tracked")
+  trackedStates String[] @default([]) @map("tracked_states")
 
   pokemon PokemonFormModel @relation(fields: [pokemonForm], references: [form], onDelete: Cascade)
   trainer TrainerModel     @relation(fields: [trainerId], references: [id], onDelete: Cascade)
 
+  @@unique([pokemonForm, trainerId])
   @@map("tracked_pokemons")
   @@schema("trainer")
 }

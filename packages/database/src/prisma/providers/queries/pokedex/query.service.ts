@@ -1,20 +1,20 @@
 import type {
 	BrowsePokedexInput,
 	BrowsePokedexOutput,
-	IBrowsePokedexQueryService,
+	IPokedexQueryService,
 } from "@context/collection";
 import { PokemonRef } from "@context/shared";
 import { prisma } from "@prisma-client";
-import type { TrainerPokedexProjectionWhereInput } from "@prisma-client/models";
+import type { PokedexProjectionWhereInput } from "@prisma-client/models";
 
-export class PrismaPokedexQueryService implements IBrowsePokedexQueryService {
-	public async from({
+export class PrismaPokedexQueryService implements IPokedexQueryService {
+	public async browsePokedex({
 		search,
 		trainerId,
 		page = 1,
 		limit = 60,
 	}: BrowsePokedexInput): Promise<BrowsePokedexOutput> {
-		const whereCondition: TrainerPokedexProjectionWhereInput = {
+		const whereCondition: PokedexProjectionWhereInput = {
 			trainerRef: trainerId,
 		};
 
@@ -22,7 +22,7 @@ export class PrismaPokedexQueryService implements IBrowsePokedexQueryService {
 			const searchAsNumber = parseInt(search, 10);
 			const isNumber = !Number.isNaN(searchAsNumber);
 
-			const searchConditions: TrainerPokedexProjectionWhereInput[] = [
+			const searchConditions: PokedexProjectionWhereInput[] = [
 				{ pokemonName: { contains: search, mode: "insensitive" } },
 			];
 
@@ -30,11 +30,11 @@ export class PrismaPokedexQueryService implements IBrowsePokedexQueryService {
 			whereCondition.OR = searchConditions;
 		}
 
-		const totalEntries = await prisma.trainerPokedexProjection.count({
+		const totalEntries = await prisma.pokedexProjection.count({
 			where: whereCondition,
 		});
 
-		const trainerPokedex = await prisma.trainerPokedexProjection.findMany({
+		const trainerPokedex = await prisma.pokedexProjection.findMany({
 			orderBy: [
 				{ dexNumber: "asc" },
 				{ formPriority: "asc" },
@@ -48,9 +48,9 @@ export class PrismaPokedexQueryService implements IBrowsePokedexQueryService {
 		return {
 			entries: trainerPokedex.map((entry) => ({
 				id: PokemonRef.from(entry.pokemonRef),
-				isTracked: entry.isTracked ?? false,
 				name: entry.pokemonName,
 				sprites: { shinyUrl: entry.shinyImageUrl, url: entry.imageUrl },
+				trackedStates: entry.trackedStates,
 			})),
 			hasMore: page * limit < totalEntries,
 			totalEntries,

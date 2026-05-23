@@ -10,9 +10,9 @@ export interface BrowsePokedexInput {
 export interface BrowsePokedexOutput {
 	entries: {
 		id: PokemonRef;
-		isTracked: boolean;
 		name: string;
 		sprites: { url: string; shinyUrl: string | null };
+		trackedStates: string[];
 	}[];
 	hasMore: boolean;
 	totalEntries: number;
