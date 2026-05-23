@@ -1,11 +1,12 @@
 {
-  "name": "@pokeatlas/contexts",
+  "name": "@context/progress",
   "version": "0.1.0",
   "main": "src/index.ts",
   "type": "module",
   "private": true,
   "dependencies": {
     "@pokeatlas/toolkit": "workspace:*",
-    "@pokeatlas/database": "workspace:*"
+    "@context/collection": "workspace:*",
+    "@context/shared": "workspace:*"
   }
 }

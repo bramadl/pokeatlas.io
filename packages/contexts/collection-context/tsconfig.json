@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "paths": {
+      "@context/collection/*": ["./src/*"],
+    }
+  },
+  "extends": ["../../config/typescript/tsconfig.base.json"]
+}

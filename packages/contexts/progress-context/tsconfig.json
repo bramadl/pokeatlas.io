@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "paths": {
+      "@context/progress/*": ["./src/*"],
+    }
+  },
+  "extends": ["../../config/typescript/tsconfig.base.json"]
+}

@@ -1,9 +1,0 @@
-{
-  "compilerOptions": {
-    "paths": {
-      "@pokeatlas/collections-tracking/*": ["./src/collections-tracking/*"],
-      "@pokeatlas/game-master/*": ["./src/game-master/*"]
-    }
-  },
-  "extends": "../config/typescript/tsconfig.base.json"
-}
