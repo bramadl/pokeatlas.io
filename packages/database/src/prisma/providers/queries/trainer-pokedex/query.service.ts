@@ -3,6 +3,7 @@ import type {
 	BrowsePokedexOutput,
 	IBrowsePokedexQueryService,
 } from "@context/collection";
+import { PokemonRef } from "@context/shared";
 
 import { prisma } from "../../../client";
 
@@ -24,7 +25,7 @@ export class PrismaTrainerPokedexQueryService
 		return {
 			entries: trainerPokedex.map((entry) => {
 				return {
-					id: entry.pokemonRef,
+					id: PokemonRef.from(entry.pokemonRef),
 					isTracked: entry.isTracked ?? false,
 					name: entry.pokemonName,
 					sprites: {
