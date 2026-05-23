@@ -5,7 +5,11 @@
   "type": "module",
   "workspaces": [
     "apps/*",
-    "packages/*"
+    "packages/contexts/*",
+    "packages/core",
+    "packages/database",
+    "packages/pipelines",
+    "packages/toolkit"
   ],
   "scripts": {
     "app:dev": "bun run --filter @pokeatlas/app.pokeatlas.io --smol dev",

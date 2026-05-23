@@ -13,7 +13,6 @@
       "version": "0.1.0",
       "dependencies": {
         "@pokeatlas/core": "workspace:*",
-        "@pokeatlas/database": "workspace:*",
         "next": "16.2.6",
         "react": "19.2.4",
         "react-dom": "19.2.4",
@@ -29,11 +28,27 @@
         "typescript": "^5",
       },
     },
-    "packages/contexts": {
-      "name": "@pokeatlas/contexts",
+    "packages/contexts/collection-context": {
+      "name": "@context/collection",
       "version": "0.1.0",
       "dependencies": {
-        "@pokeatlas/database": "workspace:*",
+        "@context/shared": "workspace:*",
+        "@pokeatlas/toolkit": "workspace:*",
+      },
+    },
+    "packages/contexts/progress-context": {
+      "name": "@context/progress",
+      "version": "0.1.0",
+      "dependencies": {
+        "@context/collection": "workspace:*",
+        "@context/shared": "workspace:*",
+        "@pokeatlas/toolkit": "workspace:*",
+      },
+    },
+    "packages/contexts/shared-context": {
+      "name": "@context/shared",
+      "version": "0.1.0",
+      "dependencies": {
         "@pokeatlas/toolkit": "workspace:*",
       },
     },
@@ -41,14 +56,20 @@
       "name": "@pokeatlas/core",
       "version": "0.1.0",
       "dependencies": {
-        "@pokeatlas/contexts": "workspace:*",
+        "@context/collection": "workspace:*",
+        "@context/progress": "workspace:*",
+        "@context/shared": "workspace:*",
         "@pokeatlas/database": "workspace:*",
+        "@pokeatlas/toolkit": "workspace:*",
       },
     },
     "packages/database": {
       "name": "@pokeatlas/database",
       "version": "0.1.0",
       "dependencies": {
+        "@context/collection": "workspace:*",
+        "@context/progress": "workspace:*",
+        "@context/shared": "workspace:*",
         "@prisma/adapter-pg": "^7.8.0",
         "@prisma/client": "^7.8.0",
         "pg": "^8.21.0",
@@ -105,6 +126,12 @@
     "@biomejs/cli-win32-arm64": ["@biomejs/cli-win32-arm64@2.4.15", "", { "os": "win32", "cpu": "arm64" }, "sha512-ouhkYdlhp/1GghEJPdWwD/Vi3gQ1nFxuSpMolWsbq3Lsq3QUR4jl6UdhhscdCugKU5vOEuMiJhvKj66O0OCq+w=="],
 
     "@biomejs/cli-win32-x64": ["@biomejs/cli-win32-x64@2.4.15", "", { "os": "win32", "cpu": "x64" }, "sha512-zBrGq5mx5wwpnow4+2BxUvleDM+GNd4sLbPaMapsSLQLD0NGRCquqPBTgN+7XkUteHvj7M+BstuI8tmnV7+HgQ=="],
+
+    "@context/collection": ["@context/collection@workspace:packages/contexts/collection-context"],
+
+    "@context/progress": ["@context/progress@workspace:packages/contexts/progress-context"],
+
+    "@context/shared": ["@context/shared@workspace:packages/contexts/shared-context"],
 
     "@electric-sql/pglite": ["@electric-sql/pglite@0.4.1", "", {}, "sha512-mZ9NzzUSYPOCnxHH1oAHPRzoMFJHY472raDKwXl/+6oPbpdJ7g8LsCN4FSaIIfkiCKHhb3iF/Zqo3NYxaIhU7Q=="],
 
@@ -229,8 +256,6 @@
     "@next/swc-win32-x64-msvc": ["@next/swc-win32-x64-msvc@16.2.6", "", { "os": "win32", "cpu": "x64" }, "sha512-F0+4i0h9J6C4eE3EAPWsoCk7UW/dbzOjyzxY0qnDUOYFu6FFmdZ6l97/XdV3/Nz3VYyO7UWjyEJUXkGqcoXfMA=="],
 
     "@pokeatlas/app.pokeatlas.io": ["@pokeatlas/app.pokeatlas.io@workspace:apps/app.pokeatlas.io"],
-
-    "@pokeatlas/contexts": ["@pokeatlas/contexts@workspace:packages/contexts"],
 
     "@pokeatlas/core": ["@pokeatlas/core@workspace:packages/core"],
 
