@@ -1,4 +1,4 @@
-model TrainerPokedexView {
+model TrainerPokedexProjection {
   pokemonRef String @map("pokemon_ref")
   trainerRef String @map("trainer_ref") @db.Uuid
 
@@ -18,5 +18,5 @@ model TrainerPokedexView {
   @@id([trainerRef, pokemonRef])
   @@index([trainerRef, dexNumber, formPriority])
   @@map("trainer_pokedex")
-  @@schema("views")
+  @@schema("projections")
 }

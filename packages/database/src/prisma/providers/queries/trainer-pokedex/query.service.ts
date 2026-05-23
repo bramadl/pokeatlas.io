@@ -4,7 +4,7 @@ import type {
 	IBrowsePokedexQueryService,
 } from "@context/collection";
 
-import { prisma } from "../../client";
+import { prisma } from "../../../client";
 
 export class PrismaTrainerPokedexQueryService
 	implements IBrowsePokedexQueryService
@@ -12,7 +12,7 @@ export class PrismaTrainerPokedexQueryService
 	public async from({
 		trainerId,
 	}: BrowsePokedexInput): Promise<BrowsePokedexOutput> {
-		const trainerPokedex = await prisma.trainerPokedexView.findMany({
+		const trainerPokedex = await prisma.trainerPokedexProjection.findMany({
 			orderBy: [
 				{ dexNumber: "asc" },
 				{ formPriority: "asc" },
