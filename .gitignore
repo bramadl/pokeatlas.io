@@ -58,7 +58,7 @@ next-env.d.ts
 *.pem
 
 # Generated prisma outputs
-packages/database/src/prisma-client
+packages/database/src/prisma/generated
 
 # ETL Pipeline synchronization state
 packages/pipelines/src/game/states
