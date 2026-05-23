@@ -1,5 +1,5 @@
 import { CollectionContext } from "@context/collection";
-import { PrismaTrainerPokedexQueryService } from "@pokeatlas/database";
+import { PrismaPokedexQueryService } from "@pokeatlas/database";
 import { ContainerBuilder } from "@pokeatlas/toolkit";
 
 import { PokeAtlas } from "./client";
@@ -17,7 +17,7 @@ import { PokeAtlas } from "./client";
  */
 const container = ContainerBuilder.create()
 	// ----- Layer: Collection BC -------------------------------------------------
-	.add("QueryService:Pokedex", () => new PrismaTrainerPokedexQueryService())
+	.add("QueryService:Pokedex", () => new PrismaPokedexQueryService())
 	.add("collection", (r) => {
 		return new CollectionContext({
 			queries: {

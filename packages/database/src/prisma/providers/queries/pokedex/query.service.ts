@@ -7,9 +7,7 @@ import { PokemonRef } from "@context/shared";
 import { prisma } from "@prisma-client";
 import type { TrainerPokedexProjectionWhereInput } from "@prisma-client/models";
 
-export class PrismaTrainerPokedexQueryService
-	implements IBrowsePokedexQueryService
-{
+export class PrismaPokedexQueryService implements IBrowsePokedexQueryService {
 	public async from({
 		search,
 		trainerId,

@@ -6,4 +6,4 @@ export * from "./prisma/generated/enums";
 export * from "./prisma/generated/models";
 
 // ----- Prisma: Query Services -------------------------------------------------
-export { PrismaTrainerPokedexQueryService } from "./prisma/providers/queries/trainer-pokedex/query.service";
+export { PrismaPokedexQueryService } from "./prisma/providers/queries/pokedex/query.service";
