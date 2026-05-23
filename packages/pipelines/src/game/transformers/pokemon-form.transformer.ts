@@ -37,6 +37,7 @@ function resolveSprites(
 	pokemonId: string,
 	_isCostume: boolean,
 	tempEvoId?: string,
+	spriteIndex?: Set<string>,
 ): { regularSprite: string; shinySprite: string } {
 	let base: string;
 	let shiny: string;
@@ -46,14 +47,52 @@ function resolveSprites(
 		base = `pm${dex}.f${suffix}.icon.png`;
 		shiny = `pm${dex}.f${suffix}.s.icon.png`;
 	} else {
-		const suffix = formSuffix(formSlug, pokemonId);
-		if (!suffix) {
+		const shortSuffix = formSuffix(formSlug, pokemonId);
+
+		if (!shortSuffix) {
 			base = `pm${dex}.icon.png`;
 			shiny = `pm${dex}.s.icon.png`;
+
+			if (spriteIndex && !spriteIndex.has(base)) {
+				const normalBase = `pm${dex}.fNORMAL.icon.png`;
+				if (spriteIndex.has(normalBase)) {
+					base = normalBase;
+					shiny = `pm${dex}.fNORMAL.s.icon.png`;
+				}
+			}
 		} else {
-			base = `pm${dex}.f${suffix}.icon.png`;
-			shiny = `pm${dex}.f${suffix}.s.icon.png`;
+			const shortBase = `pm${dex}.f${shortSuffix}.icon.png`;
+			const fullBase = `pm${dex}.f${formSlug}.icon.png`;
+
+			const resolvedSuffix =
+				spriteIndex && !spriteIndex.has(shortBase) && spriteIndex.has(fullBase)
+					? formSlug
+					: shortSuffix;
+
+			base = `pm${dex}.f${resolvedSuffix}.icon.png`;
+			shiny = `pm${dex}.f${resolvedSuffix}.s.icon.png`;
+
+			if (spriteIndex && !spriteIndex.has(base)) {
+				const fallbackBase = `pm${dex}.icon.png`;
+				if (spriteIndex.has(fallbackBase)) {
+					base = fallbackBase;
+					shiny = `pm${dex}.s.icon.png`;
+				} else {
+					const normalBase = `pm${dex}.fNORMAL.icon.png`;
+					if (spriteIndex.has(normalBase)) {
+						base = normalBase;
+						shiny = `pm${dex}.fNORMAL.s.icon.png`;
+					}
+				}
+			}
 		}
+	}
+
+	if (spriteIndex && !spriteIndex.has(base)) {
+		return {
+			regularSprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${dex}.png`,
+			shinySprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/${dex}.png`,
+		};
 	}
 
 	return {
@@ -171,6 +210,8 @@ export function transformForms(
 			formSlug,
 			settings.pokemonId,
 			isCostume,
+			undefined,
+			sources.spriteIndex,
 		);
 
 		// ----- Base form -------------------------------------------------------
@@ -193,9 +234,9 @@ export function transformForms(
 				isTemporaryEvolution: false,
 				name,
 				primaryTypeId: settings.type,
-				regularSprite: sprites.regularSprite,
+				regularSprite: sprites?.regularSprite ?? null,
 				secondaryTypeId: settings.type2 ?? null,
-				shinySprite: sprites.shinySprite,
+				shinySprite: sprites?.shinySprite ?? null,
 				speciesId: settings.pokemonId,
 				templateId: entry.templateId,
 				weight: settings.pokedexWeightKg ?? 0,
@@ -277,9 +318,9 @@ export function transformForms(
 				isTemporaryEvolution: true,
 				name: evoName,
 				primaryTypeId: evo.typeOverride1 ?? settings.type,
-				regularSprite: evoSprites.regularSprite,
+				regularSprite: evoSprites?.regularSprite ?? null,
 				secondaryTypeId: evo.typeOverride2 ?? settings.type2 ?? null,
-				shinySprite: evoSprites.shinySprite,
+				shinySprite: evoSprites?.shinySprite ?? null,
 				speciesId: settings.pokemonId,
 				templateId: entry.templateId,
 				weight: evo.averageWeightKg ?? settings.pokedexWeightKg ?? 0,
