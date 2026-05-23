@@ -1,3 +1,5 @@
+import type { Brand } from "../types/brand.type";
+
 /**
  * @description
  * Referencing a trackable pokemon. Since species has
@@ -17,4 +19,14 @@
  * - `CHARIZARD_MEGA_X`
  * - `CHARIZARD_MEGA_Y`
  */
-export type PokemonRef = string;
+export type PokemonRef = Brand<string, "PokemonRef">;
+
+export namespace PokemonRef {
+	export function from(value: string): PokemonRef {
+		if (!value.includes("_")) {
+			throw new Error(`invalid PokemonRef: ${value}`);
+		}
+
+		return value as PokemonRef;
+	}
+}
