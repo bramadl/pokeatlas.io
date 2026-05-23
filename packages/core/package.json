@@ -5,6 +5,10 @@
   "type": "module",
   "private": true,
   "dependencies": {
-    "@pokeatlas/contexts": "workspace:*"
+    "@context/collection": "workspace:*",
+    "@context/progress": "workspace:*",
+    "@context/shared": "workspace:*",
+    "@pokeatlas/database": "workspace:*",
+    "@pokeatlas/toolkit": "workspace:*"
   }
 }
