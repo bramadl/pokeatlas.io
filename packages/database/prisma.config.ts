@@ -5,8 +5,8 @@ export default defineConfig({
 		url: env("DIRECT_URL"),
 	},
 	migrations: {
-		path: "prisma/migrations",
-		seed: "bun prisma/seed",
+		path: "src/prisma/migrations",
+		seed: "bun src/prisma/seed",
 	},
-	schema: "prisma",
+	schema: "src/prisma",
 });

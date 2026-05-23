@@ -1,9 +1,9 @@
 generator client {
   provider = "prisma-client"
-  output   = "../src/prisma-client"
+  output   = "./generated"
 }
 
 datasource db {
   provider = "postgresql"
-  schemas  = ["game", "trainer"]
+  schemas  = ["game", "trainer", "views"]
 }

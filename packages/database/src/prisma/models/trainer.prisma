@@ -1,0 +1,43 @@
+model TrainerModel {
+  id String @id @default(uuid()) @db.Uuid
+
+  name String
+
+  trackedPokemons TrackedPokemonModel[]
+
+  @@map("trainers")
+  @@schema("trainer")
+}
+
+model TrackedPokemonModel {
+  id String @id @default(uuid()) @db.Uuid
+
+  pokemonForm String @map("pokemon_form")
+  trainerId   String @map("trainer_id") @db.Uuid
+
+  isTracked                        Boolean? @default(false) @map("is_tracked")
+  isHundoTracked                   Boolean? @default(false) @map("is_hundo_tracked")
+  isLuckyTracked                   Boolean? @default(false) @map("is_lucky_tracked")
+  isLuckyHundoTracked              Boolean? @default(false) @map("is_lucky_hundo_tracked")
+  isLuckyPurifiedTracked           Boolean? @default(false) @map("is_lucky_purified_tracked")
+  isPurifiedTracked                Boolean? @default(false) @map("is_purified_tracked")
+  isPurifiedHundoTracked           Boolean? @default(false) @map("is_purifiedHundo_tracked")
+  isShadowTracked                  Boolean? @default(false) @map("is_shadow_tracked")
+  isShadowHundoTracked             Boolean? @default(false) @map("is_shadow_hundo_tracked")
+  isShinyTracked                   Boolean? @default(false) @map("is_shiny_tracked")
+  isShinyHundoTracked              Boolean? @default(false) @map("is_shiny_hundo_tracked")
+  isShinyLuckyTracked              Boolean? @default(false) @map("is_shiny_lucky_tracked")
+  isShinyLuckyHundoTracked         Boolean? @default(false) @map("is_shiny_lucky_hundo_tracked")
+  isShinyLuckyPurifiedTracked      Boolean? @default(false) @map("is_shiny_lucky_purified_tracked")
+  isShinyLuckyPurifiedHundoTracked Boolean? @default(false) @map("is_shiny_lucky_purified_hundo_tracked")
+  isShinyPurifiedTracked           Boolean? @default(false) @map("is_shiny_purified_tracked")
+  isShinyPurifiedHundoTracked      Boolean? @default(false) @map("is_shiny_purified_hundo_tracked")
+  isShinyShadowTracked             Boolean? @default(false) @map("is_shiny_shadow_tracked")
+  isShinyShadowHundoTracked        Boolean? @default(false) @map("is_shiny_shadow_hundo_tracked")
+
+  pokemon PokemonFormModel @relation(fields: [pokemonForm], references: [form], onDelete: Cascade)
+  trainer TrainerModel     @relation(fields: [trainerId], references: [id], onDelete: Cascade)
+
+  @@map("tracked_pokemons")
+  @@schema("trainer")
+}
