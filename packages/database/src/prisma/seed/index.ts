@@ -183,7 +183,7 @@ async function main() {
 		});
 
 		console.log("🧹 Clearing old Read-Model views...");
-		await tx.trainerPokedexView.deleteMany({
+		await tx.trainerPokedexProjection.deleteMany({
 			where: { trainerRef: TRAINER_ID },
 		});
 
@@ -217,7 +217,7 @@ async function main() {
 		console.log(
 			`🚀 Bulk inserting ${pokedexEntries.length} cleanly formatted entries...`,
 		);
-		await tx.trainerPokedexView.createMany({ data: pokedexEntries });
+		await tx.trainerPokedexProjection.createMany({ data: pokedexEntries });
 	});
 
 	console.log("🎉 All data wired and seeded successfully in milliseconds!");
