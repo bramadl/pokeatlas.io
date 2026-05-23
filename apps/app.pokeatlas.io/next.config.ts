@@ -8,6 +8,11 @@ const nextConfig: NextConfig = {
 		],
 	},
 	reactCompiler: true,
+	transpilePackages: [
+		"@context/collection",
+		"@context/progress",
+		"@context/shared",
+	],
 };
 
 export default nextConfig;
