@@ -1,3 +1,4 @@
+export { ContainerBuilder } from "./container";
 export { UUID } from "./crypto";
 export { DomainClasses } from "./domain-classes";
 export { DomainError } from "./domain-error";

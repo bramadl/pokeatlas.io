@@ -24,6 +24,7 @@ export { Iterator } from "./helpers";
 
 // ── Libs ───────────────────────────────────────────────────────────────────
 export {
+	ContainerBuilder,
 	DomainClasses,
 	DomainError,
 	Result,
