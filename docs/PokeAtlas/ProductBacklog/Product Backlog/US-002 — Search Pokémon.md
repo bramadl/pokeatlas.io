@@ -2,7 +2,7 @@
 
 Epic: Collection Tracking
 Priority: P0
-Status: Not started
+Status: Completed
 
 **As a** trainer, **I want to** search Pokémon by name or Pokédex number. **So that** I can quickly update my collection.
 

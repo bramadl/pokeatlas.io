@@ -1,6 +1,9 @@
 import type { PokemonRef } from "@context/shared";
 
 export interface BrowsePokedexInput {
+	limit?: number;
+	page?: number;
+	search?: string;
 	trainerId: string;
 }
 
@@ -9,8 +12,9 @@ export interface BrowsePokedexOutput {
 		id: PokemonRef;
 		isTracked: boolean;
 		name: string;
-		sprites: { url: string | null; shinyUrl: string | null };
+		sprites: { url: string; shinyUrl: string | null };
 	}[];
+	hasMore: boolean;
 	totalEntries: number;
 }
 

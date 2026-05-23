@@ -4,6 +4,9 @@
       "@context/collection/*": ["../../packages/contexts/collection-context/src/*"],
       "@context/progress/*": ["../../packages/contexts/progress-context/src/*"],
       "@context/shared/*": ["../../packages/contexts/shared-context/src/*"],
+
+      "@prisma-client": ["../../packages/database/src/prisma/client.ts"],
+      "@prisma-client/*": ["../../packages/database/src/prisma/generated/*"],
     },
   },
   "exclude": ["node_modules"],
