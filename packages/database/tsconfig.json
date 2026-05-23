@@ -1,4 +1,11 @@
 {
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+      "@prisma-client": ["src/prisma/client.ts"],
+      "@prisma-client/*": ["src/prisma/generated/*"],
+    }
+  },
   "extends": "../config/typescript/tsconfig.base.json",
-  "include": ["prisma.config.ts", "src/prisma"],
+  "include": ["prisma.config.ts", "src/prisma"]
 }
