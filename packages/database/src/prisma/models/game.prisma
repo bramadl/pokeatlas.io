@@ -46,7 +46,7 @@ model PokemonFormModel {
 
   name String
 
-  regularSprite String? @map("default_sprite")
+  regularSprite String  @map("default_sprite")
   shinySprite   String? @map("shiny_sprite")
 
   primaryTypeId   String  @map("primary_type_id")

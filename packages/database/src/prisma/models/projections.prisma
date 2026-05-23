@@ -5,7 +5,7 @@ model TrainerPokedexProjection {
   pokemonName String @map("pokemon_name")
   dexNumber   Int    @map("dex_number")
 
-  imageUrl      String? @map("image_url")
+  imageUrl      String  @map("image_url")
   shinyImageUrl String? @map("shiny_image_url")
 
   isTracked Boolean @map("is_tracked")

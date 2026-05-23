@@ -172,7 +172,6 @@ async function main() {
 				name: "Ash Ketchum",
 				trackedPokemons: {
 					create: {
-						isShinyTracked: true,
 						isTracked: true,
 						pokemonForm: POKEMON_FORM,
 					},
