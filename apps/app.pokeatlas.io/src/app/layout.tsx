@@ -1,15 +1,21 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Google_Sans_Flex, Source_Code_Pro } from "next/font/google";
+
 import "./globals.css";
 
-const geistSans = Geist({
+const fontSans = Google_Sans_Flex({
 	subsets: ["latin"],
-	variable: "--font-geist-sans",
+	variable: "--font-sans",
 });
 
-const geistMono = Geist_Mono({
+const fontSerif = Google_Sans_Flex({
 	subsets: ["latin"],
-	variable: "--font-geist-mono",
+	variable: "--font-serif",
+});
+
+const fontMono = Source_Code_Pro({
+	subsets: ["latin"],
+	variable: "--font-mono",
 });
 
 export const metadata: Metadata = {
@@ -24,7 +30,7 @@ export default function RootLayout({
 }>) {
 	return (
 		<html
-			className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+			className={`${fontSans.variable} ${fontSerif.variable} ${fontMono.variable} antialiased`}
 			lang="en"
 		>
 			<body className="min-h-full flex flex-col">{children}</body>
