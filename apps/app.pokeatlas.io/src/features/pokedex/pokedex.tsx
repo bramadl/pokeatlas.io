@@ -1,12 +1,12 @@
 "use client";
 
-import { useCallback } from "react";
+import { Fragment, useCallback } from "react";
+
 import type { Brush } from "./brush";
 import { BrushModeBanner } from "./brush-mode-banner";
 import { BrushSpeedDial } from "./brush-speed-dial";
 import { PokedexGrid } from "./pokedex-grid";
-import { PokedexNav } from "./pokedex-nav";
-import { PokedexToolbar } from "./pokedex-toolbar";
+import { PokedexSearch } from "./pokedex-search";
 import type { PokedexEntry } from "./types";
 import { useBrush } from "./use-brush";
 import { useBrushKeyboard } from "./use-brush-keyboard";
@@ -26,7 +26,7 @@ export function Pokedex({
 	initialSearch,
 	totalEntries,
 }: PokedexProps) {
-	const { search, onSearchChange } = useSearch(initialSearch);
+	const { isSearchPending, search, onSearchChange } = useSearch(initialSearch);
 
 	const { entries, hasMore, isPending, loadMore, track } = usePokedex({
 		initialEntries,
@@ -78,20 +78,21 @@ export function Pokedex({
 	});
 
 	return (
-		<main>
-			<PokedexNav />
+		<Fragment>
+			<BrushModeBanner
+				activeBrushes={activeBrushes}
+				isBannerVisible={isBannerVisible}
+				onClear={clearBrushes}
+			/>
 
-			<section className="container mx-auto py-10">
-				<PokedexToolbar
-					initialSearch={initialSearch}
-					onSearchChange={onSearchChange}
-				/>
-
-				<BrushModeBanner
-					activeBrushes={activeBrushes}
-					isBannerVisible={isBannerVisible}
-					onClear={clearBrushes}
-				/>
+			<section className="container mx-auto bg-slate-50">
+				<header className="sticky top-16 z-10 bg-white shadow px-4 py-4 md:px-8">
+					<PokedexSearch
+						initialSearch={initialSearch}
+						isSearchPending={isSearchPending}
+						onSearchChange={onSearchChange}
+					/>
+				</header>
 
 				<PokedexGrid
 					entries={entries}
@@ -112,6 +113,6 @@ export function Pokedex({
 				onClearHighlight={clearHighlight}
 				onToggle={onToggleOpen}
 			/>
-		</main>
+		</Fragment>
 	);
 }

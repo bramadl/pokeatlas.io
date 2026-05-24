@@ -21,7 +21,7 @@ export function BrushModeBanner({
 	return (
 		<div
 			className={cn(
-				"fixed bottom-8 left-1/2 -translate-x-1/2 z-50",
+				"fixed left-6 bottom-6 md:bottom-8 md:left-1/2 md:-translate-x-1/2 z-50",
 				"flex flex-col items-center justify-center gap-1",
 			)}
 		>
@@ -51,11 +51,10 @@ export function BrushModeBanner({
 								isEraser ? "bg-white/70" : "bg-primary-foreground/70",
 							)}
 						/>
-						<span>{parts.emojis}</span>
 						<span>{parts.names}</span>
 						<span
 							className={cn(
-								"text-xs",
+								"hidden md:inline text-xs",
 								isEraser ? "text-white/60" : "text-primary-foreground/60",
 							)}
 						>

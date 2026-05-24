@@ -2,6 +2,7 @@ import Image from "next/image";
 
 import { cn } from "@/lib/utils";
 
+import { PokedexCardBadge } from "./pokedex-card-badge";
 import { getTypeTheme } from "./pokedex-theme";
 import type { PokedexEntry } from "./types";
 
@@ -20,27 +21,6 @@ const FORM_LABEL: Record<string, string> = {
 	mega: "Mega",
 	regional: "Regional",
 };
-
-// ── State emojis ──────────────────────────────────────────────────────────────
-
-const STATE_EMOJI: Record<string, string> = {
-	BASE: "✓",
-	HUNDO: "💯",
-	LUCKY: "🍀",
-	NUNDO: "0",
-	PURIFIED: "🌀",
-	SHADOW: "👾",
-	SHINY: "✨",
-};
-
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
-function renderStateEmoji(state: string): string {
-	return state
-		.split("+")
-		.map((s) => STATE_EMOJI[s] ?? s)
-		.join("");
-}
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
@@ -96,7 +76,7 @@ export function PokedexCard({
 				<figure
 					className={cn(
 						"absolute z-1 top-0 -translate-y-1/2 left-1/2 -translate-x-1/2",
-						"size-20 rounded-full bg-linear-to-t to-white shadow",
+						"size-16 lg:size-20 rounded-full bg-linear-to-t to-white shadow",
 						"ring-1 transition-all duration-500 ease-out",
 						theme.gradient,
 						isTracked ? theme.trackedRing : "ring-transparent",
@@ -170,34 +150,11 @@ export function PokedexCard({
 
 				{/* Tracked state badges */}
 				{p.trackedStates.length > 0 && (
-					<div className="absolute left-0 -translate-x-1/2 inset-y-1 flex flex-col items-center justify-center gap-0.5">
-						{visibleStates.map((state) => (
-							<span
-								className={cn(
-									"flex items-center justify-center rounded-full text-[9px] font-semibold border shadow-sm animate-in fade-in-0 slide-in-from-left-[2px] duration-300",
-									theme.badgeBg,
-									theme.badgeBorder,
-									theme.badgeText,
-									renderStateEmoji(state).length > 1 ? "px-1" : "aspect-square",
-								)}
-								key={state}
-							>
-								{renderStateEmoji(state)}
-							</span>
-						))}
-						{overflowCount > 0 && (
-							<span
-								className={cn(
-									"size-4 inline-flex items-center justify-center rounded-full text-[9px] font-semibold border shadow-sm",
-									theme.badgeBg,
-									theme.badgeBorder,
-									theme.badgeText,
-								)}
-							>
-								+{overflowCount}
-							</span>
-						)}
-					</div>
+					<PokedexCardBadge
+						overflowCount={overflowCount}
+						theme={theme}
+						visibleStates={visibleStates}
+					/>
 				)}
 			</div>
 		</div>

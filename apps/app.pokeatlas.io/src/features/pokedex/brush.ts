@@ -82,7 +82,8 @@ export const BRUSH_META: Record<Brush, BrushMeta> = {
 const MUTUAL_EXCLUSIONS: [Brush, Brush][] = [
 	["hundo", "nundo"],
 	["shadow", "purified"],
-	["shadow", "lucky"], // Shadow Pokémon cannot be traded → cannot be Lucky
+	["shadow", "lucky"],
+	["lucky", "nundo"],
 ];
 
 /**

@@ -1,4 +1,6 @@
 import { atlas } from "@pokeatlas/core";
+import { GlobalFooter } from "@/components/global/global-footer";
+import { GlobalNavigation } from "@/components/global/global-navigation";
 import { Pokedex } from "@/features/pokedex";
 
 const TRAINER_ID = "00000000-0000-0000-0000-000000000001";
@@ -28,11 +30,15 @@ export default async function Home({
 	const { entries, hasMore, totalEntries } = result.value();
 
 	return (
-		<Pokedex
-			initialEntries={entries}
-			initialHasMore={hasMore}
-			initialSearch={search ?? ""}
-			totalEntries={totalEntries}
-		/>
+		<main>
+			<GlobalNavigation />
+			<Pokedex
+				initialEntries={entries}
+				initialHasMore={hasMore}
+				initialSearch={search ?? ""}
+				totalEntries={totalEntries}
+			/>
+			<GlobalFooter />
+		</main>
 	);
 }

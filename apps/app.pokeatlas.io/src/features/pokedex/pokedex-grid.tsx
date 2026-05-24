@@ -16,14 +16,13 @@ interface PokedexGridProps {
 	isPending: boolean;
 	onCardTap: (entry: PokedexEntry) => void;
 	onLoadMore: () => void;
-	totalEntries: number;
+	totalEntries?: number;
 }
 
 export function PokedexGrid({
 	entries,
 	hasMore,
 	isPending,
-	totalEntries,
 	isBrushModeActive,
 	onLoadMore,
 	onCardTap,
@@ -34,8 +33,8 @@ export function PokedexGrid({
 	}, [inView, hasMore, isPending, onLoadMore]);
 
 	return (
-		<div className="bg-slate-50 px-8 py-4">
-			<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-x-8 gap-y-4 items-start">
+		<div className="px-4 md:px-8 py-4">
+			<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-x-4 mg:gap-x-8 gap-y-4 items-start">
 				{entries.map((entry, index) => (
 					<PokedexCard
 						isBrushModeActive={isBrushModeActive}
@@ -53,16 +52,6 @@ export function PokedexGrid({
 						<Separator className="flex-1" />
 						<span className="text-sm text-muted-foreground animate-pulse inline-flex items-center gap-4">
 							<Spinner /> Loading...
-						</span>
-						<Separator className="flex-1" />
-					</div>
-				)}
-
-				{!hasMore && entries.length > 0 && (
-					<div className="w-full flex items-center justify-center gap-8 py-8">
-						<Separator className="flex-1" />
-						<span className="text-sm text-muted-foreground">
-							All {totalEntries} Pokémon loaded
 						</span>
 						<Separator className="flex-1" />
 					</div>

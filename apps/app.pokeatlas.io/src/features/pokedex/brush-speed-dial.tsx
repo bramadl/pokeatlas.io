@@ -34,7 +34,7 @@ export function BrushSpeedDial({
 	return (
 		<div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
 			{/* Brush items */}
-			<div className="flex flex-col items-end gap-3 overflow-hidden p-1 pb-3">
+			<div className="flex flex-col items-end gap-2 md:gap-3 md:p-1 pb-2 md:pb-3">
 				{BRUSHES.map((brush, i) => {
 					const isActive = activeBrushes.includes(brush);
 					const isEraser = brush === "eraser";
@@ -62,7 +62,7 @@ export function BrushSpeedDial({
 							{/* Label pill */}
 							<span
 								className={cn(
-									"inline-flex items-center gap-1",
+									"hidden md:inline-flex items-center gap-1",
 									"text-xs font-medium px-2.5 py-1 rounded-full shadow-sm",
 									"transition-all duration-150",
 									isActive
@@ -116,7 +116,7 @@ export function BrushSpeedDial({
 			{isOpen && (
 				<button
 					aria-label="Close brush dial"
-					className="fixed inset-0 z-[-1] cursor-default"
+					className="fixed inset-0 z-[-1] cursor-default bg-black/10 animate-in fade-in-0 duration-200"
 					onClick={onToggle}
 					tabIndex={-1}
 					type="button"
@@ -128,7 +128,8 @@ export function BrushSpeedDial({
 				aria-expanded={isOpen}
 				aria-label={isOpen ? "Close brush menu" : "Open brush menu"}
 				className={cn(
-					"relative size-14 rounded-full shadow-lg flex items-center justify-center",
+					"relative size-10 md:size-14 rounded-full shadow-lg flex items-center justify-center",
+					"hover:scale-105",
 					"transition-all duration-200 active:scale-90",
 					"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
 					!isOpen &&
@@ -143,10 +144,10 @@ export function BrushSpeedDial({
 					isOpen
 						? "bg-primary/90 hover:bg-primary rotate-45"
 						: isEraserMode
-							? "bg-destructive"
+							? "bg-destructive/90 hover:bg-destructive"
 							: hasActiveBrushes
 								? "bg-primary"
-								: "bg-white",
+								: "bg-white hover:bg-primary",
 				)}
 				onClick={onToggle}
 				type="button"
