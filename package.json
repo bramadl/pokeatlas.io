@@ -12,9 +12,10 @@
     "packages/toolkit"
   ],
   "scripts": {
-    "app:dev": "bun run --filter @pokeatlas/app.pokeatlas.io --smol dev",
-    "app:build": "bun run --filter @pokeatlas/app.pokeatlas.io --smol build",
-    "app:start": "bun run --filter @pokeatlas/app.pokeatlas.io --smol start",
+    "app:add": "bunx --bun shadcn@latest add -c apps/app.pokeatlas.io",
+    "app:dev": "bun run --filter @pokeatlas/app.pokeatlas.io dev",
+    "app:build": "bun run --filter @pokeatlas/app.pokeatlas.io build",
+    "app:start": "bun run --filter @pokeatlas/app.pokeatlas.io start",
     "biome:check": "biome check .",
     "biome:format": "biome format . --write",
     "biome:lint": "biome lint .",
