@@ -2,7 +2,8 @@
   "$schema": "https://repomix.com/schemas/latest/schema.json",
   "ignore": {
     "customPatterns": [
-      "packages/pipelines"
+      "packages/pipelines",
+      "docs/"
     ],
     "useDefaultPatterns": true,
     "useDotIgnore": true,
