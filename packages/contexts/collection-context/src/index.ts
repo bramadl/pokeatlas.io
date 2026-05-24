@@ -7,4 +7,9 @@ export type {
 export type { IPokedex } from "./core/pokedex";
 export type { IPokemonCatalog, PokemonEntry } from "./core/pokemon-catalog";
 export { PokemonTracked } from "./core/pokemon-tracked";
-export { TrackedPokemon } from "./core/tracked-pokemon";
+export { TRACKABLE_STATES, type TrackableState } from "./core/trackable-state";
+export {
+	TrackedPokemon,
+	type TrackedPokemonProps,
+} from "./core/tracked-pokemon";
+export { TrackedStates, type TrackedStatesProps } from "./core/tracked-states";
