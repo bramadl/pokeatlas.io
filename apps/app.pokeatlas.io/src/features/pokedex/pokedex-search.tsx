@@ -21,19 +21,25 @@ export function PokedexSearch({
 	onSearchChange,
 }: PokedexSearchProps) {
 	return (
-		<InputGroup className="md:max-w-80">
-			<InputGroupInput
-				defaultValue={initialSearch}
-				onChange={(e) => onSearchChange(e.target.value)}
-				placeholder="Search by dex number or name"
-			/>
-			<InputGroupAddon align="inline-start">
-				{isSearchPending ? (
-					<Spinner className="text-muted-foreground" />
-				) : (
-					<MagnifyingGlassIcon className="text-muted-foreground" />
-				)}
-			</InputGroupAddon>
-		</InputGroup>
+		<div className="flex flex-col">
+			<p className="text-[11px] text-muted-foreground mb-1 ml-1">
+				Use <code className="font-mono">+name</code> to include the full
+				evolution family
+			</p>
+			<InputGroup className="md:max-w-80">
+				<InputGroupInput
+					defaultValue={initialSearch}
+					onChange={(e) => onSearchChange(e.target.value)}
+					placeholder="e.g. bulbasaur, +charizard, 025"
+				/>
+				<InputGroupAddon align="inline-start">
+					{isSearchPending ? (
+						<Spinner className="text-muted-foreground" />
+					) : (
+						<MagnifyingGlassIcon className="text-muted-foreground" />
+					)}
+				</InputGroupAddon>
+			</InputGroup>
+		</div>
 	);
 }

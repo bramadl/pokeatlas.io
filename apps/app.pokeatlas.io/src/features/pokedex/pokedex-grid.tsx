@@ -46,6 +46,20 @@ export function PokedexGrid({
 				))}
 			</div>
 
+			{entries.length === 0 && !isPending && (
+				<div className="flex flex-col items-center justify-center py-24 gap-4 text-center">
+					<div className="text-6xl select-none">🌿</div>
+					<div>
+						<p className="font-semibold text-foreground">
+							No wild Pokémon appeared
+						</p>
+						<p className="text-sm text-muted-foreground mt-1">
+							Try a different name, number, or family search
+						</p>
+					</div>
+				</div>
+			)}
+
 			<div className="mt-4 flex items-center justify-center" ref={sentinelRef}>
 				{isPending && (
 					<div className="w-full flex items-center justify-center gap-8 py-8">

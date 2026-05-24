@@ -4,6 +4,8 @@ import type {
 	IPokedexQueryService,
 } from "@context/collection";
 import { PokemonRef } from "@context/shared";
+import { parseSearchTokens } from "@prisma/utils/parse-search-token";
+import { resolveFamilyDexNumbers } from "@prisma/utils/resolve-family-dex-number";
 import { prisma } from "@prisma-client";
 import type { PokedexProjectionWhereInput } from "@prisma-client/models";
 
@@ -20,15 +22,35 @@ export class PrismaPokedexQueryService implements IPokedexQueryService {
 		};
 
 		if (search && search.trim() !== "") {
-			const searchAsNumber = parseInt(search, 10);
-			const isNumber = !Number.isNaN(searchAsNumber);
+			const tokens = parseSearchTokens(search);
+			const searchConditions: PokedexProjectionWhereInput[] = [];
 
-			const searchConditions: PokedexProjectionWhereInput[] = [
-				{ pokemonName: { contains: search, mode: "insensitive" } },
-			];
+			const familyTerms = tokens
+				.filter((t) => t.type === "family")
+				.map((t) => t.value);
 
-			if (isNumber) searchConditions.push({ dexNumber: searchAsNumber });
-			whereCondition.OR = searchConditions;
+			if (familyTerms.length > 0) {
+				const dexNumbers = await resolveFamilyDexNumbers(familyTerms);
+				if (dexNumbers.length > 0) {
+					searchConditions.push({ dexNumber: { in: dexNumbers } });
+				} else {
+					searchConditions.push({ pokemonRef: "__no_match__" });
+				}
+			}
+
+			for (const token of tokens.filter((t) => t.type !== "family")) {
+				if (token.type === "dex") {
+					searchConditions.push({ dexNumber: parseInt(token.value, 10) });
+				} else if (token.type === "name") {
+					searchConditions.push({
+						pokemonName: { contains: token.value, mode: "insensitive" },
+					});
+				}
+			}
+
+			if (searchConditions.length > 0) {
+				whereCondition.OR = searchConditions;
+			}
 		}
 
 		const totalEntries = await prisma.pokedexProjection.count({
