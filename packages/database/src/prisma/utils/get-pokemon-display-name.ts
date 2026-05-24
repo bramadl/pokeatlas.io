@@ -69,9 +69,9 @@ export function getPokemonDisplayName(
 	form: PokemonFormModel & { species: PokemonSpeciesModel },
 ): string {
 	const sUpper = form.species.name.toUpperCase();
-	const fUpper = form.name.toUpperCase();
+	const fUpper = form.form.toUpperCase();
 
-	let speciesName =
+	const speciesName =
 		KNOWN_SPECIAL_SPECIES[sUpper] ||
 		sUpper
 			.split("_")
@@ -82,37 +82,20 @@ export function getPokemonDisplayName(
 		? fUpper.slice(sUpper.length)
 		: fUpper;
 
-	let tokens = modifierRaw.split("_").filter((t) => t);
-	if (tokens.includes("FEMALE")) {
-		if (!speciesName.includes("♀")) speciesName = `${speciesName} ♀`;
-		tokens = tokens.filter((t) => t !== "FEMALE");
-	} else if (tokens.includes("MALE")) {
-		tokens = tokens.filter((t) => t !== "MALE");
-	}
+	let tokens = modifierRaw.split("_").filter(Boolean);
 
-	const redundantTokens = ["NORMAL", "BASE"];
-	tokens = tokens.filter((t) => !redundantTokens.includes(t));
+	const STRIP_TOKENS = ["NORMAL", "BASE", "FEMALE", "MALE"];
+	tokens = tokens.filter((t) => !STRIP_TOKENS.includes(t));
 
 	if (tokens.length === 0) return speciesName;
-
-	const formatToken = (token: string): string => {
-		if (KNOWN_ACRONYM[token]) return KNOWN_ACRONYM[token];
-		return token.charAt(0).toUpperCase() + token.slice(1).toLowerCase();
-	};
-
-	if (sUpper === "MEWTWO" && tokens.length === 1 && tokens[0] === "A") {
-		return "Armored Mewtwo";
-	}
 
 	const regionalKey = tokens.find((t) => KNOWN_REGION[t]);
 	if (regionalKey) {
 		const prefix = KNOWN_REGION[regionalKey];
 		tokens = tokens.filter((t) => t !== regionalKey);
-
 		if (tokens.length > 0) {
 			return `${prefix} ${speciesName} (${tokens.map(formatToken).join(" ")})`;
 		}
-
 		return `${prefix} ${speciesName}`;
 	}
 
@@ -122,5 +105,14 @@ export function getPokemonDisplayName(
 		return `${type} ${speciesName}${suffix ? ` ${suffix}` : ""}`;
 	}
 
+	if (sUpper === "MEWTWO" && tokens.length === 1 && tokens[0] === "A") {
+		return "Armored Mewtwo";
+	}
+
 	return `${speciesName} (${tokens.map(formatToken).join(" ")})`;
+}
+
+function formatToken(token: string): string {
+	if (KNOWN_ACRONYM[token]) return KNOWN_ACRONYM[token];
+	return token.charAt(0).toUpperCase() + token.slice(1).toLowerCase();
 }

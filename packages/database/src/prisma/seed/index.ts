@@ -1,6 +1,10 @@
-import { getFormPriority } from "@prisma/utils/get-form-priority";
+import {
+	getFormCategory,
+	getFormPriority,
+} from "@prisma/utils/get-form-priority";
 import { getPokemonDisplayName } from "@prisma/utils/get-pokemon-display-name";
 import { prisma } from "@prisma-client";
+import type { PokedexProjectionCreateManyInput } from "@prisma-client/models";
 
 async function main() {
 	console.log("🚀 Seeding...");
@@ -16,7 +20,7 @@ async function main() {
 	console.log("✅ Trainer seeded");
 
 	const allForms = await prisma.pokemonFormModel.findMany({
-		include: { species: true },
+		include: { primaryType: true, secondaryType: true, species: true },
 	});
 
 	if (allForms.length === 0) {
@@ -30,16 +34,24 @@ async function main() {
 		where: { trainerRef: TRAINER_ID },
 	});
 
-	const rows = allForms.map((form) => ({
+	const rows: PokedexProjectionCreateManyInput[] = allForms.map((form) => ({
 		dexNumber: form.species.pokedexNumber,
+		formCategory: getFormCategory(
+			form.form,
+			form.isCostume,
+			form.isTemporaryEvolution,
+		),
 		formPriority: getFormPriority(
 			form.form,
+			form.species.name,
 			form.isCostume,
 			form.isTemporaryEvolution,
 		),
 		imageUrl: form.regularSprite,
 		pokemonName: getPokemonDisplayName(form),
 		pokemonRef: form.form,
+		primaryType: form.primaryType.name,
+		secondaryType: form.secondaryType?.name ?? null,
 		shinyImageUrl: form.shinySprite,
 		trackedStates: [],
 		trainerRef: TRAINER_ID,

@@ -14,6 +14,7 @@ export class PrismaPokedexQueryService implements IPokedexQueryService {
 		page = 1,
 		limit = 60,
 	}: BrowsePokedexInput): Promise<BrowsePokedexOutput> {
+		const safePage = Math.max(1, page);
 		const whereCondition: PokedexProjectionWhereInput = {
 			trainerRef: trainerId,
 		};
@@ -40,19 +41,30 @@ export class PrismaPokedexQueryService implements IPokedexQueryService {
 				{ formPriority: "asc" },
 				{ pokemonName: "asc" },
 			],
-			skip: (page - 1) * limit,
+			skip: (safePage - 1) * limit,
 			take: limit,
 			where: whereCondition,
 		});
 
 		return {
 			entries: trainerPokedex.map((entry) => ({
+				dex: entry.dexNumber,
+				form: entry.formCategory as
+					| "costume"
+					| "regional"
+					| "alternate"
+					| "female"
+					| "mega"
+					| null,
 				id: PokemonRef.from(entry.pokemonRef),
 				name: entry.pokemonName,
 				sprites: { shinyUrl: entry.shinyImageUrl, url: entry.imageUrl },
 				trackedStates: entry.trackedStates,
+				types: [entry.primaryType, entry.secondaryType].filter(
+					Boolean,
+				) as string[],
 			})),
-			hasMore: page * limit < totalEntries,
+			hasMore: safePage * limit < totalEntries,
 			totalEntries,
 		};
 	}

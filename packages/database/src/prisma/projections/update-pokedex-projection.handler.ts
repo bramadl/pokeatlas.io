@@ -2,7 +2,7 @@ import type { TrackedPokemon } from "@context/collection";
 import type { DomainEvent } from "@pokeatlas/toolkit";
 import { prisma } from "@prisma-client";
 
-import { getFormPriority } from "../utils/get-form-priority";
+import { getFormCategory, getFormPriority } from "../utils/get-form-priority";
 import { getPokemonDisplayName } from "../utils/get-pokemon-display-name";
 
 export async function handlePokemonTracked(
@@ -23,7 +23,7 @@ export async function handlePokemonTracked(
 		.map((combo) => combo.encode());
 
 	const form = await prisma.pokemonFormModel.findUnique({
-		include: { species: true },
+		include: { primaryType: true, secondaryType: true, species: true },
 		where: { form: pokemonRef },
 	});
 
@@ -35,8 +35,16 @@ export async function handlePokemonTracked(
 	}
 
 	const pokemonName = getPokemonDisplayName(form);
+
+	const formCategory = getFormCategory(
+		form.form,
+		form.isCostume,
+		form.isTemporaryEvolution,
+	);
+
 	const formPriority = getFormPriority(
 		form.form,
+		form.species.name,
 		form.isCostume,
 		form.isTemporaryEvolution,
 	);
@@ -44,10 +52,13 @@ export async function handlePokemonTracked(
 	await prisma.pokedexProjection.upsert({
 		create: {
 			dexNumber: form.species.pokedexNumber,
+			formCategory,
 			formPriority,
 			imageUrl: form.regularSprite,
 			pokemonName,
 			pokemonRef,
+			primaryType: form.primaryType.name,
+			secondaryType: form.secondaryType?.name ?? null,
 			shinyImageUrl: form.shinySprite,
 			trackedStates,
 			trainerRef,

@@ -2,13 +2,17 @@ model PokedexProjection {
   pokemonRef String @map("pokemon_ref")
   trainerRef String @map("trainer_ref") @db.Uuid
 
-  pokemonName  String @map("pokemon_name")
-  dexNumber    Int    @map("dex_number")
-  formPriority Int    @default(0) @map("form_priority")
-
   imageUrl      String  @map("image_url")
   shinyImageUrl String? @map("shiny_image_url")
 
+  pokemonName String @map("pokemon_name")
+  dexNumber   Int    @map("dex_number")
+
+  primaryType   String  @map("primary_type")
+  secondaryType String? @map("secondary_type")
+
+  formCategory  String?  @map("form_category")
+  formPriority  Int      @default(0) @map("form_priority")
   trackedStates String[] @default([]) @map("tracked_states")
 
   createdAt DateTime @default(now()) @map("created_at")
