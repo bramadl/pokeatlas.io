@@ -7,6 +7,17 @@
 //
 // Pure functions only — no React, no side effects, fully unit-testable.
 
+import {
+	CloverIcon,
+	CrownIcon,
+	EraserIcon,
+	GhostIcon,
+	type Icon,
+	NumberZeroIcon,
+	ShootingStarIcon,
+	SparkleIcon,
+} from "@phosphor-icons/react";
+
 export const BRUSHES = [
 	"shiny",
 	"hundo",
@@ -59,18 +70,18 @@ export const BRUSH_HOTKEY_LABEL: Record<Brush, string> = {
 };
 
 export interface BrushMeta {
-	emoji: string;
+	icon: Icon;
 	label: string;
 }
 
 export const BRUSH_META: Record<Brush, BrushMeta> = {
-	eraser: { emoji: "🗑️", label: "Eraser" },
-	hundo: { emoji: "💯", label: "Hundo" },
-	lucky: { emoji: "🍀", label: "Lucky" },
-	nundo: { emoji: "0️⃣", label: "Nundo" },
-	purified: { emoji: "🌀", label: "Purified" },
-	shadow: { emoji: "👾", label: "Shadow" },
-	shiny: { emoji: "✨", label: "Shiny" },
+	eraser: { icon: EraserIcon, label: "Eraser" },
+	hundo: { icon: CrownIcon, label: "Hundo" },
+	lucky: { icon: CloverIcon, label: "Lucky" },
+	nundo: { icon: NumberZeroIcon, label: "Nundo" },
+	purified: { icon: ShootingStarIcon, label: "Purified" },
+	shadow: { icon: GhostIcon, label: "Shadow" },
+	shiny: { icon: SparkleIcon, label: "Shiny" },
 };
 
 /** Pairs of brushes where activating one removes the other. */
@@ -89,11 +100,11 @@ export const MUTUAL_EXCLUSIONS: [Brush, Brush][] = [
  */
 export function activeBrushParts(
 	brushes: Brush[],
-): { emojis: string; names: string } | null {
+): { icons: Brush[]; names: string } | null {
 	if (brushes.length === 0) return null;
 	const sorted = sortBrushes(brushes);
 	return {
-		emojis: sorted.map((b) => BRUSH_META[b].emoji).join(""),
+		icons: sorted,
 		names: sorted.map((b) => BRUSH_META[b].label).join(" "),
 	};
 }

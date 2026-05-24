@@ -1,23 +1,26 @@
 import type { Metadata } from "next";
-import { Google_Sans_Flex, Source_Code_Pro } from "next/font/google";
+import { IBM_Plex_Mono, Lora, Plus_Jakarta_Sans } from "next/font/google";
 
+import { GlobalProgressBar } from "@/components/global/global-progress-bar";
+import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
 import "./globals.css";
 
-const fontSans = Google_Sans_Flex({
+const fontSans = Plus_Jakarta_Sans({
 	subsets: ["latin"],
 	variable: "--font-sans",
 });
 
-const fontSerif = Google_Sans_Flex({
+const fontSerif = Lora({
 	subsets: ["latin"],
 	variable: "--font-serif",
 });
 
-const fontMono = Source_Code_Pro({
+const fontMono = IBM_Plex_Mono({
 	subsets: ["latin"],
 	variable: "--font-mono",
+	weight: ["400", "700"],
 });
 
 export const metadata: Metadata = {
@@ -35,8 +38,11 @@ export default function RootLayout({
 			className={`${fontSans.variable} ${fontSerif.variable} ${fontMono.variable} antialiased`}
 			lang="en"
 		>
-			<body className="min-h-full flex flex-col">
-				<TooltipProvider>{children}</TooltipProvider>
+			<body>
+				<GlobalProgressBar>
+					<TooltipProvider>{children}</TooltipProvider>
+					<Toaster />
+				</GlobalProgressBar>
 			</body>
 		</html>
 	);

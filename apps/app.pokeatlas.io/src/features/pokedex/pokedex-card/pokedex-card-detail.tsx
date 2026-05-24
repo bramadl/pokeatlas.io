@@ -64,7 +64,7 @@ export function PokedexCardDetail({ pokemon: p }: PokedexCardDetailProps) {
 			<Separator />
 
 			<ul
-				className="grid grid-cols-2 gap-x-4 gap-y-1"
+				className="grid grid-cols-2 gap-1"
 				style={{
 					gridAutoFlow: "column",
 					gridTemplateRows: `repeat(${half}, auto)`,
@@ -73,7 +73,7 @@ export function PokedexCardDetail({ pokemon: p }: PokedexCardDetailProps) {
 				{combos.map((combo) => (
 					<li
 						className={cn(
-							"flex items-center justify-between gap-2 text-xs px-2 py-1 rounded",
+							"flex items-center justify-between gap-4 text-xs px-2 py-1 rounded",
 							combo.isTracked
 								? "bg-green-50 text-green-800"
 								: "text-muted-foreground",
@@ -99,7 +99,7 @@ export function PokedexCardDetail({ pokemon: p }: PokedexCardDetailProps) {
 				<p className="text-xs text-muted-foreground">
 					{trackedCount === 0
 						? "No states tracked yet"
-						: `${trackedCount} of ${combos.length} combinations tracked`}
+						: `${trackedCount} of ${combos.length} states tracked`}
 				</p>
 				<span className="text-xs text-muted-foreground">
 					Last modified at {modifiedAt}

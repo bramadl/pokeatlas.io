@@ -11,16 +11,22 @@ import type { PokedexProjectionWhereInput } from "@prisma-client/models";
 
 export class PrismaPokedexQueryService implements IPokedexQueryService {
 	public async browsePokedex({
+		form,
+		status,
 		search,
 		trainerId,
+		types,
 		page = 1,
 		limit = 60,
 	}: BrowsePokedexInput): Promise<BrowsePokedexOutput> {
 		const safePage = Math.max(1, page);
-		const whereCondition: PokedexProjectionWhereInput = {
-			trainerRef: trainerId,
-		};
 
+		// Top-level AND conditions — each filter is independent
+		const andConditions: PokedexProjectionWhereInput[] = [
+			{ trainerRef: trainerId },
+		];
+
+		// ── Search ──────────────────────────────────────────────────────────────
 		if (search && search.trim() !== "") {
 			const tokens = parseSearchTokens(search);
 			const searchConditions: PokedexProjectionWhereInput[] = [];
@@ -49,10 +55,41 @@ export class PrismaPokedexQueryService implements IPokedexQueryService {
 			}
 
 			if (searchConditions.length > 0) {
-				whereCondition.OR = searchConditions;
+				andConditions.push({ OR: searchConditions });
 			}
 		}
 
+		// ── Status ──────────────────────────────────────────────────────────────
+		if (status === "missing") {
+			andConditions.push({ trackedStates: { equals: [] } });
+		} else if (status === "caught") {
+			andConditions.push({ trackedStates: { isEmpty: false } });
+		}
+
+		// ── Form ────────────────────────────────────────────────────────────────
+		if (form) {
+			andConditions.push({ formCategory: form });
+		}
+
+		// ── Types ───────────────────────────────────────────────────────────────
+		if (types && types.length > 0) {
+			for (const type of types) {
+				const titleCase =
+					type.charAt(0).toUpperCase() + type.slice(1).toLowerCase();
+
+				andConditions.push({
+					OR: [{ primaryType: titleCase }, { secondaryType: titleCase }],
+				});
+			}
+		}
+
+		// ── Build final where ───────────────────────────────────────────────────
+		const whereCondition: PokedexProjectionWhereInput =
+			andConditions.length === 1
+				? (andConditions[0] as PokedexProjectionWhereInput)
+				: { AND: andConditions };
+
+		// ── Query ───────────────────────────────────────────────────────────────
 		const totalEntries = await prisma.pokedexProjection.count({
 			where: whereCondition,
 		});
@@ -74,7 +111,6 @@ export class PrismaPokedexQueryService implements IPokedexQueryService {
 				form: entry.formCategory as
 					| "costume"
 					| "regional"
-					| "alternate"
 					| "female"
 					| "mega"
 					| null,

@@ -34,7 +34,9 @@ export function PokedexCardBadge({
 		<div className="absolute left-1/2 bottom-0 translate-y-1/2 -translate-x-1/2 z-1 flex items-center gap-0.5 pointer-events-none">
 			{hasBase && <span className={pillClass(theme)}>Caught</span>}
 			{extraCount > 0 && (
-				<span className={pillClass(theme)}>+{extraCount} states</span>
+				<span className={pillClass(theme)}>
+					+{extraCount} state{extraCount > 1 ? "s" : ""}
+				</span>
 			)}
 		</div>
 	);

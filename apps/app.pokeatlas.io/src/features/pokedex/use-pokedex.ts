@@ -1,12 +1,13 @@
 "use client";
 
 import { useCallback, useEffect, useState, useTransition } from "react";
-
-import { loadMorePokedex, trackPokemon } from "@/app/actions";
-
+import { toast } from "sonner";
+import { loadMorePokedex } from "@/app/actions";
+import type { PokedexFilters } from "./filter-tool/filter.types";
 import type { PokedexEntry } from "./types";
 
 interface UsePokedexOptions {
+	filters: PokedexFilters;
 	initialEntries: PokedexEntry[];
 	initialHasMore: boolean;
 	search: string;
@@ -21,6 +22,7 @@ interface UsePokedexReturn {
 }
 
 export function usePokedex({
+	filters,
 	initialEntries,
 	initialHasMore,
 	search,
@@ -30,6 +32,7 @@ export function usePokedex({
 	const [page, setPage] = useState(1);
 	const [isPending, startTransition] = useTransition();
 
+	// Reset when search or filters change (new SSR render resets initialEntries)
 	useEffect(() => {
 		setEntries(initialEntries);
 		setHasMore(initialHasMore);
@@ -37,19 +40,23 @@ export function usePokedex({
 	}, [initialEntries, initialHasMore]);
 
 	const loadMore = useCallback(() => {
-		if (isPending || !hasMore) return;
+		const nextPage = page + 1;
 		startTransition(async () => {
-			const nextPage = page + 1;
-			const data = await loadMorePokedex(nextPage, search || undefined);
-
-			setEntries((prev) => [...prev, ...data.entries]);
-			setHasMore(data.hasMore);
+			const result = await loadMorePokedex(nextPage, search, filters);
+			setEntries((prev) => {
+				const existingIds = new Set(prev.map((e) => e.id));
+				const deduped = result.entries.filter((e) => !existingIds.has(e.id));
+				return [...prev, ...deduped];
+			});
+			setHasMore(result.hasMore);
 			setPage(nextPage);
 		});
-	}, [isPending, hasMore, page, search]);
+	}, [page, search, filters]);
 
 	const track = useCallback(
 		async (entry: PokedexEntry, newStates: string[]) => {
+			const { trackPokemon } = await import("@/app/actions");
+
 			setEntries((prev) =>
 				prev.map((e) =>
 					e.id === entry.id ? { ...e, trackedStates: newStates } : e,
@@ -57,13 +64,11 @@ export function usePokedex({
 			);
 
 			try {
-				await trackPokemon(
-					entry.id,
-					newStates.map((s) => s.split("+")),
-				);
+				const combos = newStates.map((sig) => sig.split("+"));
+				await trackPokemon(entry.id, combos);
 			} catch (error) {
-				console.error("trackPokemon failed:", error);
-				// rollback
+				const msg = (error as Error).message;
+				toast.error("Failed to mark the pokemon", { description: msg });
 				setEntries((prev) =>
 					prev.map((e) =>
 						e.id === entry.id

@@ -1,7 +1,10 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter } from "@bprogress/next/app";
+import { useSearchParams } from "next/navigation";
 import { useCallback, useRef, useState, useTransition } from "react";
+
+import { buildSearchParams } from "../filter-tool/filter.types";
 
 const DEBOUNCE_MS = 500;
 
@@ -17,6 +20,7 @@ export function useSearch(initialSearch: string): UseSearchReturn {
 
 	const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 	const router = useRouter();
+	const searchParams = useSearchParams();
 
 	const onSearchChange = useCallback(
 		(value: string) => {
@@ -24,14 +28,11 @@ export function useSearch(initialSearch: string): UseSearchReturn {
 
 			if (debounceRef.current) clearTimeout(debounceRef.current);
 			debounceRef.current = setTimeout(() => {
-				const params = new URLSearchParams();
-				if (value.trim()) params.set("search", value.trim());
-				startTransition(() => {
-					router.push(`/?${params.toString()}`);
-				});
+				const next = buildSearchParams(searchParams, { search: value });
+				startTransition(() => void router.push(`/?${next.toString()}`));
 			}, DEBOUNCE_MS);
 		},
-		[router],
+		[router, searchParams],
 	);
 
 	return {

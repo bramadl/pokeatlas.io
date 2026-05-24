@@ -2,7 +2,7 @@
 
 Epic: Collection Tracking
 Priority: P1
-Status: Not started
+Status: Completed
 
 As a trainer, I want to identify missing Pokémon. So that I know what I still need.
 

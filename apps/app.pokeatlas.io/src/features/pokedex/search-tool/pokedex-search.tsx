@@ -21,22 +21,20 @@ export function PokedexSearch({
 	onSearchChange,
 }: PokedexSearchProps) {
 	return (
-		<div className="flex flex-col">
-			<InputGroup className="md:max-w-80 bg-secondary/25">
-				<InputGroupInput
-					defaultValue={initialSearch}
-					onChange={(e) => onSearchChange(e.target.value)}
-					placeholder="e.g. bulbasaur, +charizard, 025"
-					type="search"
-				/>
-				<InputGroupAddon align="inline-start">
-					{isSearchPending ? (
-						<Spinner className="text-muted-foreground" />
-					) : (
-						<MagnifyingGlassIcon className="text-muted-foreground" />
-					)}
-				</InputGroupAddon>
-			</InputGroup>
-		</div>
+		<InputGroup className="w-full md:max-w-64">
+			<InputGroupInput
+				defaultValue={initialSearch}
+				onChange={(e) => onSearchChange(e.target.value)}
+				placeholder="e.g. bulbasaur, +charizard, 025"
+				type="search"
+			/>
+			<InputGroupAddon align="inline-start">
+				{isSearchPending ? (
+					<Spinner className="text-muted-foreground" />
+				) : (
+					<MagnifyingGlassIcon className="text-muted-foreground" />
+				)}
+			</InputGroupAddon>
+		</InputGroup>
 	);
 }

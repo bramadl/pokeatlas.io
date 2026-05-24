@@ -1,7 +1,8 @@
 "use client";
 
 import { Popover as PopoverPrimitive } from "radix-ui";
-import { useCallback, useRef, useState } from "react";
+import React, { useState } from "react";
+
 import { Drawer, DrawerContent, DrawerTitle } from "@/components/ui/drawer";
 import {
 	Popover,
@@ -26,43 +27,36 @@ interface PokedexCardProps {
 	priority?: boolean;
 }
 
-export function PokedexCard({
+export const PokedexCard = React.memo(function PokedexCard({
 	pokemon: p,
 	onTap,
 	priority = false,
 	isBrushModeActive = false,
 }: PokedexCardProps) {
-	const masterButton = useRef<HTMLButtonElement>(null);
 	const [open, setOpen] = useState(false);
-	const isMobile = useIsMobile();
 
+	const isMobile = useIsMobile();
 	const isTracked = p.trackedStates.length > 0;
 	const theme = getTypeTheme(p.types[0] as string);
-
-	const handleInfoClick = useCallback(() => {
-		masterButton.current?.focus();
-		setOpen(true);
-	}, []);
 
 	const cardBody = (
 		<div
 			className={cn(
 				"relative mt-10 group drop-shadow-xl drop-shadow-black/5",
 				"hover:scale-105 transition-transform duration-300 will-change-transform",
-				open && "scale-105 shadow-2xl",
+				open && "scale-105",
 			)}
 		>
 			<div
 				className={cn(
 					"size-full transition-opacity duration-300",
-					isTracked ? "opacity-100" : "opacity-75",
+					isTracked ? "opacity-100" : "opacity-75 grayscale",
 				)}
 			>
 				<button
 					aria-label={isTracked ? `Untrack ${p.name}` : `Track ${p.name}`}
-					className="absolute inset-0 z-2 rounded-lg cursor-pointer outline-none"
+					className="absolute inset-0 z-2 cursor-pointer outline-none"
 					onClick={onTap}
-					ref={masterButton}
 					tabIndex={-1}
 					type="button"
 				/>
@@ -70,7 +64,7 @@ export function PokedexCard({
 				<PokedexCardSprite
 					isTracked={isTracked}
 					name={p.name}
-					onInfoClick={handleInfoClick}
+					onInfoClick={() => setOpen(true)}
 					priority={priority}
 					spriteUrl={p.sprites.url}
 					theme={theme}
@@ -101,9 +95,8 @@ export function PokedexCard({
 				<PopoverAnchor asChild>{cardBody}</PopoverAnchor>
 				<PopoverContent
 					align="center"
-					className="min-w-60 w-auto ring-transparent drop-shadow-2xl p-4"
+					className="min-w-60 w-auto ring-transparent drop-shadow-2xl"
 					side="right"
-					sideOffset={16}
 				>
 					<PokedexCardDetail pokemon={p} />
 					<PopoverPrimitive.Arrow className="fill-white" />
@@ -125,4 +118,4 @@ export function PokedexCard({
 			</Drawer>
 		</>
 	);
-}
+});

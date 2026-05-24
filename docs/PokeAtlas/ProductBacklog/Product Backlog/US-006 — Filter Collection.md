@@ -2,7 +2,7 @@
 
 Epic: Collection Tracking
 Priority: P1
-Status: Not started
+Status: In Progress
 
 As a trainer, I want to filter Pokémon collection results. So that I can focus on specific collectible targets.
 
@@ -11,8 +11,8 @@ Acceptance Criteria
 Trainer can filter by:
 
 Region
-Tracked
-Missing
+(✔︎) Tracked
+(✔︎) Missing
 Shiny
 Hundo
 Nundo

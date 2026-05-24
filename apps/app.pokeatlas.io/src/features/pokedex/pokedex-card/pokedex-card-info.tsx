@@ -15,7 +15,7 @@ function BackgroundGradientOverlay({
 		>
 			<div
 				className={cn(
-					"size-full bg-linear-to-b to-white",
+					"size-full bg-linear-to-b to-white to-75%",
 					"origin-top transition-all duration-300 ease-in-out",
 					className,
 				)}
@@ -47,8 +47,6 @@ export function PokedexCardInfo({
 			className={cn(
 				"size-full text-center pt-10 flex flex-col",
 				"bg-white rounded-lg shadow-2xl",
-				"ring-2 ring-transparent",
-				"border border-transparent",
 			)}
 		>
 			<BackgroundGradientOverlay
@@ -67,7 +65,9 @@ export function PokedexCardInfo({
 				<span
 					className={cn(
 						"px-1.5 py-0.5 rounded-full font-mono text-[10px]",
-						formBadge,
+						// formBadge,
+						theme.badgeBg,
+						theme.badgeText,
 					)}
 				>
 					{formLabel}

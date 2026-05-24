@@ -1,12 +1,17 @@
 "use client";
 
-import { Fragment, useCallback } from "react";
+import { Fragment, useCallback, useState } from "react";
+import { Badge } from "@/components/ui/badge";
 
 import type { Brush } from "./brush-tool/brush";
 import { BrushModeBanner } from "./brush-tool/brush-mode-banner";
 import { BrushSpeedDial } from "./brush-tool/brush-speed-dial";
 import { useBrush } from "./brush-tool/use-brush";
 import { useBrushKeyboard } from "./brush-tool/use-brush-keyboard";
+import { FORM_OPTIONS } from "./filter-tool/filter.types";
+import { PokedexFilterButton } from "./filter-tool/pokedex-filter-button";
+import { PokedexFilterPanel } from "./filter-tool/pokedex-filter-panel";
+import { useFilter } from "./filter-tool/use-filter";
 import { PokedexGrid } from "./pokedex-grid";
 import { PokedexSearch } from "./search-tool/pokedex-search";
 import { useSearch } from "./search-tool/use-search";
@@ -26,13 +31,18 @@ export function Pokedex({
 	initialSearch,
 	totalEntries,
 }: PokedexProps) {
-	const { isSearchPending, search, onSearchChange } = useSearch(initialSearch);
+	const { activeFilterCount, filters, onFilterChange, onResetFilters } =
+		useFilter();
 
+	const { isSearchPending, search, onSearchChange } = useSearch(initialSearch);
 	const { entries, hasMore, isPending, loadMore, track } = usePokedex({
+		filters,
 		initialEntries,
 		initialHasMore,
 		search,
 	});
+
+	const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
 
 	const {
 		activeBrushes,
@@ -65,6 +75,11 @@ export function Pokedex({
 		[computeTap, track],
 	);
 
+	const handleResetFilters = useCallback(() => {
+		setIsFilterPanelOpen(false);
+		onResetFilters();
+	}, [onResetFilters]);
+
 	const { highlightedIndex, clearHighlight } = useBrushKeyboard({
 		activeBrushes,
 		isBannerVisible,
@@ -83,13 +98,42 @@ export function Pokedex({
 			/>
 
 			<section className="container mx-auto bg-slate-50">
-				<header className="sticky top-16 z-10 bg-white shadow px-4 py-4 md:px-8">
-					<PokedexSearch
-						initialSearch={initialSearch}
-						isSearchPending={isSearchPending}
-						onSearchChange={onSearchChange}
+				<header className="sticky top-16 z-10 bg-white shadow p-4">
+					{/* ── Toolbar row ───────────────────────────────────────── */}
+					<div className="flex items-center justify-between gap-2">
+						<PokedexSearch
+							initialSearch={initialSearch}
+							isSearchPending={isSearchPending}
+							onSearchChange={onSearchChange}
+						/>
+						<PokedexFilterButton
+							activeFilterCount={activeFilterCount}
+							isOpen={isFilterPanelOpen}
+							onClick={() => setIsFilterPanelOpen((v) => !v)}
+						/>
+					</div>
+
+					<PokedexFilterPanel
+						filters={filters}
+						isVisible={isFilterPanelOpen}
+						onFilterChange={onFilterChange}
+						onReset={handleResetFilters}
 					/>
 				</header>
+
+				<div className="relative flex items-center justify-center gap-4 mt-8 px-4">
+					<div className="h-px flex-1 bg-linear-to-r from-transparent via-primary/25 to-transparent"></div>
+					<Badge className="relative z-1 bg-accent border border-primary/15 text-primary h-auto py-2 px-4">
+						<strong className="text-sm">
+							Showing{" "}
+							{FORM_OPTIONS.find((v) => v.value === filters.form)?.label} Forms
+						</strong>{" "}
+						<span className="text-xs">
+							({new Intl.NumberFormat().format(totalEntries)})
+						</span>
+					</Badge>
+					<div className="h-px flex-1 bg-linear-to-r from-transparent via-primary/25 to-transparent"></div>
+				</div>
 
 				<PokedexGrid
 					entries={entries}

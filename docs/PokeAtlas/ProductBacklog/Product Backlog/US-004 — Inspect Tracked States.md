@@ -2,7 +2,7 @@
 
 Epic: Collection Tracking
 Priority: P1
-Status: Not started
+Status: Completed
 
 **As a** trainer, **I want to** inspect tracked states for a Pokémon. **So that** I can understand what collectible targets I already completed.
 

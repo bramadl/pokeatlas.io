@@ -36,11 +36,6 @@ export function useBrush(): UseBrushReturn {
 	const computeTap = useCallback(
 		(entry: PokedexEntry): string[] | null => {
 			const newStates = applyBrushTap(entry.trackedStates, activeBrushes);
-			console.log("computeTap", {
-				activeBrushes,
-				currentStates: entry.trackedStates,
-				newStates,
-			});
 			if (!isDirty(entry.trackedStates, newStates)) return null;
 			return newStates;
 		},
