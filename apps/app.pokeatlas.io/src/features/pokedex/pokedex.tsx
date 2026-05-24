@@ -2,16 +2,16 @@
 
 import { Fragment, useCallback } from "react";
 
-import type { Brush } from "./brush";
-import { BrushModeBanner } from "./brush-mode-banner";
-import { BrushSpeedDial } from "./brush-speed-dial";
+import type { Brush } from "./brush-tool/brush";
+import { BrushModeBanner } from "./brush-tool/brush-mode-banner";
+import { BrushSpeedDial } from "./brush-tool/brush-speed-dial";
+import { useBrush } from "./brush-tool/use-brush";
+import { useBrushKeyboard } from "./brush-tool/use-brush-keyboard";
 import { PokedexGrid } from "./pokedex-grid";
-import { PokedexSearch } from "./pokedex-search";
+import { PokedexSearch } from "./search-tool/pokedex-search";
+import { useSearch } from "./search-tool/use-search";
 import type { PokedexEntry } from "./types";
-import { useBrush } from "./use-brush";
-import { useBrushKeyboard } from "./use-brush-keyboard";
 import { usePokedex } from "./use-pokedex";
-import { useSearch } from "./use-search";
 
 interface PokedexProps {
 	initialEntries: PokedexEntry[];
@@ -43,11 +43,8 @@ export function Pokedex({
 		clearBrushes,
 	} = useBrush();
 
-	// Brush mode is "active" when the dial is open AND at least one brush is selected
-	const isBrushModeActive = isDialOpen && activeBrushes.length > 0;
-
-	// Banner is visible when dial is closed but brushes are still loaded
 	const isBannerVisible = !isDialOpen && activeBrushes.length > 0;
+	const isBrushModeActive = activeBrushes.length > 0;
 
 	const handleBrushToggle = useCallback(
 		(brush: Brush) => {

@@ -6,7 +6,7 @@ import { useInView } from "react-intersection-observer";
 import { Separator } from "@/components/ui/separator";
 import { Spinner } from "@/components/ui/spinner";
 
-import { PokedexCard } from "./pokedex-card";
+import { PokedexCard } from "./pokedex-card/pokedex-card";
 import type { PokedexEntry } from "./types";
 
 interface PokedexGridProps {

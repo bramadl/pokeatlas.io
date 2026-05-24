@@ -29,7 +29,7 @@ export function BrushModeBanner({
 				aria-live="polite"
 				className={cn(
 					"size-full flex justify-center",
-					"transition-all duration-300 ease-out",
+					"transition-all",
 					isBannerVisible
 						? "opacity-100 translate-y-0 pointer-events-auto h-10"
 						: "opacity-0 -translate-y-2 pointer-events-none h-0 overflow-hidden",
@@ -63,7 +63,7 @@ export function BrushModeBanner({
 						<span className="opacity-50">|</span>
 						<button
 							className={cn(
-								"text-xs transition-colors ease-out duration-300",
+								"text-xs transition-colors",
 								isEraser
 									? "text-white/60 hover:text-white"
 									: "text-primary-foreground/60 hover:text-primary-foreground",

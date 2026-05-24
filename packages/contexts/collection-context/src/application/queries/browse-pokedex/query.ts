@@ -16,6 +16,7 @@ export interface BrowsePokedexOutput {
 		sprites: { url: string; shinyUrl: string | null };
 		trackedStates: string[];
 		types: string[];
+		lastModifiedAt: Date;
 	}[];
 	hasMore: boolean;
 	totalEntries: number;

@@ -22,15 +22,12 @@ export function PokedexSearch({
 }: PokedexSearchProps) {
 	return (
 		<div className="flex flex-col">
-			<p className="text-[11px] text-muted-foreground mb-1 ml-1">
-				Use <code className="font-mono">+name</code> to include the full
-				evolution family
-			</p>
-			<InputGroup className="md:max-w-80">
+			<InputGroup className="md:max-w-80 bg-secondary/25">
 				<InputGroupInput
 					defaultValue={initialSearch}
 					onChange={(e) => onSearchChange(e.target.value)}
 					placeholder="e.g. bulbasaur, +charizard, 025"
+					type="search"
 				/>
 				<InputGroupAddon align="inline-start">
 					{isSearchPending ? (

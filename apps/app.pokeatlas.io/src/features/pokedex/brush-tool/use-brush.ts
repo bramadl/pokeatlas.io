@@ -1,13 +1,13 @@
 "use client";
 
 import { useCallback, useState } from "react";
+import type { PokedexEntry } from "../types";
 import {
 	applyBrushConstraints,
 	applyBrushTap,
 	type Brush,
 	isDirty,
 } from "./brush";
-import type { PokedexEntry } from "./types";
 
 interface UseBrushReturn {
 	activeBrushes: Brush[];
@@ -36,6 +36,11 @@ export function useBrush(): UseBrushReturn {
 	const computeTap = useCallback(
 		(entry: PokedexEntry): string[] | null => {
 			const newStates = applyBrushTap(entry.trackedStates, activeBrushes);
+			console.log("computeTap", {
+				activeBrushes,
+				currentStates: entry.trackedStates,
+				newStates,
+			});
 			if (!isDirty(entry.trackedStates, newStates)) return null;
 			return newStates;
 		},

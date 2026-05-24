@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Google_Sans_Flex, Source_Code_Pro } from "next/font/google";
 
+import { TooltipProvider } from "@/components/ui/tooltip";
+
 import "./globals.css";
 
 const fontSans = Google_Sans_Flex({
@@ -33,7 +35,9 @@ export default function RootLayout({
 			className={`${fontSans.variable} ${fontSerif.variable} ${fontMono.variable} antialiased`}
 			lang="en"
 		>
-			<body className="min-h-full flex flex-col">{children}</body>
+			<body className="min-h-full flex flex-col">
+				<TooltipProvider>{children}</TooltipProvider>
+			</body>
 		</html>
 	);
 }

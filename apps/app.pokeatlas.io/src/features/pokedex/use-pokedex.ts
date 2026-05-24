@@ -61,7 +61,9 @@ export function usePokedex({
 					entry.id,
 					newStates.map((s) => s.split("+")),
 				);
-			} catch {
+			} catch (error) {
+				console.error("trackPokemon failed:", error);
+				// rollback
 				setEntries((prev) =>
 					prev.map((e) =>
 						e.id === entry.id

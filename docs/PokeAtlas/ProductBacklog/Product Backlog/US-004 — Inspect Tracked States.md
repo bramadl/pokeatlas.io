@@ -8,7 +8,7 @@ Status: Not started
 
 ## Acceptance Criteria
 
-- Trainer can long press a Pokémon card.
+- Trainer can long press a Pokémon card in mobile or hover on desktop.
 - System can display tracked states.
 
 ## Examples

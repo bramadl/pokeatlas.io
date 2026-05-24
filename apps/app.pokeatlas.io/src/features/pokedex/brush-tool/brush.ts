@@ -21,22 +21,17 @@ export type Brush = (typeof BRUSHES)[number];
 
 /**
  * Canonical display order agreed by the community:
- * Shiny > Shadow/Purified > Lucky > Hundo/Nundo
+ * Shiny > Hundo/Nundo > Shadow > Purified > Lucky
  */
-const BRUSH_ORDER: Record<Brush, number> = {
+export const BRUSH_ORDER: Record<Brush, number> = {
 	eraser: 6,
-	hundo: 4,
-	lucky: 3,
-	nundo: 5,
-	purified: 2,
-	shadow: 1,
+	hundo: 1,
+	lucky: 5,
+	nundo: 2,
+	purified: 4,
+	shadow: 3,
 	shiny: 0,
 };
-
-/** Sort a brush array into canonical display order. */
-export function sortBrushes(brushes: Brush[]): Brush[] {
-	return [...brushes].sort((a, b) => BRUSH_ORDER[a] - BRUSH_ORDER[b]);
-}
 
 /**
  * Hotkey → brush mapping (only active when speed dial is open).
@@ -79,11 +74,12 @@ export const BRUSH_META: Record<Brush, BrushMeta> = {
 };
 
 /** Pairs of brushes where activating one removes the other. */
-const MUTUAL_EXCLUSIONS: [Brush, Brush][] = [
+export const MUTUAL_EXCLUSIONS: [Brush, Brush][] = [
 	["hundo", "nundo"],
 	["shadow", "purified"],
 	["shadow", "lucky"],
-	["lucky", "nundo"],
+	["nundo", "lucky"],
+	["nundo", "purified"],
 ];
 
 /**
@@ -100,27 +96,6 @@ export function activeBrushParts(
 		emojis: sorted.map((b) => BRUSH_META[b].emoji).join(""),
 		names: sorted.map((b) => BRUSH_META[b].label).join(" "),
 	};
-}
-
-/**
- * Given an existing list of tracked states and the current active brushes,
- * return the new list of tracked states after a tap:
- *   - Eraser → clears everything.
- *   - Signature already present → removes it (toggle off).
- *   - Signature absent → appends it (toggle on).
- */
-export function applyBrushTap(
-	currentStates: string[],
-	activeBrushes: Brush[],
-): string[] {
-	if (activeBrushes.includes("eraser")) return [];
-
-	const signature = computeSignature(activeBrushes);
-
-	if (currentStates.includes(signature)) {
-		return currentStates.filter((s) => s !== signature);
-	}
-	return [...currentStates, signature];
 }
 
 /**
@@ -147,6 +122,27 @@ export function applyBrushConstraints(prev: Brush[], next: Brush[]): Brush[] {
 }
 
 /**
+ * Given an existing list of tracked states and the current active brushes,
+ * return the new list of tracked states after a tap:
+ *   - Eraser → clears everything.
+ *   - Signature already present → removes it (toggle off).
+ *   - Signature absent → appends it (toggle on).
+ */
+export function applyBrushTap(
+	currentStates: string[],
+	activeBrushes: Brush[],
+): string[] {
+	if (activeBrushes.includes("eraser")) return [];
+
+	const signature = computeSignature(activeBrushes);
+
+	if (currentStates.includes(signature)) {
+		return currentStates.filter((s) => s !== signature);
+	}
+	return [...currentStates, signature];
+}
+
+/**
  * Compute the tracked-state signature string for a given set of active brushes.
  *
  * Rules:
@@ -167,4 +163,9 @@ export function computeSignature(brushes: Brush[]): string {
 export function isDirty(prev: string[], next: string[]): boolean {
 	if (prev.length !== next.length) return true;
 	return next.some((s) => !prev.includes(s));
+}
+
+/** Sort a brush array into canonical display order. */
+export function sortBrushes(brushes: Brush[]): Brush[] {
+	return [...brushes].sort((a, b) => BRUSH_ORDER[a] - BRUSH_ORDER[b]);
 }

@@ -2,7 +2,7 @@
 
 Epic: Collection Tracking
 Priority: P0
-Status: Not started
+Status: Completed
 
 **As a** trainer, **I want to** select one or multiple tracking brushes. **So that** I can quickly track collectible targets across many Pokémon.
 

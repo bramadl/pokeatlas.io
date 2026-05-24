@@ -79,6 +79,7 @@ export class PrismaPokedexQueryService implements IPokedexQueryService {
 					| "mega"
 					| null,
 				id: PokemonRef.from(entry.pokemonRef),
+				lastModifiedAt: entry.updatedAt,
 				name: entry.pokemonName,
 				sprites: { shinyUrl: entry.shinyImageUrl, url: entry.imageUrl },
 				trackedStates: entry.trackedStates,
