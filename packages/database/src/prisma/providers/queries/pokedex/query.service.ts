@@ -2,31 +2,63 @@ import type {
 	BrowsePokedexInput,
 	BrowsePokedexOutput,
 	IPokedexQueryService,
+	PokedexRegion,
 } from "@context/collection";
 import { PokemonRef } from "@context/shared";
-import { parseSearchTokens } from "@prisma/utils/parse-search-token";
-import { resolveFamilyDexNumbers } from "@prisma/utils/resolve-family-dex-number";
 import { prisma } from "@prisma-client";
 import type { PokedexProjectionWhereInput } from "@prisma-client/models";
+import {
+	parseSearchTokens,
+	projectionCategoryToFormFilter,
+	resolveFamilyDexNumbers,
+} from "./query.helpers";
+
+// ─── Region → dex number ranges ──────────────────────────────────────────────
+
+const REGION_DEX_RANGES: Record<PokedexRegion, [number, number]> = {
+	alola: [722, 809], // includes Meltan (808) and Melmetal (809)
+	galar: [810, 898],
+	hisui: [899, 905],
+	hoenn: [252, 386],
+	johto: [152, 251],
+	kalos: [650, 721],
+	kanto: [1, 151],
+	paldea: [906, 1025],
+	sinnoh: [387, 493],
+	unova: [494, 649],
+};
+
+// ─── FormCategory string → filter value ──────────────────────────────────────
+
+const FORM_FILTER_TO_PROJECTION: Record<string, string> = {
+	alternate: "ALTERNATE_FORM",
+	costume: "COSTUME_VARIANT",
+	regional: "REGIONAL_VARIANT",
+	temporary_evolution: "TEMPORARY_EVOLUTION_FORM",
+};
+
+// ─── Service ──────────────────────────────────────────────────────────────────
 
 export class PrismaPokedexQueryService implements IPokedexQueryService {
 	public async browsePokedex({
 		form,
+		regions,
 		status,
 		search,
 		trainerId,
 		types,
+		variants,
 		page = 1,
 		limit = 60,
 	}: BrowsePokedexInput): Promise<BrowsePokedexOutput> {
 		const safePage = Math.max(1, page);
 
-		// Top-level AND conditions — each filter is independent
+		// ── Top-level AND conditions — each filter is independent ─────────────────
 		const andConditions: PokedexProjectionWhereInput[] = [
 			{ trainerRef: trainerId },
 		];
 
-		// ── Search ──────────────────────────────────────────────────────────────
+		// ── Search Filter ─────────────────────────────────────────────────────────
 		if (search && search.trim() !== "") {
 			const tokens = parseSearchTokens(search);
 			const searchConditions: PokedexProjectionWhereInput[] = [];
@@ -59,19 +91,54 @@ export class PrismaPokedexQueryService implements IPokedexQueryService {
 			}
 		}
 
-		// ── Status ──────────────────────────────────────────────────────────────
+		// ── Status Filter ─────────────────────────────────────────────────────────
+
 		if (status === "missing") {
 			andConditions.push({ trackedStates: { equals: [] } });
-		} else if (status === "caught") {
+		} else if (status === "tracked") {
 			andConditions.push({ trackedStates: { isEmpty: false } });
 		}
 
-		// ── Form ────────────────────────────────────────────────────────────────
+		// ── Form filter ───────────────────────────────────────────────────────────
 		if (form) {
-			andConditions.push({ formCategory: form });
+			const projectionCategory = FORM_FILTER_TO_PROJECTION[form];
+			if (projectionCategory) {
+				andConditions.push({ formCategory: projectionCategory });
+			}
 		}
 
-		// ── Types ───────────────────────────────────────────────────────────────
+		// ── Variant filters ───────────────────────────────────────────────────────
+		const excludeConditions: PokedexProjectionWhereInput[] = [];
+		if (variants?.regional === false) {
+			excludeConditions.push({ formCategory: { not: "REGIONAL_VARIANT" } });
+		}
+
+		if (variants?.gender === false) excludeConditions.push({ isFemale: false });
+		if (variants?.costume !== true) {
+			excludeConditions.push({ formCategory: { not: "COSTUME_VARIANT" } });
+		}
+
+		for (const c of excludeConditions) {
+			andConditions.push(c);
+		}
+
+		// ── Region filter ─────────────────────────────────────────────────────────
+		if (regions && regions.length > 0) {
+			const regionConditions: PokedexProjectionWhereInput[] = regions.map(
+				(region) => {
+					const [min, max] = REGION_DEX_RANGES[region] as [number, number];
+					return { dexNumber: { gte: min, lte: max } };
+				},
+			);
+
+			andConditions.push(
+				regionConditions.length === 1
+					? (regionConditions[0] as PokedexProjectionWhereInput)
+					: { OR: regionConditions },
+			);
+		}
+
+		// ── Types ─────────────────────────────────────────────────────────────────
 		if (types && types.length > 0) {
 			for (const type of types) {
 				const titleCase =
@@ -83,13 +150,13 @@ export class PrismaPokedexQueryService implements IPokedexQueryService {
 			}
 		}
 
-		// ── Build final where ───────────────────────────────────────────────────
+		// ── Build final conditions ────────────────────────────────────────────────
 		const whereCondition: PokedexProjectionWhereInput =
 			andConditions.length === 1
 				? (andConditions[0] as PokedexProjectionWhereInput)
 				: { AND: andConditions };
 
-		// ── Query ───────────────────────────────────────────────────────────────
+		// ── Query ─────────────────────────────────────────────────────────────────
 		const totalEntries = await prisma.pokedexProjection.count({
 			where: whereCondition,
 		});
@@ -108,13 +175,9 @@ export class PrismaPokedexQueryService implements IPokedexQueryService {
 		return {
 			entries: trainerPokedex.map((entry) => ({
 				dex: entry.dexNumber,
-				form: entry.formCategory as
-					| "costume"
-					| "regional"
-					| "female"
-					| "mega"
-					| null,
+				form: projectionCategoryToFormFilter(entry.formCategory),
 				id: PokemonRef.from(entry.pokemonRef),
+				isFemale: entry.isFemale,
 				lastModifiedAt: entry.updatedAt,
 				name: entry.pokemonName,
 				sprites: { shinyUrl: entry.shinyImageUrl, url: entry.imageUrl },

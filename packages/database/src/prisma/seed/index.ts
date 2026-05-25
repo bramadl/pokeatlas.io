@@ -1,7 +1,7 @@
 import {
-	getFormCategory,
 	getFormPriority,
-} from "@prisma/utils/get-form-priority";
+	toProjectionFormCategory,
+} from "@prisma/providers/queries/pokedex/query.helpers";
 import { getPokemonDisplayName } from "@prisma/utils/get-pokemon-display-name";
 import { prisma } from "@prisma-client";
 import type { PokedexProjectionCreateManyInput } from "@prisma-client/models";
@@ -36,18 +36,10 @@ async function main() {
 
 	const rows: PokedexProjectionCreateManyInput[] = allForms.map((form) => ({
 		dexNumber: form.species.pokedexNumber,
-		formCategory: getFormCategory(
-			form.form,
-			form.isCostume,
-			form.isTemporaryEvolution,
-		),
-		formPriority: getFormPriority(
-			form.form,
-			form.species.name,
-			form.isCostume,
-			form.isTemporaryEvolution,
-		),
+		formCategory: toProjectionFormCategory(form.formCategory),
+		formPriority: getFormPriority(form),
 		imageUrl: form.regularSprite,
+		isFemale: form.isFemale,
 		pokemonName: getPokemonDisplayName(form),
 		pokemonRef: form.form,
 		primaryType: form.primaryType.name,

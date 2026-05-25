@@ -1,9 +1,9 @@
 import type { TrackedPokemon } from "@context/collection";
 import type { DomainEvent } from "@pokeatlas/toolkit";
+import { getPokemonDisplayName } from "@prisma/utils/get-pokemon-display-name";
 import { prisma } from "@prisma-client";
 
-import { getFormCategory, getFormPriority } from "../utils/get-form-priority";
-import { getPokemonDisplayName } from "../utils/get-pokemon-display-name";
+import { getFormPriority, toProjectionFormCategory } from "./query.helpers";
 
 export async function handlePokemonTracked(
 	event: DomainEvent<TrackedPokemon>,
@@ -35,19 +35,8 @@ export async function handlePokemonTracked(
 	}
 
 	const pokemonName = getPokemonDisplayName(form);
-
-	const formCategory = getFormCategory(
-		form.form,
-		form.isCostume,
-		form.isTemporaryEvolution,
-	);
-
-	const formPriority = getFormPriority(
-		form.form,
-		form.species.name,
-		form.isCostume,
-		form.isTemporaryEvolution,
-	);
+	const formCategory = toProjectionFormCategory(form.formCategory);
+	const formPriority = getFormPriority(form);
 
 	await prisma.pokedexProjection.upsert({
 		create: {
@@ -55,6 +44,7 @@ export async function handlePokemonTracked(
 			formCategory,
 			formPriority,
 			imageUrl: form.regularSprite,
+			isFemale: form.isFemale,
 			pokemonName,
 			pokemonRef,
 			primaryType: form.primaryType.name,

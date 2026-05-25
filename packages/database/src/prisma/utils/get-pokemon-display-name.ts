@@ -1,7 +1,4 @@
-import type {
-	PokemonFormModel,
-	PokemonSpeciesModel,
-} from "@prisma-client/client";
+import type { PokemonFormModelGetPayload } from "@prisma-client/models";
 
 const KNOWN_ACRONYM: Record<string, string> = {
 	BB: "BB",
@@ -66,7 +63,7 @@ const KNOWN_SPECIAL_SPECIES: Record<string, string> = {
 };
 
 export function getPokemonDisplayName(
-	form: PokemonFormModel & { species: PokemonSpeciesModel },
+	form: PokemonFormModelGetPayload<{ include: { species: true } }>,
 ): string {
 	const sUpper = form.species.name.toUpperCase();
 	const fUpper = form.form.toUpperCase();

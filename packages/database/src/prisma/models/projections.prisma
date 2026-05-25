@@ -11,8 +11,11 @@ model PokedexProjection {
   primaryType   String  @map("primary_type")
   secondaryType String? @map("secondary_type")
 
-  formCategory  String?  @map("form_category")
-  formPriority  Int      @default(0) @map("form_priority")
+  formCategory String? @map("form_category")
+  formPriority Int     @default(0) @map("form_priority")
+
+  isFemale Boolean @default(false) @map("is_female")
+
   trackedStates String[] @default([]) @map("tracked_states")
 
   createdAt DateTime @default(now()) @map("created_at")
@@ -20,6 +23,8 @@ model PokedexProjection {
 
   @@id([trainerRef, pokemonRef])
   @@index([trainerRef, dexNumber, formPriority])
+  @@index([trainerRef, formCategory])
+  @@index([trainerRef, isFemale])
   @@map("trainer_pokedex")
   @@schema("projections")
 }
