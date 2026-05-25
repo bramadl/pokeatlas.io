@@ -14,6 +14,7 @@ export interface GmFormSettings {
 
 export interface GmFormEntry {
 	assetBundleSuffix?: string;
+	assetBundleValue?: number;
 	form: string;
 	isCostume?: boolean;
 	isTemporaryEvolution?: boolean;
@@ -26,6 +27,12 @@ export interface GmPokemonSettings {
 	}>;
 	familyId: string;
 	form?: string;
+	ibfc: {
+		alternateForm?: string | string[];
+		combatEnable?: boolean;
+		defaultForm?: string;
+	};
+
 	pokedexHeightM?: number;
 	pokedexWeightKg?: number;
 	pokemonClass?: string;
@@ -63,12 +70,19 @@ export interface TransformedPokemonForm {
 	baseDefense: number;
 	baseStamina: number;
 	form: string;
+	formCategory:
+		| "ALTERNATE_FORM"
+		| "BASE_FORM"
+		| "COSTUME_VARIANT"
+		| "TEMPORARY_EVOLUTION_FORM"
+		| "REGIONAL_VARIANT";
 	height: number;
-	isCostume: boolean;
-	isTemporaryEvolution: boolean;
+	isDefaultForm: boolean;
+	isFemale: boolean;
+	isTrackable: boolean;
 	name: string;
 	primaryTypeId: string;
-	regularSprite: string | null;
+	regularSprite: string;
 	secondaryTypeId: string | null;
 	shinySprite: string | null;
 	speciesId: string;
@@ -81,7 +95,7 @@ export interface TransformedPokemonSpecies {
 	isShadowAvailable: boolean;
 	name: string;
 	pokedexNumber: number;
-	pokemonClassification: "LEGENDARY" | "MYTHIC" | null;
+	pokemonClassification: "LEGENDARY" | "MYTHIC" | "ULTRA_BEAST" | null;
 	pokemonId: string;
 }
 

@@ -99,10 +99,14 @@ const ERROR_KIND_DISPLAY: Record<
 
 export class CliRenderer {
 	private readonly isDryRun: boolean;
+	private readonly isForce: boolean;
 	private readonly isVerbose: boolean;
 
-	constructor(opts: { dryRun?: boolean; verbose?: boolean } = {}) {
+	constructor(
+		opts: { dryRun?: boolean; force?: boolean; verbose?: boolean } = {},
+	) {
 		this.isDryRun = opts.dryRun ?? false;
+		this.isForce = opts.force ?? false;
 		this.isVerbose = opts.verbose ?? false;
 	}
 
@@ -111,11 +115,13 @@ export class CliRenderer {
 		const titleText = `${SYMBOLS.diamond} PokeAtlas Sync v${pkg.version}`;
 		const dryRunText = `• Dry Run: ${this.isDryRun ? "True" : "False"}`;
 		const verboseText = `• Verbose: ${this.isVerbose ? "True" : "False"}`;
+		const forceText = `• Force:   ${this.isForce ? "True" : "False"}`;
 
 		const maxTextLength = Math.max(
 			titleText.length,
 			dryRunText.length,
 			verboseText.length,
+			forceText.length,
 		);
 
 		const innerWidth = maxTextLength + 4;
@@ -147,6 +153,15 @@ export class CliRenderer {
 		console.log(
 			`${indent}${c.cyan("│")}\x20\x20${styledVerbose}${"\x20".repeat(verbosePadding)}${c.cyan("│")}`,
 		);
+
+		// Force row — only shown when active, to avoid visual noise on normal runs
+		if (this.isForce) {
+			const styledForce = `${c.dim("•")}\x20Force:  \x20${c.yellow("True")}`;
+			const forcePadding = innerWidth - forceText.length - 2;
+			console.log(
+				`${indent}${c.cyan("│")}\x20\x20${styledForce}${"\x20".repeat(forcePadding)}${c.cyan("│")}`,
+			);
+		}
 
 		console.log(`${indent}╰${borderLine}╯`);
 	}
@@ -205,7 +220,6 @@ export class CliRenderer {
 				this.printError(event.error, event.durationMs);
 				break;
 
-			// Change detection: game master has not changed since last run
 			case "pipeline:up-to-date":
 				this.printUpToDate(event.timestamp, event.durationMs);
 				break;
@@ -278,7 +292,6 @@ export class CliRenderer {
 		updated: number,
 		durationMs: number,
 	): void {
-		// Clear the full line width to remove any \r artifacts from progress/running
 		clearLine();
 
 		const phaseTag = c.dim(`${PHASE_LABEL[phase] ?? phase}`);
@@ -307,8 +320,6 @@ export class CliRenderer {
 	// ----- Up-to-date notice --------------------------------------------------
 
 	private printUpToDate(timestamp: string, durationMs: number): void {
-		// Parse the timestamp for a friendly display
-		// Format: "gm\n<gmVersion>\n<apkVersion>\n<date>\n<time>"
 		const parts = timestamp.split("\n");
 		const date = parts[3] ?? "";
 		const time = (parts[4] ?? "").replace(/-/g, ":");
@@ -326,6 +337,9 @@ export class CliRenderer {
 			);
 		}
 		console.log(`     ${c.dim(`Checked in ${formatDuration(durationMs)}`)}`);
+		console.log(
+			`     ${c.dim(`Run with ${c.white("--force")} to sync anyway`)}`,
+		);
 		console.log();
 	}
 

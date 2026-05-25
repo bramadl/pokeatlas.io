@@ -6,9 +6,13 @@ import { toTitleCase } from "../utils/string";
 
 export const SPECIES_REGEX = /^V(\d{4})_POKEMON_([A-Z0-9_]+)$/;
 
-const POKEMON_CLASS_MAP: Record<string, "LEGENDARY" | "MYTHIC"> = {
+const POKEMON_CLASS_MAP: Record<
+	string,
+	"LEGENDARY" | "MYTHIC" | "ULTRA_BEAST"
+> = {
 	POKEMON_CLASS_LEGENDARY: "LEGENDARY",
 	POKEMON_CLASS_MYTHIC: "MYTHIC",
+	POKEMON_CLASS_ULTRA_BEAST: "ULTRA_BEAST",
 };
 
 export function transformSpecies(

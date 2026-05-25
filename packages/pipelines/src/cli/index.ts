@@ -30,7 +30,15 @@ const ALL_PIPELINES: EntityPipeline<AppContext>[] = [
 ];
 
 async function main() {
-	// ----- State ----------------------------------------------------------------
+	// ----- Parse flags --------------------------------------------------------
+	// Flags are resolved before prompts so the renderer can reflect them.
+
+	const args = process.argv.slice(2);
+	const isDryRun = args.includes("--dry-run");
+	const isVerbose = args.includes("--verbose");
+	const isForce = args.includes("--force");
+
+	// ----- State --------------------------------------------------------------
 
 	const stateManager = new SyncStateManager();
 	stateManager.load();
@@ -38,7 +46,7 @@ async function main() {
 	const existingState = stateManager.getAll();
 	const hasExistingState = Object.keys(existingState).length > 0;
 
-	// ----- Prompt 1: Pipeline selection -----------------------------------------
+	// ----- Prompt 1: Pipeline selection ----------------------------------------
 
 	const selectedNames = await checkbox({
 		choices: ALL_PIPELINES.map((p) => {
@@ -58,7 +66,7 @@ async function main() {
 		},
 	});
 
-	// ----- Prompt 2: Execution mode ---------------------------------------------
+	// ----- Prompt 2: Execution mode --------------------------------------------
 
 	const modeChoices: Array<{
 		name: string;
@@ -84,18 +92,16 @@ async function main() {
 		message: "Execution mode:",
 	});
 
-	// ----- Dry-run flag (optional, still supported via arg) ---------------------
+	// ----- Wire renderer ------------------------------------------------------
 
-	const args = process.argv.slice(2);
-	const isDryRun = args.includes("--dry-run");
-	const isVerbose = args.includes("--verbose");
-
-	// ----- Wire renderer --------------------------------------------------------
-
-	const renderer = new CliRenderer({ dryRun: isDryRun, verbose: isVerbose });
+	const renderer = new CliRenderer({
+		dryRun: isDryRun,
+		force: isForce,
+		verbose: isVerbose,
+	});
 	renderer.printHeader();
 
-	// ----- Build context --------------------------------------------------------
+	// ----- Build context ------------------------------------------------------
 
 	const eventHandlers: Array<(event: PipelineEvent) => void> = [
 		(event) => renderer.onEvent(event),
@@ -110,22 +116,23 @@ async function main() {
 		prisma,
 	};
 
-	// ----- Build runner ---------------------------------------------------------
+	// ----- Build runner -------------------------------------------------------
 
 	const runner = new PipelineRunner({
 		context,
 		eventHandlers,
 		executionMode,
+		force: isForce,
 		stateManager,
 	});
 
-	// ----- Filter to selected pipelines -----------------------------------------
+	// ----- Filter to selected pipelines ----------------------------------------
 
 	const selectedPipelines = ALL_PIPELINES.filter((p) =>
 		selectedNames.includes(p.name),
 	);
 
-	// ----- Run ------------------------------------------------------------------
+	// ----- Run -----------------------------------------------------------------
 
 	const results = await runner.run(selectedPipelines);
 	const anyFailed = results.some((r) => r.status === "failed");
@@ -138,7 +145,11 @@ async function main() {
 main().catch((err) => {
 	if (err instanceof ExitPromptError) process.exit(0);
 
-	const renderer = new CliRenderer({ dryRun: false, verbose: false });
+	const renderer = new CliRenderer({
+		dryRun: false,
+		force: false,
+		verbose: false,
+	});
 	const syncError = classifyError(err);
 
 	renderer.onEvent({

@@ -5,37 +5,242 @@ import type {
 import { toTitleCase } from "../utils/string";
 import { SPECIES_REGEX } from "./pokemon-species.transformer";
 
+// ─── Constants ────────────────────────────────────────────────────────────────
+
 const SPRITE_BASE =
 	"https://raw.githubusercontent.com/PokeMiners/pogo_assets/master/Images/Pokemon%20-%20256x256/Addressable%20Assets";
 
-function formSortKey(f: TransformedPokemonForm): number {
-	if (f.isTemporaryEvolution) return 3;
-	if (f.isCostume && f.form.endsWith("_FEMALE")) return 2;
-	if (f.isCostume) return 1;
-	if (f.form.endsWith("_FEMALE")) return 1;
-	return 0;
-}
+const POKEAPI_ARTWORK_BASE =
+	"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork";
 
-function formSuffix(formSlug: string, pokemonId: string): string | null {
-	const baseIdToken = pokemonId.split("_")[0] as string;
+/**
+ * Known regional variant suffixes in Pokémon GO.
+ * GM has no explicit regional flag — detection is suffix-based.
+ * Update when Niantic adds new regional variants.
+ */
+const REGIONAL_SUFFIXES = new Set([
+	"ALOLAN",
+	"GALARIAN",
+	"HISUIAN",
+	"PALDEAN",
+	"KANTONIAN",
+]);
 
-	let withoutSpecies = formSlug;
-	if (formSlug.startsWith(pokemonId)) {
-		withoutSpecies = formSlug.slice(pokemonId.length + 1);
-	} else if (formSlug.startsWith(baseIdToken)) {
-		withoutSpecies = formSlug.slice(baseIdToken.length + 1);
+type FormCategory = TransformedPokemonForm["formCategory"];
+
+// ─── Pre-pass maps ────────────────────────────────────────────────────────────
+
+/**
+ * Maps formSlug → { isCostume, assetBundleValue } from FORMS_V* entries.
+ * This is the authoritative source for costume flag AND form ordering.
+ *
+ * assetBundleValue is also captured here but the primary ordering source
+ * is the array index from buildDefaultFormMap.
+ */
+function buildFormMetaMap(
+	sources: ExtractedSources,
+): Map<string, { isCostume: boolean; assetBundleValue?: number }> {
+	const map = new Map<
+		string,
+		{ isCostume: boolean; assetBundleValue?: number }
+	>();
+
+	for (const entry of sources.gameMaster) {
+		const fs = entry.data.formSettings;
+		if (!fs?.forms) continue;
+
+		for (const f of fs.forms) {
+			map.set(f.form, {
+				assetBundleValue: f.assetBundleValue,
+				isCostume: f.isCostume ?? false,
+			});
+		}
 	}
 
-	return withoutSpecies === "NORMAL" || withoutSpecies === ""
-		? null
-		: withoutSpecies;
+	return map;
 }
+
+/**
+ * Maps pokemonId → the DEFAULT form slug for that species.
+ *
+ * Rule: forms[0] in formSettings.forms[] is always the default form
+ * (the form a trainer first encounters when catching the species).
+ *
+ * Examples from GM data:
+ *   LANDORUS     → LANDORUS_INCARNATE   (forms[0])
+ *   GIRATINA     → GIRATINA_ALTERED     (forms[0])
+ *   DIALGA       → DIALGA_NORMAL        (forms[0])
+ *   FLABEBE      → FLABEBE_RED          (forms[0])
+ *   ZACIAN       → ZACIAN_HERO          (forms[0])
+ *   KORAIDON     → KORAIDON_APEX        (forms[0], only form)
+ *   NIDORAN_FEMALE → NIDORAN_NORMAL     (forms[0])
+ *
+ * This is an intentional Niantic convention — forms[0] is always catchable,
+ * subsequent forms may require special conditions (research, raids, etc.)
+ */
+function buildDefaultFormMap(sources: ExtractedSources): Map<string, string> {
+	const map = new Map<string, string>();
+	for (const entry of sources.gameMaster) {
+		const fs = entry.data.formSettings;
+		if (!fs?.forms?.length) continue;
+
+		// biome-ignore lint/style/noNonNullAssertion: forms[0] is always the default — never undefined given length check
+		const firstForm = fs.forms[0]!.form;
+		map.set(fs.pokemon, firstForm);
+	}
+
+	return map;
+}
+
+/**
+ * Maps pokemonId → { defaultForm, battleOnlyForms } for species with
+ * ibfc.combatEnable = true (Aegislash, Mimikyu, Morpeko, Wishiwashi, etc.)
+ *
+ * ibfc is present on ALL entries (as {} when inactive), so we check combatEnable.
+ */
+function buildIbfcMap(
+	sources: ExtractedSources,
+): Map<string, { defaultForm: string; battleOnlyForms: Set<string> }> {
+	const map = new Map<
+		string,
+		{ defaultForm: string; battleOnlyForms: Set<string> }
+	>();
+
+	for (const entry of sources.gameMaster) {
+		const settings = entry.data.pokemonSettings;
+		if (!settings?.ibfc?.combatEnable) continue;
+
+		const defaultForm = settings.ibfc.defaultForm;
+		if (!defaultForm) continue;
+
+		const alternates = settings.ibfc.alternateForm
+			? Array.isArray(settings.ibfc.alternateForm)
+				? settings.ibfc.alternateForm
+				: [settings.ibfc.alternateForm]
+			: [];
+
+		map.set(settings.pokemonId, {
+			battleOnlyForms: new Set(alternates),
+			defaultForm,
+		});
+	}
+
+	return map;
+}
+
+/**
+ * Build the set of pokemonIds that have at least one _NORMAL template.
+ * Used to pick the canonical template for emitting temp evolutions.
+ */
+function buildSpeciesWithNormalTemplate(
+	sources: ExtractedSources,
+): Set<string> {
+	const set = new Set<string>();
+	for (const entry of sources.gameMaster) {
+		const settings = entry.data.pokemonSettings;
+		if (!settings?.form) continue;
+		if (settings.form.endsWith("_NORMAL")) set.add(settings.pokemonId);
+	}
+
+	return set;
+}
+
+// ─── Slug helpers ─────────────────────────────────────────────────────────────
+
+/**
+ * Resolves the globally-unique canonical form slug.
+ *
+ * Problem: NIDORAN_FEMALE and NIDORAN_MALE both produce formSlug "NIDORAN_NORMAL".
+ * Since `form` is the sole PK, we suffix with pokemonId to disambiguate:
+ *   formSlug="NIDORAN_NORMAL", pokemonId="NIDORAN_FEMALE" → "NIDORAN_FEMALE_NORMAL"
+ */
+function resolveCanonicalFormSlug(formSlug: string, pokemonId: string): string {
+	if (formSlug.startsWith(pokemonId)) return formSlug;
+
+	const underscoreIdx = formSlug.indexOf("_");
+	const suffix = underscoreIdx >= 0 ? formSlug.slice(underscoreIdx + 1) : null;
+
+	return suffix ? `${pokemonId}_${suffix}` : pokemonId;
+}
+
+/**
+ * Extracts the suffix portion of a formSlug relative to the pokemonId.
+ * Returns null for base/normal forms (NORMAL suffix or no suffix).
+ */
+function formSuffix(formSlug: string, pokemonId: string): string | null {
+	const baseToken = pokemonId.split("_")[0] as string;
+
+	let rest = formSlug;
+	if (formSlug.startsWith(pokemonId)) {
+		rest = formSlug.slice(pokemonId.length + 1);
+	} else if (formSlug.startsWith(baseToken)) {
+		rest = formSlug.slice(baseToken.length + 1);
+	}
+
+	return rest === "NORMAL" || rest === "" ? null : rest;
+}
+
+// ─── FormCategory classifier ──────────────────────────────────────────────────
+
+/**
+ * Classifies the structural category of a form. isFemale is NOT part of this
+ * classification — it is a separate orthogonal boolean on TransformedPokemonForm.
+ *
+ * Decision tree (priority order):
+ * 1. Temp evo            → TEMPORARY_EVOLUTION_FORM
+ * 2. isCostume from GM   → COSTUME_VARIANT
+ * 3. Regional suffix     → REGIONAL_VARIANT
+ * 4. Non-NORMAL suffix   → ALTERNATE_FORM
+ * 5. Default             → BASE_FORM
+ *
+ * Note: ibfc.defaultForm no longer affects formCategory.
+ * isTrackable handles the battle-only distinction separately.
+ * isDefaultForm handles the "primary form" distinction separately.
+ */
+function classifyFormCategory(opts: {
+	canonicalFormSlug: string;
+	isCostume: boolean;
+	isTempEvo: boolean;
+	pokemonId: string;
+}): FormCategory {
+	const { canonicalFormSlug, isCostume, isTempEvo, pokemonId } = opts;
+
+	if (isTempEvo) return "TEMPORARY_EVOLUTION_FORM";
+	if (isCostume) return "COSTUME_VARIANT";
+
+	const suffix = formSuffix(canonicalFormSlug, pokemonId);
+	if (suffix) {
+		const firstToken = suffix.split("_")[0] as string;
+		if (REGIONAL_SUFFIXES.has(firstToken)) return "REGIONAL_VARIANT";
+		return "ALTERNATE_FORM";
+	}
+
+	return "BASE_FORM";
+}
+
+/**
+ * Resolves isTrackable.
+ * Only battle-only forms (ibfc.combatEnable + alternateForm) are non-trackable.
+ * Everything else — including Mega, Primal, costume, regional, female — is trackable.
+ */
+function resolveIsTrackable(
+	canonicalFormSlug: string,
+	ibfcEntry: { defaultForm: string; battleOnlyForms: Set<string> } | undefined,
+): boolean {
+	if (!ibfcEntry) return true;
+	// defaultForm is trackable, alternateForm(s) are battle-only
+	return (
+		canonicalFormSlug === ibfcEntry.defaultForm ||
+		!ibfcEntry.battleOnlyForms.has(canonicalFormSlug)
+	);
+}
+
+// ─── Sprite resolution ────────────────────────────────────────────────────────
 
 function resolveSprites(
 	dex: number,
 	formSlug: string,
 	pokemonId: string,
-	_isCostume: boolean,
 	tempEvoId?: string,
 	spriteIndex?: Set<string>,
 ): { regularSprite: string; shinySprite: string } {
@@ -73,25 +278,25 @@ function resolveSprites(
 			shiny = `pm${dex}.f${resolvedSuffix}.s.icon.png`;
 
 			if (spriteIndex && !spriteIndex.has(base)) {
-				const fallbackBase = `pm${dex}.icon.png`;
-				if (spriteIndex.has(fallbackBase)) {
-					base = fallbackBase;
+				const fallbackBare = `pm${dex}.icon.png`;
+				const fallbackNormal = `pm${dex}.fNORMAL.icon.png`;
+
+				if (spriteIndex.has(fallbackBare)) {
+					base = fallbackBare;
 					shiny = `pm${dex}.s.icon.png`;
-				} else {
-					const normalBase = `pm${dex}.fNORMAL.icon.png`;
-					if (spriteIndex.has(normalBase)) {
-						base = normalBase;
-						shiny = `pm${dex}.fNORMAL.s.icon.png`;
-					}
+				} else if (spriteIndex.has(fallbackNormal)) {
+					base = fallbackNormal;
+					shiny = `pm${dex}.fNORMAL.s.icon.png`;
 				}
 			}
 		}
 	}
 
+	// Final fallback: PokeAPI official artwork (always exists)
 	if (spriteIndex && !spriteIndex.has(base)) {
 		return {
-			regularSprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${dex}.png`,
-			shinySprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/${dex}.png`,
+			regularSprite: `${POKEAPI_ARTWORK_BASE}/${dex}.png`,
+			shinySprite: `${POKEAPI_ARTWORK_BASE}/shiny/${dex}.png`,
 		};
 	}
 
@@ -101,90 +306,56 @@ function resolveSprites(
 	};
 }
 
-interface FormMeta {
-	assetBundleSuffix?: string;
-	isCostume: boolean;
-}
-
-function buildFormMetaMap(sources: ExtractedSources): Map<string, FormMeta> {
-	const map = new Map<string, FormMeta>();
-	for (const entry of sources.gameMaster) {
-		const fs = entry.data.formSettings;
-		if (!fs?.forms) continue;
-		for (const f of fs.forms) {
-			map.set(f.form, {
-				assetBundleSuffix: f.assetBundleSuffix,
-				isCostume: f.isCostume ?? false,
-			});
-		}
-	}
-	return map;
-}
-
-function buildFemaleFilename(
+/**
+ * Builds the female probe filename to check in the sprite index.
+ * If the file exists → emit a female variant form (Case B: sprite-only, no GM entry).
+ * Case A (GM explicit _FEMALE suffix e.g. NIDORAN_FEMALE) is handled in the main loop.
+ */
+function buildFemaleProbeFilename(
 	dex: number,
 	formSlug: string,
 	pokemonId: string,
-	isCostume: boolean,
-): string | null {
+): string {
 	const suffix = formSuffix(formSlug, pokemonId);
 	if (!suffix) return `pm${dex}.g2.icon.png`;
-
-	const prefix = isCostume ? "c" : "f";
-	return `pm${dex}.${prefix}${suffix}.g2.icon.png`;
+	return `pm${dex}.f${suffix}.g2.icon.png`;
 }
 
-/**
- * Build a set of pokemonIds that have at least one _NORMAL template.
- * Used to decide which template is the canonical source for temp evos.
- */
-function buildSpeciesWithNormalTemplate(
-	sources: ExtractedSources,
-): Set<string> {
-	const set = new Set<string>();
-	for (const entry of sources.gameMaster) {
-		const settings = entry.data.pokemonSettings;
-		if (!settings?.form) continue;
-		if (settings.form.endsWith("_NORMAL")) {
-			set.add(settings.pokemonId);
-		}
-	}
-	return set;
+// ─── Sort key ─────────────────────────────────────────────────────────────────
+
+function formSortKey(
+	category: FormCategory,
+	isDefaultForm: boolean,
+	isFemale: boolean,
+): number {
+	// Default form always sorts first within its species
+	if (isDefaultForm) return 0;
+
+	// Within each category, male (isFemale: false) sorts before female
+	const femaleOffset = isFemale ? 0.5 : 0;
+
+	if (category === "BASE_FORM") return 1 + femaleOffset;
+	if (category === "ALTERNATE_FORM") return 3 + femaleOffset;
+	if (category === "REGIONAL_VARIANT") return 4 + femaleOffset;
+	if (category === "COSTUME_VARIANT") return 5 + femaleOffset;
+	if (category === "TEMPORARY_EVOLUTION_FORM") return 6;
+	return 7;
 }
 
-/**
- * Resolves the canonical unique form slug for a given pokemonId + formSlug.
- *
- * Problem: NIDORAN_FEMALE and NIDORAN_MALE both have formSlug "NIDORAN_NORMAL".
- * Since `form` is the sole PK, slugs must be globally unique.
- *
- * If formSlug does NOT start with pokemonId, the species prefix is replaced:
- *   formSlug="NIDORAN_NORMAL", pokemonId="NIDORAN_FEMALE"
- *   → "NIDORAN_FEMALE_NORMAL"
- *
- * For the vast majority of Pokémon formSlug already starts with pokemonId,
- * so this is a no-op.
- */
-function resolveCanonicalFormSlug(formSlug: string, pokemonId: string): string {
-	if (formSlug.startsWith(pokemonId)) return formSlug;
-
-	const underscoreIdx = formSlug.indexOf("_");
-	const suffix = underscoreIdx >= 0 ? formSlug.slice(underscoreIdx + 1) : null;
-
-	return suffix ? `${pokemonId}_${suffix}` : pokemonId;
-}
+// ─── Main transformer ─────────────────────────────────────────────────────────
 
 export function transformForms(
 	sources: ExtractedSources,
 ): TransformedPokemonForm[] {
 	const formMetaMap = buildFormMetaMap(sources);
+	const defaultFormMap = buildDefaultFormMap(sources);
+	const ibfcMap = buildIbfcMap(sources);
 	const speciesWithNormal = buildSpeciesWithNormalTemplate(sources);
 	const forms: TransformedPokemonForm[] = [];
 
-	// Track emitted (speciesId, formSlug) pairs to prevent duplicates from
-	// costume/alternate templates repeating the same temp evo slugs.
-	// Key: `${speciesId}::${formSlug}`
-	const emittedForms = new Set<string>();
+	// Dedup guard: prevents duplicate slugs from costume/alternate templates.
+	// Key: `${pokemonId}::${canonicalFormSlug}`
+	const emitted = new Set<string>();
 
 	for (const entry of sources.gameMaster) {
 		const settings = entry.data.pokemonSettings;
@@ -193,78 +364,112 @@ export function transformForms(
 		const match = SPECIES_REGEX.exec(entry.templateId);
 		if (!match) continue;
 
-		const pokedexNumber = Number.parseInt(match[1] as string, 10);
-		const formSlug = settings.form;
-		const meta = formMetaMap.get(formSlug);
-		const isCostume = meta?.isCostume ?? false;
+		const dex = Number.parseInt(match[1] as string, 10);
+		const rawFormSlug = settings.form;
+		const pokemonId = settings.pokemonId;
+		const formMeta = formMetaMap.get(rawFormSlug);
+		const isCostume = formMeta?.isCostume ?? false;
+		const ibfcEntry = ibfcMap.get(pokemonId);
 
-		const formI18nKey = `form_${formSlug.toLowerCase()}`;
-		const speciesI18nKey = `pokemon_name_${String(pokedexNumber).padStart(4, "0")}`;
-		const name =
-			sources.i18n.get(formI18nKey) ??
-			sources.i18n.get(speciesI18nKey) ??
-			toTitleCase(settings.pokemonId);
+		// The default form for this species (forms[0] in formSettings)
+		const defaultFormSlug = defaultFormMap.get(pokemonId);
 
-		const sprites = resolveSprites(
-			pokedexNumber,
-			formSlug,
-			settings.pokemonId,
-			isCostume,
-			undefined,
-			sources.spriteIndex,
-		);
+		// ── i18n names ────────────────────────────────────────────────────────
+		const speciesI18nKey = `pokemon_name_${String(dex).padStart(4, "0")}`;
+		const formI18nKey = `form_${rawFormSlug.toLowerCase()}`;
+		const speciesName =
+			sources.i18n.get(speciesI18nKey) ?? toTitleCase(pokemonId);
+		const formName = sources.i18n.get(formI18nKey) ?? speciesName;
 
-		// ----- Base form -------------------------------------------------------
-		const canonicalFormSlug = resolveCanonicalFormSlug(
-			formSlug,
-			settings.pokemonId,
-		);
-		const baseFormKey = `${settings.pokemonId}::${canonicalFormSlug}`;
+		// ── Canonical slug ────────────────────────────────────────────────────
+		const canonicalSlug = resolveCanonicalFormSlug(rawFormSlug, pokemonId);
+		const baseKey = `${pokemonId}::${canonicalSlug}`;
 
-		if (!emittedForms.has(baseFormKey)) {
-			emittedForms.add(baseFormKey);
+		if (!emitted.has(baseKey)) {
+			emitted.add(baseKey);
+
+			// isDefaultForm: true when this form's raw slug matches the species' forms[0]
+			// Note: compare raw slugs (before canonical resolution) because defaultFormMap
+			// stores the raw slug from formSettings — e.g. "NIDORAN_NORMAL" for both
+			// NIDORAN_FEMALE and NIDORAN_MALE. After canonical resolution they become
+			// unique slugs but both should be isDefaultForm: true (each is the only
+			// form for their respective species).
+			const isDefaultForm = defaultFormSlug === rawFormSlug;
+
+			const formCategory = classifyFormCategory({
+				canonicalFormSlug: canonicalSlug,
+				isCostume,
+				isTempEvo: false,
+				pokemonId,
+			});
+
+			const isTrackable = resolveIsTrackable(canonicalSlug, ibfcEntry);
+
+			if (!settings.type) {
+				throw new Error(
+					`PokemonFormTransformer: missing required field "type"\n` +
+						`Template: ${entry.templateId}\n` +
+						`PokemonId: ${pokemonId}`,
+				);
+			}
+
+			const sprites = resolveSprites(
+				dex,
+				rawFormSlug,
+				pokemonId,
+				undefined,
+				sources.spriteIndex,
+			);
 
 			const baseForm: TransformedPokemonForm = {
 				baseAttack: settings.stats?.baseAttack ?? 0,
 				baseDefense: settings.stats?.baseDefense ?? 0,
 				baseStamina: settings.stats?.baseStamina ?? 0,
-				form: canonicalFormSlug,
+				form: canonicalSlug,
+				formCategory,
 				height: settings.pokedexHeightM ?? 0,
-				isCostume,
-				isTemporaryEvolution: false,
-				name,
+				isDefaultForm,
+				isFemale: false,
+				isTrackable,
+				name: formName,
 				primaryTypeId: settings.type,
-				regularSprite: sprites?.regularSprite ?? null,
+				regularSprite: sprites.regularSprite,
 				secondaryTypeId: settings.type2 ?? null,
-				shinySprite: sprites?.shinySprite ?? null,
-				speciesId: settings.pokemonId,
+				shinySprite: sprites.shinySprite,
+				speciesId: pokemonId,
 				templateId: entry.templateId,
 				weight: settings.pokedexWeightKg ?? 0,
 			};
 
-			// ----- Female variant ------------------------------------------------
-			const femaleFilename = buildFemaleFilename(
-				pokedexNumber,
-				formSlug,
-				settings.pokemonId,
-				isCostume,
-			);
+			// ── Female variant — Case B (sprite-index-detected, no GM entry) ─
+			// Case A (GM explicit _FEMALE suffix e.g. NIDORAN_FEMALE) is a
+			// regular form entry in the main loop and needs no special treatment.
+			//
+			// Female variant inherits formCategory from its parent: a female costume
+			// is COSTUME_VARIANT + isFemale: true, not a separate FEMALE_VARIANT.
+			const femaleProbe = buildFemaleProbeFilename(dex, rawFormSlug, pokemonId);
+			if (sources.spriteIndex.has(femaleProbe)) {
+				const femaleSlug = `${canonicalSlug}_FEMALE`;
+				const femaleKey = `${pokemonId}::${femaleSlug}`;
 
-			if (femaleFilename && sources.spriteIndex.has(femaleFilename)) {
-				const femaleSlug = `${canonicalFormSlug}_FEMALE`;
-				const femaleKey = `${settings.pokemonId}::${femaleSlug}`;
+				if (!emitted.has(femaleKey)) {
+					emitted.add(femaleKey);
+					const femaleShinyFilename = femaleProbe.replace(
+						".icon.png",
+						".s.icon.png",
+					);
 
-				if (!emittedForms.has(femaleKey)) {
-					emittedForms.add(femaleKey);
 					forms.push({
 						...baseForm,
 						form: femaleSlug,
-						name: `${name} ♀`,
-						regularSprite: `${SPRITE_BASE}/${femaleFilename}`,
-						shinySprite: sources.spriteIndex.has(
-							femaleFilename.replace(".icon.png", ".s.icon.png"),
-						)
-							? `${SPRITE_BASE}/${femaleFilename.replace(".icon.png", ".s.icon.png")}`
+						formCategory: baseForm.formCategory, // inherit — e.g. COSTUME_VARIANT stays COSTUME_VARIANT
+						isDefaultForm: false, // female variant is never the default form
+						isFemale: true,
+						isTrackable: true,
+						name: `${speciesName} ♀`,
+						regularSprite: `${SPRITE_BASE}/${femaleProbe}`,
+						shinySprite: sources.spriteIndex.has(femaleShinyFilename)
+							? `${SPRITE_BASE}/${femaleShinyFilename}`
 							: null,
 					});
 				}
@@ -273,63 +478,75 @@ export function transformForms(
 			forms.push(baseForm);
 		}
 
-		// ----- Temp evolutions -------------------------------------------------
-		// Emit only from the canonical template to avoid duplicates:
-		//   - If the species has a _NORMAL template → only emit from _NORMAL
-		//   - If the species has NO _NORMAL template (e.g. Zorua Hisuian) →
-		//     emit from whichever template we encounter first (emittedForms
-		//     Set prevents subsequent templates from duplicating)
-		const hasNormalTemplate = speciesWithNormal.has(settings.pokemonId);
-		const isNormalTemplate = formSlug.endsWith("_NORMAL");
-
+		// ── Temp evolutions ───────────────────────────────────────────────────
+		// Only emit from the canonical (_NORMAL) template to prevent duplicates.
+		// Exception: species with no _NORMAL template (e.g. Zorua Hisuian) —
+		// emit from the first template encountered; emitted Set prevents dupes.
+		const hasNormalTemplate = speciesWithNormal.has(pokemonId);
+		const isNormalTemplate = rawFormSlug.endsWith("_NORMAL");
 		if (hasNormalTemplate && !isNormalTemplate) continue;
 
 		for (const evo of settings.tempEvoOverrides ?? []) {
 			if (!evo.tempEvoId) continue;
 
 			const evoSuffix = evo.tempEvoId.replace("TEMP_EVOLUTION_", "");
-			const evoFormSlug = `${settings.pokemonId}_${evoSuffix}`;
-			const evoKey = `${settings.pokemonId}::${evoFormSlug}`;
+			const evoSlug = `${pokemonId}_${evoSuffix}`;
+			const evoKey = `${pokemonId}::${evoSlug}`;
 
-			if (emittedForms.has(evoKey)) continue;
-			emittedForms.add(evoKey);
+			if (emitted.has(evoKey)) continue;
+			emitted.add(evoKey);
 
 			const evoI18nKey = `form_${evoSuffix.toLowerCase()}`;
 			const evoName =
 				sources.i18n.get(evoI18nKey) ??
 				sources.i18n.get(speciesI18nKey) ??
-				toTitleCase(evoFormSlug);
+				toTitleCase(evoSlug);
+
+			const primaryType = evo.typeOverride1 ?? settings.type;
+			if (!primaryType) {
+				throw new Error(
+					`PokemonFormTransformer: missing required field "type" on temp evo\n` +
+						`Template: ${entry.templateId}\n` +
+						`TempEvoId: ${evo.tempEvoId}`,
+				);
+			}
 
 			const evoSprites = resolveSprites(
-				pokedexNumber,
-				evoFormSlug,
-				settings.pokemonId,
-				false,
+				dex,
+				evoSlug,
+				pokemonId,
 				evo.tempEvoId,
+				sources.spriteIndex,
 			);
 
 			forms.push({
 				baseAttack: evo.stats?.baseAttack ?? settings.stats?.baseAttack ?? 0,
 				baseDefense: evo.stats?.baseDefense ?? settings.stats?.baseDefense ?? 0,
 				baseStamina: evo.stats?.baseStamina ?? settings.stats?.baseStamina ?? 0,
-				form: evoFormSlug,
+				form: evoSlug,
+				formCategory: "TEMPORARY_EVOLUTION_FORM",
 				height: evo.averageHeightM ?? settings.pokedexHeightM ?? 0,
-				isCostume: false,
-				isTemporaryEvolution: true,
+				isDefaultForm: false, // temp evos are never the default form
+				isFemale: false, // no female temp evos in GO
+				isTrackable: true,
 				name: evoName,
-				primaryTypeId: evo.typeOverride1 ?? settings.type,
-				regularSprite: evoSprites?.regularSprite ?? null,
+				primaryTypeId: primaryType,
+				regularSprite: evoSprites.regularSprite,
 				secondaryTypeId: evo.typeOverride2 ?? settings.type2 ?? null,
-				shinySprite: evoSprites?.shinySprite ?? null,
-				speciesId: settings.pokemonId,
+				shinySprite: evoSprites.shinySprite,
+				speciesId: pokemonId,
 				templateId: entry.templateId,
 				weight: evo.averageWeightKg ?? settings.pokedexWeightKg ?? 0,
 			});
 		}
 	}
 
+	// Sort within species: default form first, then by category, male before female
 	return forms.sort((a, b) => {
 		if (a.speciesId !== b.speciesId) return 0;
-		return formSortKey(a) - formSortKey(b);
+		return (
+			formSortKey(a.formCategory, a.isDefaultForm, a.isFemale) -
+			formSortKey(b.formCategory, b.isDefaultForm, b.isFemale)
+		);
 	});
 }

@@ -36,7 +36,6 @@ export async function loadForms(
 	const batches = [...chunk(data, BATCH_SIZE)];
 	const batchTotal = batches.length;
 	let itemsDone = 0;
-
 	const upsertedSlugs = new Set<string>();
 
 	for (let batchIndex = 0; batchIndex < batches.length; batchIndex++) {
@@ -51,9 +50,10 @@ export async function loadForms(
 							baseAttack: form.baseAttack,
 							baseDefense: form.baseDefense,
 							baseStamina: form.baseStamina,
+							formCategory: form.formCategory,
 							height: form.height,
-							isCostume: form.isCostume,
-							isTemporaryEvolution: form.isTemporaryEvolution,
+							isFemale: form.isFemale,
+							isTrackable: form.isTrackable,
 							name: form.name,
 							primaryTypeId: form.primaryTypeId,
 							regularSprite: form.regularSprite,
@@ -97,6 +97,7 @@ export async function loadForms(
 		}
 	}
 
+	// ── Reconciliation ────────────────────────────────────────────────────────
 	const missingSlugs = data
 		.map((f) => f.form)
 		.filter((slug) => !upsertedSlugs.has(slug));

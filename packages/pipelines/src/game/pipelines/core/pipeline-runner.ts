@@ -13,6 +13,7 @@ interface RunnerConfig {
 	context: AppContext;
 	eventHandlers: Array<(event: PipelineEvent) => void>;
 	executionMode: ExecutionMode;
+	force: boolean;
 	stateManager: SyncStateManager;
 }
 
@@ -30,14 +31,14 @@ export class PipelineRunner {
 	public async run(
 		pipelines: EntityPipeline<AppContext>[],
 	): Promise<EntityRunResult[]> {
-		const { stateManager, executionMode } = this.config;
+		const { stateManager, executionMode, force } = this.config;
 		const wallStart = Date.now();
 
 		// ----- Change detection -----------------------------------------------
-		// Fetch the cheap timestamp.txt (~100 bytes) before downloading the full
-		// game master (~10MB). If the timestamp matches our last successful sync
-		// and the mode is "normal", there is nothing to do.
-		if (executionMode === "normal") {
+		// Skipped entirely when:
+		//   - --force flag is set
+		//   - executionMode is not "normal" (retry-failed / resume always run)
+		if (executionMode === "normal" && !force) {
 			this.emit({
 				kind: "step",
 				phase: "extracting",
@@ -86,7 +87,6 @@ export class PipelineRunner {
 				updated: 0,
 			});
 
-			// Store new timestamp — will be persisted after successful run
 			if (currentTimestamp) {
 				stateManager.setLastGameMasterTimestamp(currentTimestamp);
 			}
