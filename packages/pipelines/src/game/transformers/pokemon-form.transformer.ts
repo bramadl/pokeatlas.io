@@ -20,10 +20,15 @@ const POKEAPI_ARTWORK_BASE =
  */
 const REGIONAL_SUFFIXES = new Set([
 	"ALOLAN",
+	"ALOLA",
 	"GALARIAN",
+	"GALAR",
 	"HISUIAN",
+	"HISUI",
 	"PALDEAN",
+	"PALDEA",
 	"KANTONIAN",
+	"KANTO",
 ]);
 
 type FormCategory = TransformedPokemonForm["formCategory"];
@@ -143,6 +148,135 @@ function buildSpeciesWithNormalTemplate(
 	}
 
 	return set;
+}
+
+/**
+ * Maps a raw suffix token to a human-readable label.
+ * Handles known patterns; falls back to title-cased tokens.
+ */
+function slugSuffixToLabel(suffix: string): string {
+	const KNOWN: Record<string, string> = {
+		ADVENTURE_HAT_2020: "Adventure Hat 2020",
+		BB_2026: "BB 2026",
+		COMPLETE_FIFTY_PERCENT: "50% Forme (Complete)",
+		COMPLETE_TEN_PERCENT: "10% Forme (Complete)",
+		COPY_2019: "Clone 2019",
+		COSTUME_2020: "Costume 2020",
+		DIWALI_2024: "Diwali 2024",
+		DOCTOR: "Doctor",
+		FALL_2019: "Fall 2019",
+		FLYING_5TH_ANNIV: "Flying 5th Anniversary",
+		FLYING_01: "Flying 01",
+		FLYING_02: "Flying 02",
+		FLYING_03: "Flying 03",
+		FLYING_04: "Flying 04",
+		FLYING_OKINAWA: "Flying Okinawa",
+		GOFEST_2022: "GO Fest 2022",
+		GOFEST_2024_MTIARA: "GO Fest 2024 Mega Tiara",
+		GOFEST_2024_STIARA: "GO Fest 2024 Standard Tiara",
+		GOFEST_2025_GOGGLES_BLUE: "GO Fest 2025 Goggles Blue",
+		GOFEST_2025_GOGGLES_RED: "GO Fest 2025 Goggles Red",
+		GOFEST_2025_GOGGLES_YELLOW: "GO Fest 2025 Goggles Yellow",
+		GOFEST_2025_MONOCLE_BLUE: "GO Fest 2025 Monocle Blue",
+		GOFEST_2025_MONOCLE_RED: "GO Fest 2025 Monocle Red",
+		GOFEST_2025_MONOCLE_YELLOW: "GO Fest 2025 Monocle Yellow",
+		GOTOUR_2024_A: "GO Tour 2024 A",
+		GOTOUR_2024_A_02: "GO Tour 2024 A (02)",
+		GOTOUR_2024_B: "GO Tour 2024 B",
+		GOTOUR_2024_B_02: "GO Tour 2024 B (02)",
+		GOTOUR_2025_A: "GO Tour 2025 A",
+		GOTOUR_2025_A_02: "GO Tour 2025 A (02)",
+		GOTOUR_2025_B: "GO Tour 2025 B",
+		GOTOUR_2025_B_02: "GO Tour 2025 B (02)",
+		GOTOUR_2026_A: "GO Tour 2026 A",
+		GOTOUR_2026_A_02: "GO Tour 2026 A (02)",
+		GOTOUR_2026_B: "GO Tour 2026 B",
+		GOTOUR_2026_B_02: "GO Tour 2026 B (02)",
+		GOTOUR_2026_C: "GO Tour 2026 C",
+		GOTOUR_2026_C_02: "GO Tour 2026 C (02)",
+		HORIZONS: "Horizons",
+		JEJU: "Jeju",
+		KARIYUSHI: "Kariyushi",
+		KURTA: "Kurta",
+		POP_STAR: "Pop Star",
+		ROCK_STAR: "Rock Star",
+		SUMMER_2023_A: "Summer 2023 A",
+		SUMMER_2023_B: "Summer 2023 B",
+		SUMMER_2023_C: "Summer 2023 C",
+		SUMMER_2023_D: "Summer 2023 D",
+		SUMMER_2023_E: "Summer 2023 E",
+		TSHIRT_01: "T-Shirt 01",
+		TSHIRT_02: "T-Shirt 02",
+		TSHIRT_03: "T-Shirt 03",
+		VS_2019: "VS 2019",
+		WCS_2022: "WCS 2022",
+		WCS_2023: "WCS 2023",
+		WCS_2024: "WCS 2024",
+		WCS_2025: "WCS 2025",
+		WINTER_2020: "Winter 2020",
+	};
+
+	if (KNOWN[suffix]) return KNOWN[suffix];
+	return suffix.split("_").map(toTitleCase).join(" ");
+}
+
+const REGION_LABEL: Record<string, string> = {
+	ALOLA: "Alolan",
+	ALOLAN: "Alolan",
+	GALAR: "Galarian",
+	GALARIAN: "Galarian",
+	HISUI: "Hisuian",
+	HISUIAN: "Hisuian",
+	KANTO: "Kantonian",
+	KANTONIAN: "Kantonian",
+	PALDEA: "Paldean",
+	PALDEAN: "Paldean",
+};
+
+/**
+ * Derives a human-readable display name from the canonical form slug
+ * when i18n doesn't have a form-specific entry.
+ *
+ * Examples:
+ *   VENUSAUR_COPY_2019        → "(Clone 2019)"  → "Venusaur (Clone 2019)"
+ *   PIKACHU_ROCK_STAR         → "(Rock Star)"   → "Pikachu (Rock Star)"
+ *   PIKACHU_GOFEST_2025_GOGGLES_BLUE → "(GO Fest 2025 Goggles Blue)"
+ *   RATTATA_ALOLA             → regional prefix, handled by classifyFormCategory
+ *   VENUSAUR_MEGA             → "(Mega)" — but temp evos have their own i18n key
+ *   CHARIZARD_MEGA_X          → "(Mega X)"
+ */
+function deriveFormName(
+	speciesName: string,
+	canonicalFormSlug: string,
+	pokemonId: string,
+	formCategory: FormCategory,
+	isFemale: boolean,
+): string {
+	const femaleSuffix = isFemale ? " ♀" : "";
+	const base = `${speciesName}${femaleSuffix}`;
+
+	const suffix = formSuffix(canonicalFormSlug, pokemonId);
+	if (!suffix) return base; // BASE_FORM, no decoration needed
+
+	if (formCategory === "REGIONAL_VARIANT") {
+		// "ALOLA" → "Alolan Rattata", "GALARIAN" → "Galarian Darmanitan"
+		const regionToken = suffix.split("_")[0];
+		if (!regionToken) throw new Error("Failed to derive form name");
+
+		const regionLabel = REGION_LABEL[regionToken] ?? toTitleCase(regionToken);
+		return `${regionLabel} ${speciesName}${femaleSuffix}`;
+	}
+
+	if (formCategory === "TEMPORARY_EVOLUTION_FORM") {
+		// suffix is already handled via evoI18nKey, this path shouldn't be hit
+		// but as fallback: "MEGA" → "Mega Venusaur", "MEGA_X" → "Mega Charizard X"
+		const parts = suffix.split("_").map(toTitleCase);
+		return `${parts.join(" ")} ${speciesName}${femaleSuffix}`;
+	}
+
+	// COSTUME_VARIANT and ALTERNATE_FORM: parenthetical suffix
+	const label = slugSuffixToLabel(suffix);
+	return `${speciesName}${femaleSuffix} (${label})`;
 }
 
 // ─── Slug helpers ─────────────────────────────────────────────────────────────
@@ -379,11 +513,44 @@ export function transformForms(
 		const formI18nKey = `form_${rawFormSlug.toLowerCase()}`;
 		const speciesName =
 			sources.i18n.get(speciesI18nKey) ?? toTitleCase(pokemonId);
-		const formName = sources.i18n.get(formI18nKey) ?? speciesName;
+
+		const i18nFormName = sources.i18n.get(formI18nKey);
+		const i18nIsSelfIdentifying =
+			i18nFormName != null &&
+			i18nFormName !== speciesName &&
+			i18nFormName.toLowerCase().includes(speciesName.toLowerCase());
 
 		// ── Canonical slug ────────────────────────────────────────────────────
 		const canonicalSlug = resolveCanonicalFormSlug(rawFormSlug, pokemonId);
 		const baseKey = `${pokemonId}::${canonicalSlug}`;
+
+		const formCategory = classifyFormCategory({
+			canonicalFormSlug: canonicalSlug,
+			isCostume,
+			isTempEvo: false,
+			pokemonId,
+		});
+
+		let formName: string;
+		const suffix = formSuffix(canonicalSlug, pokemonId);
+		if (suffix?.startsWith("COMPLETE_") && !i18nIsSelfIdentifying) {
+			const subName = i18nFormName ?? suffix.slice("COMPLETE_".length);
+			const completeName =
+				sources.i18n.get("form_zygarde_complete") ?? "Complete";
+			formName = `${speciesName} (${completeName}, ${subName})`;
+		} else {
+			formName = i18nIsSelfIdentifying
+				? i18nFormName
+				: i18nFormName != null && i18nFormName !== speciesName
+					? `${speciesName} (${i18nFormName})`
+					: deriveFormName(
+							speciesName,
+							canonicalSlug,
+							pokemonId,
+							formCategory,
+							false,
+						);
+		}
 
 		if (!emitted.has(baseKey)) {
 			emitted.add(baseKey);
@@ -395,13 +562,6 @@ export function transformForms(
 			// unique slugs but both should be isDefaultForm: true (each is the only
 			// form for their respective species).
 			const isDefaultForm = defaultFormSlug === rawFormSlug;
-
-			const formCategory = classifyFormCategory({
-				canonicalFormSlug: canonicalSlug,
-				isCostume,
-				isTempEvo: false,
-				pokemonId,
-			});
 
 			const isTrackable = resolveIsTrackable(canonicalSlug, ibfcEntry);
 
@@ -466,7 +626,13 @@ export function transformForms(
 						isDefaultForm: false, // female variant is never the default form
 						isFemale: true,
 						isTrackable: true,
-						name: `${speciesName} ♀`,
+						name: deriveFormName(
+							speciesName,
+							canonicalSlug,
+							pokemonId,
+							baseForm.formCategory,
+							true,
+						),
 						regularSprite: `${SPRITE_BASE}/${femaleProbe}`,
 						shinySprite: sources.spriteIndex.has(femaleShinyFilename)
 							? `${SPRITE_BASE}/${femaleShinyFilename}`
