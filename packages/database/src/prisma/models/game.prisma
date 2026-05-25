@@ -1,8 +1,20 @@
 enum PokemonClassification {
   LEGENDARY
   MYTHIC
+  ULTRA_BEAST
 
   @@map("pokemon_classification")
+  @@schema("game")
+}
+
+enum FormCategory {
+  ALTERNATE_FORM
+  BASE_FORM
+  COSTUME_VARIANT
+  TEMPORARY_EVOLUTION_FORM
+  REGIONAL_VARIANT
+
+  @@map("form_category")
   @@schema("game")
 }
 
@@ -39,7 +51,12 @@ model PokemonSpeciesModel {
 }
 
 model PokemonFormModel {
-  form String @id
+  form         String       @id
+  formCategory FormCategory @default(BASE_FORM) @map("form_category")
+
+  isDefaultForm Boolean @default(false) @map("is_default_form")
+  isFemale      Boolean @default(false) @map("is_female")
+  isTrackable   Boolean @default(false) @map("is_trackable")
 
   templateId String @map("template_id")
   speciesId  String @map("species_id")
@@ -58,9 +75,6 @@ model PokemonFormModel {
 
   height Float
   weight Float
-
-  isCostume            Boolean @default(false) @map("is_costume")
-  isTemporaryEvolution Boolean @default(false) @map("is_temporary_evolution")
 
   syncedAt DateTime @updatedAt @map("synced_at")
 
