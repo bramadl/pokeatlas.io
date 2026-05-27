@@ -1,7 +1,8 @@
 {
   "compilerOptions": {
     "paths": {
-      "@context/collection/*": ["./src/*"],
+      "#application": ["./src/application/index.ts"],
+      "#core": ["./src/core/index.ts"],
     }
   },
   "extends": ["../../config/typescript/tsconfig.base.json"]

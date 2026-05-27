@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "paths": {
-      "@context/shared/*": ["./src/*"],
+      "#/*": ["./src/*"]
     }
   },
   "extends": ["../../config/typescript/tsconfig.base.json"]

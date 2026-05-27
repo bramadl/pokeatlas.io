@@ -1,11 +1,11 @@
 import type { DomainError } from "@pokeatlas/toolkit";
 
 export class DataCorruptionError extends Error {
-	constructor(aggregateName: string, id: string, cause: DomainError) {
+	constructor(name: string, id?: string, cause?: DomainError) {
 		super(
-			`[Data Corruption] Failed to reconstitute \`${aggregateName}\` for identifier: ${id}.`,
+			`[Data Corruption] Failed to reconstitute \`${name}\`${id ? ` for identifier: ${id}.` : "."}`,
 		);
 		this.name = "DataCorruptionError";
-		this.cause = cause.message;
+		if (cause) this.cause = cause.message;
 	}
 }

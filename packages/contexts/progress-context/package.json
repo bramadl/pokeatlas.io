@@ -1,9 +1,16 @@
 {
   "name": "@context/progress",
   "version": "0.1.0",
-  "main": "src/index.ts",
   "type": "module",
   "private": true,
+  "exports": {
+    ".": "./src/index.ts",
+    "./types": "./types/index.ts"
+  },
+  "imports": {
+    "#application": "./src/application/index.ts",
+    "#core": "./src/core/index.ts"
+  },
   "dependencies": {
     "@pokeatlas/toolkit": "workspace:*",
     "@context/collection": "workspace:*",

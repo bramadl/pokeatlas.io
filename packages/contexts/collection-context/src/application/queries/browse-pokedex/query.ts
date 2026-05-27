@@ -1,29 +1,9 @@
-import type { PokemonRef } from "@context/shared";
+import type { BrowsePokedexInput } from "../services/pokedex.service";
 
-export interface BrowsePokedexInput {
-	form?: "costume" | "regional" | "female" | "mega";
-	limit?: number;
-	page?: number;
-	search?: string;
-	status?: "caught" | "missing";
-	trainerId: string;
-	types?: string[];
-}
-
-export interface BrowsePokedexOutput {
-	entries: {
-		id: PokemonRef;
-		dex: number;
-		form: "costume" | "regional" | "female" | "mega" | null;
-		name: string;
-		sprites: { url: string; shinyUrl: string | null };
-		trackedStates: string[];
-		types: string[];
-		lastModifiedAt: Date;
-	}[];
-	hasMore: boolean;
-	totalEntries: number;
-}
+export type {
+	BrowsePokedexInput,
+	BrowsePokedexOutput,
+} from "../services/pokedex.service";
 
 export class BrowsePokedexQuery {
 	public constructor(public readonly input: BrowsePokedexInput) {}

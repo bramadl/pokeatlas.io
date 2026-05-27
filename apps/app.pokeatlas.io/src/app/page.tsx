@@ -1,48 +1,32 @@
-import { atlas } from "@pokeatlas/core";
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+import type { SearchParams } from "nuqs/server";
 
-import { GlobalFooter } from "@/components/global/global-footer";
-import { GlobalNavigation } from "@/components/global/global-navigation";
+import { GlobalFooter } from "@/components/global/footer";
+import { GlobalNavigation } from "@/components/global/navigation";
 import { Pokedex } from "@/features/pokedex";
-import { parseFiltersFromParams } from "@/features/pokedex/filter-tool/filter.types";
+import { browsePokedexQueryOptions } from "@/features/pokedex/api/query-options";
+import { loadPokedexFilters } from "@/features/pokedex/filters/filter.loader";
+import { getQueryClient } from "@/lib/tanstack/query/get-query-client";
+import { trainerId } from "@/lib/trainer-id";
 
-const TRAINER_ID = "00000000-0000-0000-0000-000000000001";
+interface PageProps {
+	searchParams: Promise<SearchParams>;
+}
 
-export default async function Home({ searchParams }: PageProps<"/">) {
-	const params = await searchParams;
-	const search = params.search as string | undefined;
+export default async function Home({ searchParams }: PageProps) {
+	const { dex, filters } = await loadPokedexFilters(searchParams);
 
-	const filters = parseFiltersFromParams(
-		params as Record<string, string | string[] | undefined>,
+	const queryClient = getQueryClient();
+	await queryClient.prefetchInfiniteQuery(
+		browsePokedexQueryOptions({ dex, filters, trainerId: trainerId() }),
 	);
 
-	const result = await atlas.collection.browsePokedex({
-		form: filters.form !== "all" ? filters.form : undefined,
-		limit: 60,
-		page: 1,
-		search,
-		status: filters.status !== "all" ? filters.status : undefined,
-		trainerId: TRAINER_ID,
-		types: filters.types.length ? filters.types : undefined,
-	});
-
-	if (result.isError()) {
-		return (
-			<main>
-				<p>Error: {String(result.error())}</p>
-			</main>
-		);
-	}
-
-	const { entries, hasMore, totalEntries } = result.value();
 	return (
 		<main>
 			<GlobalNavigation />
-			<Pokedex
-				initialEntries={entries}
-				initialHasMore={hasMore}
-				initialSearch={search ?? ""}
-				totalEntries={totalEntries}
-			/>
+			<HydrationBoundary state={dehydrate(queryClient)}>
+				<Pokedex trainerId={trainerId()} />
+			</HydrationBoundary>
 			<GlobalFooter />
 		</main>
 	);

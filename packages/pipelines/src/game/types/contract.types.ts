@@ -70,15 +70,12 @@ export interface TransformedPokemonForm {
 	baseDefense: number;
 	baseStamina: number;
 	form: string;
-	formCategory:
-		| "ALTERNATE_FORM"
-		| "BASE_FORM"
-		| "COSTUME_VARIANT"
-		| "TEMPORARY_EVOLUTION_FORM"
-		| "REGIONAL_VARIANT";
+	formCategory: "ALTERNATE_FORM" | "BASE_FORM" | "REGIONAL_FORM";
 	height: number;
+	isCostume: boolean;
 	isDefaultForm: boolean;
 	isFemale: boolean;
+	isTemporaryEvolution: boolean;
 	isTrackable: boolean;
 	name: string;
 	primaryTypeId: string;

@@ -1,16 +1,13 @@
-import type { IPokemonCatalog, PokemonEntry } from "@context/collection";
-import { prisma } from "@prisma-client";
+import type { IPokemonCatalog } from "@context/collection/types";
 
-import { mapPokemonEntry } from "./adapter.mapper";
+import { prisma } from "#prisma-client";
 
 export class PrismaPokemonCatalogAdapter implements IPokemonCatalog {
-	public async findByRef(pokemonRef: string): Promise<PokemonEntry | null> {
-		const data = await prisma.pokemonFormModel.findFirst({
-			include: { primaryType: true, secondaryType: true, species: true },
+	public async exists(pokemonRef: string): Promise<boolean | null> {
+		const amount = await prisma.pokemonFormModel.count({
 			where: { form: pokemonRef },
 		});
 
-		if (!data) return null;
-		return mapPokemonEntry(data);
+		return amount !== 0;
 	}
 }

@@ -1,10 +1,10 @@
-import { TrackedPokemon } from "@context/collection";
-import { TrackedStates } from "@context/collection/src/core/tracked-states";
+import { TrackedPokemon, TrackedStates } from "@context/collection";
 import { DataCorruptionError, PokemonRef } from "@context/shared";
 import { Id } from "@pokeatlas/toolkit";
-import type { TrackedPokemonModel } from "@prisma-client/client";
 
-export function mapTrackedPokemon(from: TrackedPokemonModel): TrackedPokemon {
+import type { TrackedPokemonModel } from "#prisma-client/client";
+
+export function toDomain(from: TrackedPokemonModel): TrackedPokemon {
 	const trackedStatesResults = from.trackedStates.map(TrackedStates.decode);
 
 	for (const result of trackedStatesResults) {

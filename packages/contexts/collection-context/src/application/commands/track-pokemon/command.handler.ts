@@ -1,8 +1,3 @@
-import type { IPokedex } from "@context/collection/core/pokedex";
-import type { IPokemonCatalog } from "@context/collection/core/pokemon-catalog";
-import { PokemonTracked } from "@context/collection/core/pokemon-tracked";
-import { TrackedPokemon } from "@context/collection/core/tracked-pokemon";
-import { TrackedStates } from "@context/collection/core/tracked-states";
 import { PokemonNotFoundError, PokemonRef } from "@context/shared";
 import {
 	type ICommand,
@@ -11,6 +6,14 @@ import {
 	type IResult,
 	Result,
 } from "@pokeatlas/toolkit";
+
+import {
+	type IPokedex,
+	type IPokemonCatalog,
+	PokemonTracked,
+	TrackedPokemon,
+	TrackedStates,
+} from "#core";
 
 import type {
 	TrackPokemonCommand,
@@ -33,8 +36,8 @@ export class TrackPokemonHandler
 	}: TrackPokemonCommand): Promise<
 		IResult<TrackPokemonOutput, TrackPokemonErrors>
 	> {
-		const referencedPokemon = await this.catalog.findByRef(input.pokemonRef);
-		if (!referencedPokemon) {
+		const exists = await this.catalog.exists(input.pokemonRef);
+		if (!exists) {
 			return Result.error(new PokemonNotFoundError(input.pokemonRef));
 		}
 

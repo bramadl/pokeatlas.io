@@ -1,8 +1,9 @@
-import type { IPokedex } from "@context/collection";
-import type { TrackedPokemon } from "@context/collection/src/core/tracked-pokemon";
-import { prisma } from "@prisma-client";
+import type { TrackedPokemon } from "@context/collection";
+import type { IPokedex } from "@context/collection/types";
 
-import { mapTrackedPokemon } from "./adapter.mapper";
+import { prisma } from "#prisma-client";
+
+import { toDomain } from "./adapter.mapper";
 
 export class PrismaPokedexRepositoryAdapter implements IPokedex {
 	public async findByRefAndTrainerId(
@@ -14,7 +15,7 @@ export class PrismaPokedexRepositoryAdapter implements IPokedex {
 		});
 
 		if (!data) return null;
-		return mapTrackedPokemon(data);
+		return toDomain(data);
 	}
 
 	public async save(pokemon: TrackedPokemon): Promise<void> {

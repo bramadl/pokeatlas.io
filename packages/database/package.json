@@ -1,9 +1,15 @@
 {
   "name": "@pokeatlas/database",
   "version": "0.1.0",
-  "main": "src/index.ts",
   "type": "module",
   "private": true,
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "imports": {
+    "#prisma-client": "./src/prisma/client.ts",
+    "#prisma-client/*": "./src/prisma/generated/*"
+  },
   "scripts": {
     "db:generate": "bunx --bun prisma generate",
     "db:migrate": "bunx --bun prisma migrate dev",

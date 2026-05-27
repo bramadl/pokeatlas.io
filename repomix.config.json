@@ -2,14 +2,26 @@
   "$schema": "https://repomix.com/schemas/latest/schema.json",
   "ignore": {
     "customPatterns": [
-      "packages/pipelines",
-      "docs/"
+      "**/node_modules/**",
+      "**/.next/**",
+      "**/.turbo/**",
+      "**/dist/**",
+      "apps/app.pokeatlas.io/public/**",
+      "apps/app.pokeatlas.io/src/features/pokedex/_bak/**",
+      "packages/database/src/prisma/migrations/**"
     ],
     "useDefaultPatterns": true,
     "useDotIgnore": true,
     "useGitignore": true
   },
-  "include": [],
+  "include": [
+    "apps/app.pokeatlas.io/**/*",
+    "packages/contexts/progress-context/**/*",
+    "packages/contexts/shared-context/**/*",
+    "packages/contexts/collection-context/**/*",
+    "packages/core/**/*",
+    "packages/database/**/*"
+  ],
   "input": {
     "maxFileSize": 52428800
   },

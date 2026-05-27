@@ -10,15 +10,15 @@ Acceptance Criteria
 
 Trainer can filter by:
 
-Region
+(📂) Region
 (✔︎) Tracked
 (✔︎) Missing
-Shiny
-Hundo
-Nundo
-Shadow
-Purified
-Lucky
+(📂) Shiny
+(📂) Hundo
+(📂) Nundo
+(📂) Shadow
+(📂) Purified
+(📂) Lucky
 
 Examples:
 

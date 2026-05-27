@@ -1,15 +1,22 @@
-export * from "./application/context";
-export type { IPokedexQueryService } from "./application/projections/queries/pokedex.query";
-export type {
-	BrowsePokedexInput,
-	BrowsePokedexOutput,
-} from "./application/queries/browse-pokedex/query";
-export type { IPokedex } from "./core/pokedex";
-export type { IPokemonCatalog, PokemonEntry } from "./core/pokemon-catalog";
-export { PokemonTracked } from "./core/pokemon-tracked";
-export { TRACKABLE_STATES, type TrackableState } from "./core/trackable-state";
-export {
-	TrackedPokemon,
-	type TrackedPokemonProps,
-} from "./core/tracked-pokemon";
-export { TrackedStates, type TrackedStatesProps } from "./core/tracked-states";
+// ----- Context ---------------------------------------------------
+
+export * from "./context";
+
+// ----- Application ---------------------------------------------------
+
+export * from "./application/commands/track-pokemon/command";
+export * from "./application/contracts/pokedex-entry";
+export * from "./application/queries/browse-pokedex/query";
+export * from "./application/queries/services/pokedex.service";
+
+// ----- Domain -----------------------------------------------------
+
+export * from "./core/aggregates/tracked-pokemon.aggregate";
+export * from "./core/definitions/pokedex-status";
+export * from "./core/definitions/pokemon-form";
+export * from "./core/definitions/pokemon-regions";
+export * from "./core/definitions/trackable-state";
+export * from "./core/events/pokemon-tracked";
+export * from "./core/ports/pokedex";
+export * from "./core/ports/pokemon-catalog";
+export * from "./core/value-objects/tracked-states.value-object";

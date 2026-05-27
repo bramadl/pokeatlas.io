@@ -33,7 +33,12 @@ const REGIONAL_SUFFIXES = new Set([
 
 type FormCategory = TransformedPokemonForm["formCategory"];
 
-// ─── Pre-pass maps ────────────────────────────────────────────────────────────
+/**
+ * Forms that Niantic forgot to flag isCostume: true in Game Master.
+ * Verified manually against in-game data.
+ * Update when new unflagged costumes are discovered.
+ */
+const UNFLAGGED_COSTUME_OVERRIDES = new Set(["PSYDUCK_SWIM_2025"]);
 
 /**
  * Maps formSlug → { isCostume, assetBundleValue } from FORMS_V* entries.
@@ -251,6 +256,7 @@ function deriveFormName(
 	pokemonId: string,
 	formCategory: FormCategory,
 	isFemale: boolean,
+	isTemporaryEvolution: boolean,
 ): string {
 	const femaleSuffix = isFemale ? " ♀" : "";
 	const base = `${speciesName}${femaleSuffix}`;
@@ -258,7 +264,7 @@ function deriveFormName(
 	const suffix = formSuffix(canonicalFormSlug, pokemonId);
 	if (!suffix) return base; // BASE_FORM, no decoration needed
 
-	if (formCategory === "REGIONAL_VARIANT") {
+	if (formCategory === "REGIONAL_FORM") {
 		// "ALOLA" → "Alolan Rattata", "GALARIAN" → "Galarian Darmanitan"
 		const regionToken = suffix.split("_")[0];
 		if (!regionToken) throw new Error("Failed to derive form name");
@@ -267,7 +273,7 @@ function deriveFormName(
 		return `${regionLabel} ${speciesName}${femaleSuffix}`;
 	}
 
-	if (formCategory === "TEMPORARY_EVOLUTION_FORM") {
+	if (isTemporaryEvolution) {
 		// suffix is already handled via evoI18nKey, this path shouldn't be hit
 		// but as fallback: "MEGA" → "Mega Venusaur", "MEGA_X" → "Mega Charizard X"
 		const parts = suffix.split("_").map(toTitleCase);
@@ -331,21 +337,17 @@ function formSuffix(formSlug: string, pokemonId: string): string | null {
  * isTrackable handles the battle-only distinction separately.
  * isDefaultForm handles the "primary form" distinction separately.
  */
-function classifyFormCategory(opts: {
+function classifyFormCategory({
+	canonicalFormSlug,
+	pokemonId,
+}: {
 	canonicalFormSlug: string;
-	isCostume: boolean;
-	isTempEvo: boolean;
 	pokemonId: string;
 }): FormCategory {
-	const { canonicalFormSlug, isCostume, isTempEvo, pokemonId } = opts;
-
-	if (isTempEvo) return "TEMPORARY_EVOLUTION_FORM";
-	if (isCostume) return "COSTUME_VARIANT";
-
 	const suffix = formSuffix(canonicalFormSlug, pokemonId);
 	if (suffix) {
 		const firstToken = suffix.split("_")[0] as string;
-		if (REGIONAL_SUFFIXES.has(firstToken)) return "REGIONAL_VARIANT";
+		if (REGIONAL_SUFFIXES.has(firstToken)) return "REGIONAL_FORM";
 		return "ALTERNATE_FORM";
 	}
 
@@ -459,8 +461,10 @@ function buildFemaleProbeFilename(
 
 function formSortKey(
 	category: FormCategory,
+	isCostume: boolean,
 	isDefaultForm: boolean,
 	isFemale: boolean,
+	isTemporaryEvolution: boolean,
 ): number {
 	// Default form always sorts first within its species
 	if (isDefaultForm) return 0;
@@ -470,9 +474,9 @@ function formSortKey(
 
 	if (category === "BASE_FORM") return 1 + femaleOffset;
 	if (category === "ALTERNATE_FORM") return 3 + femaleOffset;
-	if (category === "REGIONAL_VARIANT") return 4 + femaleOffset;
-	if (category === "COSTUME_VARIANT") return 5 + femaleOffset;
-	if (category === "TEMPORARY_EVOLUTION_FORM") return 6;
+	if (category === "REGIONAL_FORM") return 4 + femaleOffset;
+	if (isCostume) return 5 + femaleOffset;
+	if (isTemporaryEvolution) return 6;
 	return 7;
 }
 
@@ -502,7 +506,9 @@ export function transformForms(
 		const rawFormSlug = settings.form;
 		const pokemonId = settings.pokemonId;
 		const formMeta = formMetaMap.get(rawFormSlug);
-		const isCostume = formMeta?.isCostume ?? false;
+		const isCostume =
+			(formMeta?.isCostume ?? false) ||
+			UNFLAGGED_COSTUME_OVERRIDES.has(rawFormSlug);
 		const ibfcEntry = ibfcMap.get(pokemonId);
 
 		// The default form for this species (forms[0] in formSettings)
@@ -526,8 +532,6 @@ export function transformForms(
 
 		const formCategory = classifyFormCategory({
 			canonicalFormSlug: canonicalSlug,
-			isCostume,
-			isTempEvo: false,
 			pokemonId,
 		});
 
@@ -548,6 +552,7 @@ export function transformForms(
 							canonicalSlug,
 							pokemonId,
 							formCategory,
+							false,
 							false,
 						);
 		}
@@ -581,6 +586,8 @@ export function transformForms(
 				sources.spriteIndex,
 			);
 
+			if (sprites.regularSprite.startsWith(POKEAPI_ARTWORK_BASE)) continue;
+
 			const baseForm: TransformedPokemonForm = {
 				baseAttack: settings.stats?.baseAttack ?? 0,
 				baseDefense: settings.stats?.baseDefense ?? 0,
@@ -588,8 +595,10 @@ export function transformForms(
 				form: canonicalSlug,
 				formCategory,
 				height: settings.pokedexHeightM ?? 0,
+				isCostume,
 				isDefaultForm,
 				isFemale: false,
+				isTemporaryEvolution: false,
 				isTrackable,
 				name: formName,
 				primaryTypeId: settings.type,
@@ -632,6 +641,7 @@ export function transformForms(
 							pokemonId,
 							baseForm.formCategory,
 							true,
+							false,
 						),
 						regularSprite: `${SPRITE_BASE}/${femaleProbe}`,
 						shinySprite: sources.spriteIndex.has(femaleShinyFilename)
@@ -662,11 +672,7 @@ export function transformForms(
 			if (emitted.has(evoKey)) continue;
 			emitted.add(evoKey);
 
-			const evoI18nKey = `form_${evoSuffix.toLowerCase()}`;
-			const evoName =
-				sources.i18n.get(evoI18nKey) ??
-				sources.i18n.get(speciesI18nKey) ??
-				toTitleCase(evoSlug);
+			const evoName = formatTempEvoName(speciesName, evoSuffix);
 
 			const primaryType = evo.typeOverride1 ?? settings.type;
 			if (!primaryType) {
@@ -685,15 +691,19 @@ export function transformForms(
 				sources.spriteIndex,
 			);
 
+			if (evoSprites.regularSprite.startsWith(POKEAPI_ARTWORK_BASE)) continue;
+
 			forms.push({
 				baseAttack: evo.stats?.baseAttack ?? settings.stats?.baseAttack ?? 0,
 				baseDefense: evo.stats?.baseDefense ?? settings.stats?.baseDefense ?? 0,
 				baseStamina: evo.stats?.baseStamina ?? settings.stats?.baseStamina ?? 0,
 				form: evoSlug,
-				formCategory: "TEMPORARY_EVOLUTION_FORM",
+				formCategory,
 				height: evo.averageHeightM ?? settings.pokedexHeightM ?? 0,
+				isCostume,
 				isDefaultForm: false, // temp evos are never the default form
 				isFemale: false, // no female temp evos in GO
+				isTemporaryEvolution: true,
 				isTrackable: true,
 				name: evoName,
 				primaryTypeId: primaryType,
@@ -711,8 +721,38 @@ export function transformForms(
 	return forms.sort((a, b) => {
 		if (a.speciesId !== b.speciesId) return 0;
 		return (
-			formSortKey(a.formCategory, a.isDefaultForm, a.isFemale) -
-			formSortKey(b.formCategory, b.isDefaultForm, b.isFemale)
+			formSortKey(
+				a.formCategory,
+				a.isCostume,
+				a.isDefaultForm,
+				a.isFemale,
+				a.isTemporaryEvolution,
+			) -
+			formSortKey(
+				b.formCategory,
+				b.isCostume,
+				b.isDefaultForm,
+				b.isFemale,
+				b.isTemporaryEvolution,
+			)
 		);
 	});
+}
+
+const EVO_PREFIX_TOKENS = new Set(["MEGA", "PRIMAL"]);
+
+function formatTempEvoName(speciesName: string, evoSuffix: string): string {
+	const tokens = evoSuffix.split("_");
+	const firstToken = tokens[0] as string;
+
+	if (EVO_PREFIX_TOKENS.has(firstToken)) {
+		const prefix = toTitleCase(firstToken); // "Mega" / "Primal"
+		const rest = tokens.slice(1).map(toTitleCase).join(" "); // "X", "Y", ""
+		return rest
+			? `${prefix} ${speciesName} ${rest}` // "Mega Charizard X"
+			: `${prefix} ${speciesName}`; // "Mega Abomasnow"
+	}
+
+	// Fallback untuk evo type lain yang mungkin muncul nanti
+	return `${tokens.map(toTitleCase).join(" ")} ${speciesName}`;
 }

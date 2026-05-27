@@ -1,8 +1,8 @@
 import { CollectionContext, PokemonTracked } from "@context/collection";
 import {
 	handlePokemonTracked,
-	PrismaPokedexQueryService,
 	PrismaPokedexRepositoryAdapter,
+	PrismaPokedexServiceAdapter,
 	PrismaPokemonCatalogAdapter,
 } from "@pokeatlas/database";
 import { ContainerBuilder, EventBus } from "@pokeatlas/toolkit";
@@ -31,7 +31,7 @@ const container = ContainerBuilder.create()
 	})
 
 	// ----- Layer: Collection BC -------------------------------------------------
-	.add("QueryService:Pokedex", () => new PrismaPokedexQueryService())
+	.add("QueryService:Pokedex", () => new PrismaPokedexServiceAdapter())
 	.add("QueryService:PokemonCatalog", () => new PrismaPokemonCatalogAdapter())
 	.add("Repository:Pokedex", () => new PrismaPokedexRepositoryAdapter())
 	.add("collection", (r) => {

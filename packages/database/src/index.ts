@@ -7,11 +7,11 @@ export * from "./prisma/generated/models";
 
 // ----- Prisma: Projection Handlers --------------------------------------------
 
-export { handlePokemonTracked } from "./prisma/projections/update-pokedex-projection.handler";
+export { handlePokemonTracked } from "./prisma/providers/queries/pokedex/adapter.projection";
 
 // ----- Prisma: Query Services -------------------------------------------------
 
-export { PrismaPokedexQueryService } from "./prisma/providers/queries/pokedex/query.service";
+export { PrismaPokedexServiceAdapter } from "./prisma/providers/queries/pokedex/adapter";
 export { PrismaPokemonCatalogAdapter } from "./prisma/providers/queries/pokemon-catalog/adapter";
 
 // ----- Prisma: Repositories ---------------------------------------------------

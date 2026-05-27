@@ -1,9 +1,12 @@
 {
   "name": "@pokeatlas/core",
   "version": "0.1.0",
-  "main": "src/index.ts",
   "type": "module",
   "private": true,
+  "exports": {
+    ".": "./src/index.ts",
+    "./types": "./types/index.ts"
+  },
   "dependencies": {
     "@context/collection": "workspace:*",
     "@context/progress": "workspace:*",
