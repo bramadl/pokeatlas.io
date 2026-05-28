@@ -10,8 +10,7 @@ import {
 	SyncStateManager,
 } from "../game/pipelines/core/sync.state";
 import type { EntityPipeline } from "../game/pipelines/entity.pipeline";
-import { PokemonFormPipeline } from "../game/pipelines/pokemon-form.pipeline";
-import { PokemonSpeciesPipeline } from "../game/pipelines/pokemon-species.pipeline";
+import { PokemonPipeline } from "../game/pipelines/pokemon.pipeline";
 import { PokemonTypePipeline } from "../game/pipelines/pokemon-type.pipeline";
 import type { PipelineEvent } from "../game/types/event.types";
 import { CliRenderer } from "./renderer";
@@ -20,18 +19,11 @@ import { CliRenderer } from "./renderer";
 
 const ALL_PIPELINES: EntityPipeline<AppContext>[] = [
 	new PokemonTypePipeline(),
-	new PokemonSpeciesPipeline(),
-	new PokemonFormPipeline(),
-
-	// ----- Future -------------------------------------------------------------
-	// new MovesPipeline(),
-	// new EvolutionsPipeline(),
-	// new RaidBossPipeline(),
+	new PokemonPipeline(),
 ];
 
 async function main() {
 	// ----- Parse flags --------------------------------------------------------
-	// Flags are resolved before prompts so the renderer can reflect them.
 
 	const args = process.argv.slice(2);
 	const isDryRun = args.includes("--dry-run");

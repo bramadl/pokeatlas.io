@@ -60,43 +60,40 @@ export interface ExtractedSources {
 }
 
 export interface TransformedData {
-	forms: TransformedPokemonForm[];
-	species: TransformedPokemonSpecies[];
+	pokemon: TransformedPokemon[];
 	types: TransformedPokemonType[];
-}
-
-export interface TransformedPokemonForm {
-	baseAttack: number;
-	baseDefense: number;
-	baseStamina: number;
-	form: string;
-	formCategory: "ALTERNATE_FORM" | "BASE_FORM" | "REGIONAL_FORM";
-	height: number;
-	isCostume: boolean;
-	isDefaultForm: boolean;
-	isFemale: boolean;
-	isTemporaryEvolution: boolean;
-	isTrackable: boolean;
-	name: string;
-	primaryTypeId: string;
-	regularSprite: string;
-	secondaryTypeId: string | null;
-	shinySprite: string | null;
-	speciesId: string;
-	templateId: string;
-	weight: number;
-}
-
-export interface TransformedPokemonSpecies {
-	familyId: string;
-	isShadowAvailable: boolean;
-	name: string;
-	pokedexNumber: number;
-	pokemonClassification: "LEGENDARY" | "MYTHIC" | "ULTRA_BEAST" | null;
-	pokemonId: string;
 }
 
 export interface TransformedPokemonType {
 	name: string;
 	templateId: string;
+}
+
+export interface TransformedPokemon {
+	baseAttack: number;
+	baseDefense: number;
+	baseStamina: number;
+	familyId: string;
+	formCategory: "ALTERNATE_FORM" | "BASE_FORM" | "REGIONAL_FORM";
+	formName: string;
+	formPriority: number;
+	formSortGroup: number;
+	height: number;
+	isCostume: boolean;
+	isDefaultForm: boolean;
+	isFemale: boolean;
+	isShadowAvailable: boolean;
+	isTemporaryEvolution: boolean;
+	isTrackable: boolean;
+	pokedexNumber: number;
+	pokemonClassification: "LEGENDARY" | "MYTHIC" | "ULTRA_BEAST" | null;
+	primaryTypeId: string;
+	ref: string;
+	regularSprite: string;
+	secondaryTypeId: string | null;
+	shinySprite: string | null;
+	speciesId: string;
+	speciesName: string;
+	templateId: string;
+	weight: number;
 }
