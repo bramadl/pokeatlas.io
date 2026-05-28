@@ -12,7 +12,7 @@ export class CountPokedexHandler
 	public async execute({
 		input,
 	}: CountPokedexQuery): Promise<IResult<CountPokedexOutput>> {
-		const total = await this.pokedex.count(input);
+		const total = await this.pokedex.countPokedexEntries(input);
 		return Result.success(total);
 	}
 }

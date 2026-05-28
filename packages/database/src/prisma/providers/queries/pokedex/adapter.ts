@@ -103,7 +103,9 @@ export class PrismaPokedexServiceAdapter implements IPokedex {
 		};
 	}
 
-	public async count(input: CountPokedexInput): Promise<CountPokedexOutput> {
+	public async countPokedexEntries(
+		input: CountPokedexInput,
+	): Promise<CountPokedexOutput> {
 		return prisma.pokemonModel.count({ where: await this.buildWhere(input) });
 	}
 }

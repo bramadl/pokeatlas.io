@@ -1,3 +1,7 @@
+import type { PokemonRef } from "@context/shared";
+import type { UID } from "@pokeatlas/toolkit";
+
+import type { TrackedPokemon } from "../aggregates/tracked-pokemon.aggregate";
 import type { Pokedex } from "../definitions/pokedex";
 import type { PokedexEntry } from "../definitions/pokedex-entry";
 import type { PokedexStatus } from "../definitions/pokedex-status";
@@ -5,7 +9,6 @@ import type { PokemonClassification } from "../definitions/pokemon-classificatio
 
 export interface BasePokedexInput {
 	dex?: Pokedex;
-
 	filters?: Partial<{
 		classification: PokemonClassification[];
 		search: string;
@@ -18,7 +21,6 @@ export interface BasePokedexInput {
 			temporaryEvolution: boolean;
 		}>;
 	}>;
-
 	trainerId: string;
 }
 
@@ -47,5 +49,5 @@ export type CountPokedexOutput = number;
  */
 export interface IPokedex {
 	browse(input: BrowsePokedexInput): Promise<BrowsePokedexOutput>;
-	count(input: CountPokedexInput): Promise<CountPokedexOutput>;
+	countPokedexEntries(input: CountPokedexInput): Promise<CountPokedexOutput>;
 }
