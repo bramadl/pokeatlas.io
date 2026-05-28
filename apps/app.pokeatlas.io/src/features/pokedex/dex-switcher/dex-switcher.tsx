@@ -2,6 +2,7 @@
 
 import { CaretLeftIcon, CaretRightIcon } from "@phosphor-icons/react";
 import { useQueryState } from "nuqs";
+import { useCallback, useMemo } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -13,31 +14,41 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { dexParser } from "../filters/filter.params";
-import { DEX_OPTIONS } from "./dex.options";
-
-function getDexAt(index: number) {
-	const item = DEX_OPTIONS.at(index % DEX_OPTIONS.length);
-	if (!item) throw new Error("DEX_OPTIONS is empty");
-	return item;
-}
+import { POKEDEX_OPTIONS } from "./dex.options";
 
 export function DexSwitcher() {
 	const [dex, setDex] = useQueryState("dex", dexParser);
 
-	const currentIndex = Math.max(
-		0,
-		DEX_OPTIONS.findIndex((o) => o.value === dex),
+	const currentIndex = useMemo(() => {
+		const index = POKEDEX_OPTIONS.findIndex((o) => o.value === dex);
+		return Math.max(0, index);
+	}, [dex]);
+
+	const getDexAt = useCallback((index: number) => {
+		const item = POKEDEX_OPTIONS.at(index % POKEDEX_OPTIONS.length);
+		if (!item) throw new Error("POKEDEX_OPTIONS is empty");
+		return item;
+	}, []);
+
+	const currentDex = useMemo(() => {
+		return getDexAt(currentIndex);
+	}, [getDexAt, currentIndex]);
+
+	const prev = useCallback(
+		function prev() {
+			const index = currentIndex - 1 + POKEDEX_OPTIONS.length;
+			setDex(getDexAt(index).value);
+		},
+		[currentIndex, getDexAt, setDex],
 	);
 
-	const current = getDexAt(currentIndex);
-
-	function prev() {
-		setDex(getDexAt(currentIndex - 1 + DEX_OPTIONS.length).value);
-	}
-
-	function next() {
-		setDex(getDexAt(currentIndex + 1).value);
-	}
+	const next = useCallback(
+		function next() {
+			const index = currentIndex + 1;
+			setDex(getDexAt(index).value);
+		},
+		[currentIndex, getDexAt, setDex],
+	);
 
 	return (
 		<div className="w-full flex items-center justify-between gap-4">
@@ -48,12 +59,12 @@ export function DexSwitcher() {
 			<DropdownMenu>
 				<DropdownMenuTrigger asChild>
 					<Button className="font-bold" variant="ghost">
-						{current.label} Dex
+						{currentDex.label} Dex
 					</Button>
 				</DropdownMenuTrigger>
 				<DropdownMenuContent>
 					<DropdownMenuGroup>
-						{DEX_OPTIONS.map(({ label, value }) => (
+						{POKEDEX_OPTIONS.map(({ label, value }) => (
 							<DropdownMenuItem key={value} onClick={() => setDex(value)}>
 								{label}
 							</DropdownMenuItem>

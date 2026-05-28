@@ -1,6 +1,7 @@
 "use client";
 
 import { GearIcon } from "@phosphor-icons/react";
+import { useQueryState } from "nuqs";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -10,11 +11,39 @@ import {
 	PopoverTrigger,
 } from "@/components/ui/popover";
 
-import { useVariantControlsStore } from "./use-variant-controls";
+import { variantsParser } from "../filter.params";
 import { VARIANT_CONTROL_OPTIONS } from "./variant.options";
+import {
+	getInitialVariants,
+	VARIANT_DEFINITIONS,
+	VARIANTS_BY_KEY,
+	type VariantKey,
+	writeStored,
+} from "./variant.store";
 
 export function VariantControls() {
-	const { activeCount, toggle, values } = useVariantControlsStore();
+	const [variants, setVariants] = useQueryState(
+		"variants",
+		variantsParser.withDefault(getInitialVariants()),
+	);
+
+	const variantSet = new Set(variants);
+	const values = Object.fromEntries(
+		VARIANT_DEFINITIONS.map((v) => [v.key, variantSet.has(v.urlValue)]),
+	) as Record<VariantKey, boolean>;
+
+	function toggle(key: VariantKey) {
+		const { urlValue } = VARIANTS_BY_KEY[key];
+		const next = !values[key];
+		writeStored(key, next);
+		setVariants(
+			next
+				? [...variantSet, urlValue]
+				: [...variantSet].filter((v) => v !== urlValue),
+		);
+	}
+
+	const activeCount = VARIANT_DEFINITIONS.filter((v) => values[v.key]).length;
 
 	return (
 		<Popover modal>

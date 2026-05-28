@@ -1,12 +1,18 @@
 import type {
 	BrowsePokedexInput,
 	BrowsePokedexOutput,
+	CountPokedexInput,
+	CountPokedexOutput,
 } from "@pokeatlas/core/types";
-import { type InfiniteData, infiniteQueryOptions } from "@tanstack/react-query";
 
-import { browsePokedex } from "./server-actions";
+import {
+	type InfiniteData,
+	infiniteQueryOptions,
+	queryOptions,
+} from "@tanstack/react-query";
+import { browsePokedex, countPokedex } from "./server-actions";
 
-const LIMIT = 100;
+const LIMIT = 60;
 
 export function browsePokedexQueryOptions({
 	dex,
@@ -21,22 +27,47 @@ export function browsePokedexQueryOptions({
 		BrowsePokedexOutput,
 		Error,
 		InfiniteData<BrowsePokedexOutput>,
-		["collection:browse-pokedex", typeof dex, typeof trainerId, typeof filters],
-		number
+		["browse-pokedex", typeof dex, typeof filters, typeof trainerId],
+		string | null
 	>({
-		getNextPageParam: (lastPage, _allPages, lastPageParam) => {
-			if (!lastPage.hasMore) return;
-			return lastPageParam + 1;
-		},
-		initialPageParam: 1,
+		getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
+		initialPageParam: null,
+		placeholderData: (prev) => prev,
 		queryFn: ({ pageParam }) => {
 			return browsePokedex({
 				dex,
 				filters,
-				pagination: { limit: LIMIT, page: pageParam },
+				pagination: { cursor: pageParam, limit: LIMIT },
 				trainerId,
 			});
 		},
-		queryKey: ["collection:browse-pokedex", dex, trainerId, filters],
+		queryKey: ["browse-pokedex", dex, filters, trainerId],
+	});
+}
+
+export function countPokedexQueryOptions({
+	dex,
+	filters,
+	trainerId,
+}: {
+	dex?: CountPokedexInput["dex"];
+	filters?: CountPokedexInput["filters"];
+	trainerId: CountPokedexInput["trainerId"];
+}) {
+	return queryOptions<
+		CountPokedexOutput,
+		Error,
+		CountPokedexOutput,
+		["count-pokedex", typeof dex, typeof filters, typeof trainerId]
+	>({
+		placeholderData: (prev) => prev,
+		queryFn: () => {
+			return countPokedex({
+				dex,
+				filters,
+				trainerId,
+			});
+		},
+		queryKey: ["count-pokedex", dex, filters, trainerId],
 	});
 }

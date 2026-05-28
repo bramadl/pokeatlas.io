@@ -16,39 +16,27 @@ interface PokedexProps {
 }
 
 export function Pokedex({ trainerId }: PokedexProps) {
-	const {
-		entries,
-		filters,
-		isFetching,
-		isFetchingNextPage,
-		isPending,
-		sentinelRef,
-	} = usePokedex(trainerId);
+	const { entries, filters, isLoading, sentinelRef, showEmpty, showSkeleton } =
+		usePokedex(trainerId);
 
-	const isFetchingNewQuery = isFetching && !isFetchingNextPage && !isPending;
-
-	const isSettled = !isPending && !isFetching;
-	const showEmpty = isSettled && entries.length === 0;
-	const showSkeleton = isFetchingNewQuery && entries.length === 0;
+	function PokedexScreen() {
+		if (showSkeleton) return <PokedexSkeleton />;
+		if (showEmpty) return <PokedexEmpty status={filters?.status} />;
+		return entries.map((pokemon, index) => (
+			<PokemonCard
+				key={pokemon.id}
+				pokemon={pokemon}
+				shouldPreload={index <= 16}
+			/>
+		));
+	}
 
 	return (
 		<Fragment>
 			<section className="container mx-auto bg-slate-50 my-8">
 				<PokedexToolbar />
-				<PokedexGrid isFetchingNewQuery={isFetchingNewQuery && !showSkeleton}>
-					{showSkeleton ? (
-						<PokedexSkeleton />
-					) : showEmpty ? (
-						<PokedexEmpty status={filters?.status} />
-					) : (
-						entries.map((pokemon, index) => (
-							<PokemonCard
-								key={pokemon.id}
-								pokemon={pokemon}
-								shouldPreload={index <= 16}
-							/>
-						))
-					)}
+				<PokedexGrid isLoading={isLoading}>
+					<PokedexScreen />
 				</PokedexGrid>
 				<div ref={sentinelRef} />
 			</section>

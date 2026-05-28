@@ -6,12 +6,12 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 interface FilterButtonProps extends React.ComponentProps<"button"> {
-	activeFilterCount: number;
+	activeFilterCount?: number;
 	isOpen: boolean;
 }
 
 export function FilterButton({
-	activeFilterCount,
+	activeFilterCount = 0,
 	className,
 	isOpen,
 	onClick,

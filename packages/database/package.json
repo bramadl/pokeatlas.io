@@ -8,13 +8,15 @@
   },
   "imports": {
     "#prisma-client": "./src/prisma/client.ts",
-    "#prisma-client/*": "./src/prisma/generated/*"
+    "#prisma-client/*": "./src/prisma/generated/*",
+    "#prisma/*": "./src/prisma/providers/*"
   },
   "scripts": {
     "db:generate": "bunx --bun prisma generate",
     "db:migrate": "bunx --bun prisma migrate dev",
     "db:migrate:resolve": "bunx --bun prisma migrate resolve",
     "db:deploy": "bunx --bun prisma migrate deploy",
+    "db:push": "bunx --bun prisma db push",
     "db:studio": "bunx --bun prisma studio",
     "db:seed": "bunx --bun prisma db seed"
   },
@@ -23,6 +25,7 @@
     "@context/progress": "workspace:*",
     "@context/shared": "workspace:*",
     "@pokeatlas/toolkit": "workspace:*",
+    "@prisma/adapter-neon": "^7.8.0",
     "@prisma/adapter-pg": "^7.8.0",
     "@prisma/client": "^7.8.0",
     "pg": "^8.21.0"

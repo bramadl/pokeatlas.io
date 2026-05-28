@@ -23,49 +23,40 @@ model PokemonTypeModel {
 
   syncedAt DateTime @updatedAt @map("synced_at")
 
-  pokemonHavingAsPrimaryType   PokemonFormModel[] @relation(name: "PrimaryType")
-  pokemonHavingAsSecondaryType PokemonFormModel[] @relation(name: "SecondaryType")
+  pokemonHavingAsPrimaryType   PokemonModel[] @relation(name: "PrimaryType")
+  pokemonHavingAsSecondaryType PokemonModel[] @relation(name: "SecondaryType")
 
   @@map("pokemon_types")
   @@schema("game")
 }
 
-model PokemonSpeciesModel {
-  pokemonId String @id @map("pokemon_id")
-  familyId  String @map("family_id")
+model PokemonModel {
+  ref String @id
 
-  name String
+  familyId   String @map("family_id")
+  speciesId  String @map("species_id")
+  templateId String @map("template_id")
 
   pokedexNumber         Int                    @map("pokedex_number")
   pokemonClassification PokemonClassification? @map("pokemon_classification")
-  isShadowAvailable     Boolean                @map("is_shadow_available")
 
-  syncedAt DateTime @updatedAt @map("synced_at")
-
-  forms PokemonFormModel[]
-
-  @@map("pokemon_species")
-  @@schema("game")
-}
-
-model PokemonFormModel {
-  form         String       @id
-  formCategory FormCategory @default(BASE_FORM) @map("form_category")
-
-  isCostume            Boolean @default(false) @map("is_costume")
-  isDefaultForm        Boolean @default(false) @map("is_default_form")
-  isFemale             Boolean @default(false) @map("is_female")
-  isTemporaryEvolution Boolean @default(false) @map("is_temporary_evolution")
-
-  isTrackable Boolean @default(false) @map("is_trackable")
-
-  templateId String @map("template_id")
-  speciesId  String @map("species_id")
-
-  name String
+  speciesName String @map("species_name")
+  formName    String @map("form_name")
 
   regularSprite String  @map("default_sprite")
   shinySprite   String? @map("shiny_sprite")
+
+  formCategory  FormCategory @default(BASE_FORM) @map("form_category")
+  formPriority  Int          @map("form_priority")
+  formSortGroup Int          @map("form_sort_group")
+  isDefaultForm Boolean      @default(false) @map("is_default_form")
+
+  isCostume            Boolean @default(false) @map("is_costume")
+  isFemale             Boolean @default(false) @map("is_female")
+  isShadowAvailable    Boolean @map("is_shadow_available")
+  isTemporaryEvolution Boolean @default(false) @map("is_temporary_evolution")
+
+  isTrackable Boolean @default(false) @map("is_trackable")
 
   primaryTypeId   String  @map("primary_type_id")
   secondaryTypeId String? @map("secondary_type_id")
@@ -79,11 +70,15 @@ model PokemonFormModel {
 
   syncedAt DateTime @updatedAt @map("synced_at")
 
-  species         PokemonSpeciesModel   @relation(fields: [speciesId], references: [pokemonId], onDelete: Cascade)
   primaryType     PokemonTypeModel      @relation(name: "PrimaryType", fields: [primaryTypeId], references: [templateId], onDelete: Restrict)
   secondaryType   PokemonTypeModel?     @relation(name: "SecondaryType", fields: [secondaryTypeId], references: [templateId], onDelete: SetNull)
   trackedPokemons TrackedPokemonModel[]
 
-  @@map("pokemon_forms")
+  @@index(fields: [formSortGroup, pokedexNumber, formPriority, ref], map: "cursor_pagination")
+  @@index(fields: [isTrackable, formSortGroup, pokedexNumber, formPriority, ref], map: "filter_is_trackable")
+  @@index(fields: [pokedexNumber], map: "search_by_pokedex_number")
+  @@index(fields: [formName], map: "search_by_form_name")
+  @@index(fields: [speciesId], map: "regional_dex_filter")
+  @@map("pokemon")
   @@schema("game")
 }

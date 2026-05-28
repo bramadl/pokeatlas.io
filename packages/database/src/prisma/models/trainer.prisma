@@ -5,6 +5,9 @@ model TrainerModel {
 
   trackedPokemons TrackedPokemonModel[]
 
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
   @@map("trainers")
   @@schema("trainer")
 }
@@ -12,15 +15,18 @@ model TrainerModel {
 model TrackedPokemonModel {
   id String @id @default(uuid()) @db.Uuid
 
-  pokemonForm String @map("pokemon_form")
-  trainerId   String @map("trainer_id") @db.Uuid
+  species   String @map("species")
+  trainerId String @map("trainer_id") @db.Uuid
 
   trackedStates String[] @default([]) @map("tracked_states")
 
-  pokemon PokemonFormModel @relation(fields: [pokemonForm], references: [form], onDelete: Cascade)
-  trainer TrainerModel     @relation(fields: [trainerId], references: [id], onDelete: Cascade)
+  pokemon PokemonModel @relation(fields: [species], references: [ref], onDelete: Cascade)
+  trainer TrainerModel @relation(fields: [trainerId], references: [id], onDelete: Cascade)
 
-  @@unique([pokemonForm, trainerId])
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([species, trainerId])
   @@map("tracked_pokemons")
   @@schema("trainer")
 }

@@ -1,10 +1,9 @@
-import { CollectionContext, PokemonTracked } from "@context/collection";
 import {
-	handlePokemonTracked,
-	PrismaPokedexRepositoryAdapter,
-	PrismaPokedexServiceAdapter,
-	PrismaPokemonCatalogAdapter,
-} from "@pokeatlas/database";
+	BrowsePokedexHandler,
+	CollectionContext,
+	CountPokedexHandler,
+} from "@context/collection";
+import { PrismaPokedexServiceAdapter } from "@pokeatlas/database";
 import { ContainerBuilder, EventBus } from "@pokeatlas/toolkit";
 
 import { PokeAtlas } from "./client";
@@ -21,33 +20,37 @@ import { PokeAtlas } from "./client";
  * and internal bounded context structures from the outer presentation layers.
  */
 const container = ContainerBuilder.create()
-	// ----- Layer: Infrastructure ------------------------------------------------
-	.add("EventBus", () => {
-		const bus = new EventBus();
+	// ----- Infrastructure ------------------------------------------------
 
-		bus.subscribe(PokemonTracked.type, handlePokemonTracked);
+	.add("EventBus", () => new EventBus())
 
-		return bus;
-	})
+	// ----- Query Services ------------------------------------------------
 
-	// ----- Layer: Collection BC -------------------------------------------------
 	.add("QueryService:Pokedex", () => new PrismaPokedexServiceAdapter())
-	.add("QueryService:PokemonCatalog", () => new PrismaPokemonCatalogAdapter())
-	.add("Repository:Pokedex", () => new PrismaPokedexRepositoryAdapter())
+
+	// ----- Handlers ------------------------------------------------------
+
+	.add(
+		"Handler:BrowsePokedex",
+		(r) => new BrowsePokedexHandler(r["QueryService:Pokedex"]),
+	)
+
+	.add(
+		"Handler:CountPokedex",
+		(r) => new CountPokedexHandler(r["QueryService:Pokedex"]),
+	)
+
+	// ----- Contexts ------------------------------------------------------
+
 	.add("collection", (r) => {
 		return new CollectionContext({
-			eventBus: r.EventBus,
-			queries: {
-				pokedex: r["QueryService:Pokedex"],
-				pokemonCatalog: r["QueryService:PokemonCatalog"],
-			},
-			repositories: {
-				pokedex: r["Repository:Pokedex"],
-			},
+			browsePokedex: r["Handler:BrowsePokedex"],
+			countPokedex: r["Handler:CountPokedex"],
 		});
 	})
 
-	// ----- Layer: Poke Atlas ----------------------------------------------------
+	// ----- Atlas ---------------------------------------------------------
+
 	.add("atlas", (r) => new PokeAtlas({ collection: r.collection }))
 	.build();
 

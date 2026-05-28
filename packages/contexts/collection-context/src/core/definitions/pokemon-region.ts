@@ -4,14 +4,14 @@
  */
 export type PokemonRegion = (typeof POKEMON_REGIONS)[number];
 export const POKEMON_REGIONS = [
+	"KANTO",
+	"JOHTO",
+	"HOENN",
+	"SINNOH",
+	"UNOVA",
+	"KALOS",
 	"ALOLA",
 	"GALAR",
 	"HISUI",
-	"HOENN",
-	"JOHTO",
-	"KALOS",
-	"KANTO",
 	"PALDEA",
-	"SINNOH",
-	"UNOVA",
 ] as const;

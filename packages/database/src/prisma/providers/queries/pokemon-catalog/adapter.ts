@@ -1,13 +1,13 @@
-import type { IPokemonCatalog } from "@context/collection/types";
+// import type { IPokemonCatalog } from "@context/collection/types";
 
-import { prisma } from "#prisma-client";
+// import { prisma } from "#prisma-client";
 
-export class PrismaPokemonCatalogAdapter implements IPokemonCatalog {
-	public async exists(pokemonRef: string): Promise<boolean | null> {
-		const amount = await prisma.pokemonFormModel.count({
-			where: { form: pokemonRef },
-		});
+// export class PrismaPokemonCatalogAdapter implements IPokemonCatalog {
+// 	public async exists(pokemonRef: string): Promise<boolean | null> {
+// 		const amount = await prisma.pokemonFormModel.count({
+// 			where: { form: pokemonRef },
+// 		});
 
-		return amount !== 0;
-	}
-}
+// 		return amount !== 0;
+// 	}
+// }

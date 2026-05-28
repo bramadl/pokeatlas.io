@@ -26,9 +26,9 @@ export function PokemonCard({ pokemon, shouldPreload }: PokemonCardProps) {
 				setIsTrackLogShown: () => setIsTrackLogShown((prev) => !prev),
 			}}
 		>
-			<CardComposer ContextComponent={CardTrackLog}>
+			<CardComposer Context={CardTrackLog}>
 				<CardContainer>
-					<CardImage shouldPreload={shouldPreload} />
+					<CardImage priority={shouldPreload} />
 					<div className="size-full">
 						<CardBackground />
 						<CardContent />

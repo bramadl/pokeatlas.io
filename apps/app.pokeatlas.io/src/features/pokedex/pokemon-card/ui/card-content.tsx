@@ -17,7 +17,7 @@ export function CardContent() {
 				<span
 					className={cn(
 						"px-1.5 py-0.5 rounded-full font-mono text-[10px] uppercase",
-						"transition-[color,background-color] duration-100",
+						"transition-[background-color,color] duration-100",
 						isPokemonTracked(pokemon)
 							? [theme.badgeBg, theme.badgeText]
 							: "bg-slate-100 text-muted-foreground",

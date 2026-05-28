@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { getPokemonTheme, isPokemonTracked } from "../card.utils";
 import { usePokemonCard } from "../use-pokemon-card";
 
-export function CardImage({ shouldPreload }: { shouldPreload?: boolean }) {
+export function CardImage({ priority }: { priority?: boolean }) {
 	const { pokemon, setIsTrackLogShown } = usePokemonCard();
 	const theme = getPokemonTheme(pokemon);
 
@@ -20,12 +20,13 @@ export function CardImage({ shouldPreload }: { shouldPreload?: boolean }) {
 			)}
 		>
 			<div className="flex items-center absolute left-1/2 bottom-1 -translate-x-1/2 translate-y-1/2">
-				{pokemon.types.map((t) => (
+				{pokemon.types.map((t, _, types) => (
 					<Image
 						alt={t}
-						className="object-contain"
+						className={cn("object-contain", types.length > 1 && "-mx-px")}
 						height={20}
 						key={t}
+						priority={priority}
 						src={`/pokemon-types/${t.toLowerCase()}.png`}
 						width={20}
 					/>
@@ -37,7 +38,7 @@ export function CardImage({ shouldPreload }: { shouldPreload?: boolean }) {
 					alt={pokemon.name}
 					className="object-contain p-1"
 					fill
-					priority={shouldPreload}
+					priority={priority}
 					sizes="64px"
 					src={pokemon.sprites.url}
 				/>

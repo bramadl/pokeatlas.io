@@ -1,13 +1,14 @@
 import {
 	POKEDEX_STATUSES,
+	POKEDEXES,
 	POKEMON_CLASSIFICATIONS,
-	POKEMON_DEXES,
 } from "@pokeatlas/core/types";
 import {
 	parseAsArrayOf,
 	parseAsString,
 	parseAsStringLiteral,
 } from "nuqs/server";
+
 import { VARIANT_VALUES } from "./variant-controls/variant.store";
 
 export const searchParser = parseAsString;
@@ -17,7 +18,7 @@ export const statusParser = parseAsStringLiteral(
 );
 
 export const dexParser = parseAsStringLiteral(
-	POKEMON_DEXES.map((d) => d.toLowerCase()) as [string, ...string[]],
+	POKEDEXES.map((d) => d.toLowerCase()) as [string, ...string[]],
 ).withDefault("national");
 
 export const classificationParser = parseAsArrayOf(

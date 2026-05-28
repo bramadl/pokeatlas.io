@@ -2,70 +2,81 @@ import type {
 	PokedexEntry,
 	PokemonForm,
 	PokemonRegion,
-} from "@context/collection/types";
-import { DataCorruptionError, PokemonRef, TypeRef } from "@context/shared";
+} from "@context/collection";
+import { PokemonRef, TypeRef } from "@context/shared";
 
-import type { PokedexProjection } from "#prisma-client/client";
+import type { PokemonModelGetPayload } from "#prisma-client/models.ts";
 
 import { REGION_DEX_RANGES } from "../../constants/region-dex-ranges";
 
-const getForm = (form: string): PokemonForm => {
-	return form as PokemonForm;
-};
+export type PokemonQueryResult = PokemonModelGetPayload<{
+	select: {
+		ref: true;
+		formCategory: true;
+		formPriority: true;
+		formSortGroup: true;
+		formName: true;
+		speciesName: true;
+		pokedexNumber: true;
+		pokemonClassification: true;
+		isDefaultForm: true;
+		isCostume: true;
+		isFemale: true;
+		isTemporaryEvolution: true;
+		regularSprite: true;
+		shinySprite: true;
+		primaryType: { select: { name: true; templateId: true } };
+		secondaryType: { select: { name: true; templateId: true } };
+		trackedPokemons: {
+			select: { createdAt: true; trackedStates: true; updatedAt: true };
+		};
+	};
+}>;
 
-const getRegion = (dex: number): PokemonRegion => {
+const getRegion = (dex: number): PokemonRegion | null => {
 	for (const region in REGION_DEX_RANGES) {
 		const range = REGION_DEX_RANGES[region];
-		if (!range) throw new DataCorruptionError("PokedexProjection");
+		if (!range) return null;
 
 		const [min, max] = range;
 		if (dex >= min && dex <= max) return region as PokemonRegion;
 	}
-	throw new DataCorruptionError("PokedexProjection");
+
+	return null;
 };
 
 const getTypes = (
-	primaryType: string,
-	secondaryType: string | null,
+	primary: string,
+	secondary: string | null,
 ): [TypeRef] | [TypeRef, TypeRef] => {
-	const types: [TypeRef] | [TypeRef, TypeRef] = [TypeRef.from(primaryType)];
-	if (secondaryType) types.push(TypeRef.from(secondaryType));
+	const types: [TypeRef] | [TypeRef, TypeRef] = [TypeRef.from(primary)];
+	if (secondary) types.push(TypeRef.from(secondary));
 	return types;
 };
 
-export function toProjection({
-	createdAt,
-	dexNumber,
-	formCategory,
-	imageUrl,
-	isCostume,
-	isFemale,
-	isTemporaryEvolution,
-	pokemonName,
-	pokemonRef,
-	primaryType,
-	secondaryType,
-	shinyImageUrl,
-	sortGroup,
-	trackedStates,
-	updatedAt,
-}: PokedexProjection): PokedexEntry {
+export function toEntry(row: PokemonQueryResult): PokedexEntry {
+	const tracked = row.trackedPokemons.find(() => true) ?? null;
+	const dex = row.pokedexNumber;
+
 	return {
-		dex: dexNumber,
-		form: getForm(formCategory),
-		id: PokemonRef.from(pokemonRef),
+		dex,
+		form: row.formCategory as PokemonForm,
+		id: PokemonRef.from(row.ref),
 		lastModifiedAt:
-			createdAt.getTime() === updatedAt.getTime() ? null : updatedAt,
-		name: pokemonName,
-		region: getRegion(dexNumber),
-		sortGroup: sortGroup ?? 0,
-		sprites: { shinyUrl: shinyImageUrl, url: imageUrl },
-		trackedStates: trackedStates,
-		types: getTypes(primaryType, secondaryType),
+			tracked && tracked.createdAt.getTime() !== tracked.updatedAt.getTime()
+				? tracked.updatedAt
+				: null,
+		name: row.formName,
+		region: getRegion(dex),
+		sortGroup: row.formSortGroup,
+		sprites: { shinyUrl: row.shinySprite, url: row.regularSprite },
+		trackedStates: tracked?.trackedStates ?? [],
+		types: getTypes(row.primaryType.name, row.secondaryType?.name ?? null),
 		variant: {
-			isCostume,
-			isFemale,
-			isTemporaryEvolution,
+			isCostume: row.isCostume,
+			isDefaultForm: row.isDefaultForm,
+			isFemale: row.isFemale,
+			isTemporaryEvolution: row.isTemporaryEvolution,
 		},
 	};
 }

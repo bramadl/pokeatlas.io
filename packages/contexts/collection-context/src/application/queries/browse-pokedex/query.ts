@@ -1,9 +1,4 @@
-import type { BrowsePokedexInput } from "../services/pokedex.service";
-
-export type {
-	BrowsePokedexInput,
-	BrowsePokedexOutput,
-} from "../services/pokedex.service";
+import type { BrowsePokedexInput } from "#core";
 
 export class BrowsePokedexQuery {
 	public constructor(public readonly input: BrowsePokedexInput) {}

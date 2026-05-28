@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useQueryStates } from "nuqs";
 
 import { Button } from "@/components/ui/button";
+
 import { FilterLabel } from "../filter-label";
 import { filterParsers } from "../use-filter-params";
 import { POKEMON_TYPE_OPTIONS } from "./type.options";

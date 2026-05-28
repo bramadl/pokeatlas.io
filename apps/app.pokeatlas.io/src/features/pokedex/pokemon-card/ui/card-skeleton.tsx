@@ -17,7 +17,7 @@ function ImageSkeleton() {
 					.fill(null)
 					.map((_, index) => (
 						<div
-							className="bg-muted border border-white rounded-full mx-px size-3"
+							className="bg-muted border border-white rounded-full mx-px size-5"
 							key={index.toString()}
 						/>
 					))}

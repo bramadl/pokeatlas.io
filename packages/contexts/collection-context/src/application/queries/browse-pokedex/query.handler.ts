@@ -1,12 +1,13 @@
 import { type IQuery, type IResult, Result } from "@pokeatlas/toolkit";
 
-import type { IPokedexService } from "../services/pokedex.service";
-import type { BrowsePokedexOutput, BrowsePokedexQuery } from "./query";
+import type { BrowsePokedexOutput, IPokedex } from "#core";
+
+import type { BrowsePokedexQuery } from "./query";
 
 export class BrowsePokedexHandler
 	implements IQuery<BrowsePokedexQuery, BrowsePokedexOutput>
 {
-	public constructor(private readonly pokedex: IPokedexService) {}
+	public constructor(private readonly pokedex: IPokedex) {}
 
 	public async execute({
 		input,

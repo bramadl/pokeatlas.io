@@ -19,9 +19,9 @@ import { usePokemonCard } from "../use-pokemon-card";
 
 export function CardComposer({
 	children,
-	ContextComponent,
+	Context,
 }: React.ComponentProps<"div"> & {
-	ContextComponent: (props: { pokemon: Pokemon }) => React.JSX.Element;
+	Context: (props: { pokemon: Pokemon }) => React.JSX.Element;
 }) {
 	const { pokemon, setIsTrackLogShown, isTrackLogShown } = usePokemonCard();
 	const isMobile = useMediaQuery("(max-width: 860px)", {
@@ -39,7 +39,7 @@ export function CardComposer({
 							Track Log for {pokemon.name}
 						</DrawerDescription>
 						<div className="mt-4 scrollbar-none overflow-y-auto p-4">
-							<ContextComponent pokemon={pokemon} />
+							<Context pokemon={pokemon} />
 						</div>
 					</DrawerContent>
 				</Drawer>
@@ -55,7 +55,7 @@ export function CardComposer({
 				className="min-w-96 w-auto ring-transparent"
 				side="right"
 			>
-				<ContextComponent pokemon={pokemon} />
+				<Context pokemon={pokemon} />
 				<PopoverPrimitive.Arrow className="fill-white" />
 			</PopoverContent>
 		</Popover>

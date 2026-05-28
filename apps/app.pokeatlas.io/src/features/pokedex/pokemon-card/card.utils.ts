@@ -11,7 +11,7 @@ export function getPokemonDex(pokemon: Pokemon) {
 }
 
 export function getPokemonBadge(pokemon: Pokemon) {
-	if (pokemon.form === "ALTERNATE_FORM") {
+	if (pokemon.form === "ALTERNATE_FORM" && !pokemon.variant.isDefaultForm) {
 		if (pokemon.variant.isCostume) {
 			return `Costume${pokemon.variant.isFemale ? " | Female" : ""}`;
 		}

@@ -15,10 +15,7 @@ export function CardBackground() {
 					"origin-top transition-[opacity,scale] duration-300 ease-in-out",
 					isPokemonTracked(pokemon)
 						? ["opacity-100 scale-100", theme.cardBg]
-						: [
-								"opacity-0 scale-y-0 group-hover:opacity-100 group-hover:scale-100",
-								"from-slate-300",
-							],
+						: "opacity-0 scale-y-0 group-hover:opacity-100 group-hover:scale-100 from-slate-300",
 				)}
 			/>
 		</div>

@@ -1,11 +1,14 @@
 "use client";
 
 import { useProgress } from "@bprogress/next";
-import { useInfiniteQuery } from "@tanstack/react-query";
-import { useCallback, useEffect } from "react";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { useCallback, useDeferredValue, useEffect } from "react";
 import { useOnInView } from "react-intersection-observer";
 
-import { browsePokedexQueryOptions } from "./api/query-options";
+import {
+	browsePokedexQueryOptions,
+	countPokedexQueryOptions,
+} from "./api/query-options";
 import { usePokedexFilterParams } from "./filters/use-filter-params";
 
 export function usePokedex(trainerId: string) {
@@ -18,16 +21,27 @@ export function usePokedex(trainerId: string) {
 		isFetching,
 		hasNextPage,
 		isFetchingNextPage,
+		isPlaceholderData,
 		fetchNextPage,
-	} = useInfiniteQuery({
-		...browsePokedexQueryOptions({ dex, filters, trainerId }),
-		placeholderData: (prev) => prev,
-	});
+	} = useInfiniteQuery(browsePokedexQueryOptions({ dex, filters, trainerId }));
+
+	const { data: dexCount } = useQuery(
+		countPokedexQueryOptions({ dex, filters, trainerId }),
+	);
 
 	const entries = data?.pages.flatMap((page) => page.entries) ?? [];
 
 	const dexKey = dex ?? "national";
 	const filtersKey = JSON.stringify(filters);
+
+	const isFetchingNewQuery = isFetching && !isFetchingNextPage && !isPending;
+
+	const showEmpty =
+		!isPending && !isFetching && !isPlaceholderData && entries.length === 0;
+
+	const showSkeleton = isFetchingNewQuery && entries.length === 0;
+
+	const isLoading = (isFetchingNewQuery && !showSkeleton) || isPlaceholderData;
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: stable string keys
 	useEffect(() => {
@@ -36,9 +50,9 @@ export function usePokedex(trainerId: string) {
 
 	// Progress bar
 	useEffect(() => {
-		if (isFetching) progress.start();
+		if (isLoading) progress.start();
 		else progress.stop();
-	}, [isFetching, progress]);
+	}, [isLoading, progress]);
 
 	// Infinite scroll sentinel
 	const sentinelRef = useOnInView(
@@ -54,11 +68,12 @@ export function usePokedex(trainerId: string) {
 
 	return {
 		dex,
+		dexCount,
 		entries,
 		filters,
-		isFetching,
-		isFetchingNextPage,
-		isPending,
+		isLoading,
 		sentinelRef,
+		showEmpty,
+		showSkeleton,
 	};
 }
