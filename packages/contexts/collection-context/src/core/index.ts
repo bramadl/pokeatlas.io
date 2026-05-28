@@ -10,6 +10,5 @@ export * from "./definitions/trackable-state";
 export * from "./events/pokemon-tracked";
 
 export * from "./ports/pokedex";
-export * from "./ports/pokemon-catalog";
 
 export * from "./value-objects/tracked-states.value-object";
