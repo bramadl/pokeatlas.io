@@ -14,7 +14,7 @@ import {
 	ShootingStarIcon,
 	SparkleIcon,
 } from "@phosphor-icons/react";
-
+import { TRACKABLE_STATES, type TrackableState } from "@pokeatlas/core/types";
 import type { ViewKey } from "../view.options";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -38,16 +38,52 @@ export interface BrushMeta {
 	hotkey: string;
 	icon: Icon;
 	label: string;
+	text?: string;
 }
 
 export const BRUSH_META: Record<Brush, BrushMeta> = {
-	eraser: { hotkey: "E", icon: EraserIcon, label: "Eraser" },
-	hundo: { hotkey: "H", icon: CrownIcon, label: "Hundo" },
-	lucky: { hotkey: "L", icon: CloverIcon, label: "Lucky" },
-	nundo: { hotkey: "N", icon: NumberZeroIcon, label: "Nundo" },
-	purified: { hotkey: "P", icon: ShootingStarIcon, label: "Purified" },
-	shadow: { hotkey: "W", icon: GhostIcon, label: "Shadow" },
-	shiny: { hotkey: "S", icon: SparkleIcon, label: "Shiny" },
+	eraser: {
+		hotkey: "E",
+		icon: EraserIcon,
+		label: "Eraser",
+		text: "🧹",
+	},
+	hundo: {
+		hotkey: "H",
+		icon: CrownIcon,
+		label: "Hundo",
+		text: "💯",
+	},
+	lucky: {
+		hotkey: "L",
+		icon: CloverIcon,
+		label: "Lucky",
+		text: "🍀",
+	},
+	nundo: {
+		hotkey: "N",
+		icon: NumberZeroIcon,
+		label: "Nundo",
+		text: "❌",
+	},
+	purified: {
+		hotkey: "P",
+		icon: ShootingStarIcon,
+		label: "Purified",
+		text: "💫",
+	},
+	shadow: {
+		hotkey: "W",
+		icon: GhostIcon,
+		label: "Shadow",
+		text: "🌑",
+	},
+	shiny: {
+		hotkey: "S",
+		icon: SparkleIcon,
+		label: "Shiny",
+		text: "🌟",
+	},
 };
 
 // Pointer (BASE brush) has its own meta because it lives separately in the UI
@@ -63,13 +99,30 @@ export const POINTER_META: Omit<BrushMeta, "hotkey"> & { hotkey: null } = {
  */
 export const BRUSH_ORDER: Record<Brush, number> = {
 	eraser: 6,
-	hundo: 1,
-	lucky: 5,
-	nundo: 2,
-	purified: 4,
-	shadow: 3,
+	hundo: 4,
+	lucky: 3,
+	nundo: 5,
+	purified: 2,
+	shadow: 1,
 	shiny: 0,
 };
+
+export const HOTKEY_MAP: Record<string, Brush> = Object.fromEntries(
+	(Object.entries(BRUSH_META) as [Brush, (typeof BRUSH_META)[Brush]][]).map(
+		([brush, meta]) => [meta.hotkey.toLowerCase(), brush],
+	),
+);
+
+const PRIMITIVE_STATES = Object.values(TRACKABLE_STATES);
+export function getActivePrimitives(displayedStates: string[]) {
+	const active = new Set<TrackableState>();
+	for (const state of displayedStates) {
+		for (const primitive of PRIMITIVE_STATES) {
+			if (state.includes(primitive)) active.add(primitive);
+		}
+	}
+	return active;
+}
 
 // ── Mutual exclusion rules ────────────────────────────────────────────────────
 

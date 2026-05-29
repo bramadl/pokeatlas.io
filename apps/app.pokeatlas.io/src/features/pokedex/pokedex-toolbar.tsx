@@ -31,13 +31,16 @@ export function PokedexToolbar() {
 		<header className="sticky top-16 z-10 shadow">
 			<Collapsible onOpenChange={setIsOpen} open={isOpen}>
 				<div className="relative z-1 p-4 grid grid-cols-1 sm:grid-cols-[260px_260px] md:grid-cols-[320px_320px] lg:grid-cols-[300px_1fr_300px] xl:grid-cols-[320px_1fr_320px] gap-x-8 gap-y-4 bg-white items-center justify-between">
-					<div className="w-full">
+					<div className="w-full row-start-3 md:row-start-[unset]">
 						<DexSwitcher />
 					</div>
-					<div className="flex items-center justify-start lg:justify-center gap-4">
+					<div className="flex items-center justify-start lg:justify-center gap-4 row-start-1 md:row-start-[unset]">
 						<StatusFilter />
 					</div>
 					<div className="flex items-center gap-2 sm:col-span-2 lg:col-span-1">
+						<div className="flex-1 order-2 lg:order-1">
+							<SearchFilter />
+						</div>
 						<div className="order-1 lg:order-2">
 							<CollapsibleTrigger asChild>
 								<FilterButton
@@ -46,9 +49,6 @@ export function PokedexToolbar() {
 									onClick={() => {}}
 								/>
 							</CollapsibleTrigger>
-						</div>
-						<div className="flex-1 order-2 lg:order-1">
-							<SearchFilter />
 						</div>
 						<div className="order-3 lg:order-3">
 							<VariantControls />

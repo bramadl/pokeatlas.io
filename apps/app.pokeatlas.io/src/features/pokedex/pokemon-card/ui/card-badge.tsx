@@ -6,8 +6,7 @@ import { usePokemonCard } from "../use-pokemon-card";
 export function CardBadge() {
 	const { displayedStates, pokemon } = usePokemonCard();
 
-	const extraCount = displayedStates.filter((s) => s !== "BASE").length;
-	const hasBase = displayedStates.includes("BASE");
+	const compoundCount = displayedStates.filter((s) => s.includes("+")).length;
 	const theme = getPokemonTheme(pokemon);
 
 	const pillClass = cn(
@@ -19,14 +18,12 @@ export function CardBadge() {
 		theme.badgeText,
 	);
 
+	if (compoundCount === 0) return;
 	return (
 		<div className="absolute left-1/2 bottom-0 translate-y-1/2 -translate-x-1/2 z-1 flex items-center gap-0.5 pointer-events-none">
-			{hasBase && <span className={pillClass}>Base Tracked</span>}
-			{extraCount > 0 && (
-				<span className={pillClass}>
-					+{extraCount} State{extraCount > 1 ? "s" : ""}
-				</span>
-			)}
+			<span className={pillClass}>
+				+{compoundCount} More State{compoundCount > 1 ? "s" : ""}
+			</span>
 		</div>
 	);
 }

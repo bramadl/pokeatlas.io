@@ -17,15 +17,12 @@ export function usePokedex() {
 	const { raw, debounced } = usePokedexFilterParams();
 	const { trainerId } = useWorkspace();
 
-	// Debounce bypass: if TQ already has this data cached, use raw params
-	// immediately for instant feedback (no debounce delay needed).
 	const isCached =
 		queryClient.getQueryData(
 			browsePokedexQueryOptions({ ...raw, trainerId }).queryKey,
 		) !== undefined;
 
 	const { dex, filters } = isCached ? raw : debounced;
-
 	const {
 		data,
 		isFetching,
@@ -33,28 +30,43 @@ export function usePokedex() {
 		hasNextPage,
 		isPlaceholderData,
 		fetchNextPage,
-	} = useInfiniteQuery(browsePokedexQueryOptions({ dex, filters, trainerId }));
+	} = useInfiniteQuery({
+		...browsePokedexQueryOptions({ dex, filters, trainerId }),
+	});
 
 	const entries = useMemo(
 		() => data?.pages.flatMap((page) => page.entries) ?? [],
 		[data],
 	);
 
-	// Are any mutations in-flight right now?
-	// If so, suppress animate-pulse — user is tapping, not waiting for a fetch.
-	const hasAnyInflight = useTrackingStore((s) => s.overlays.size > 0);
-
-	// isLoading = "we are fetching a NEW filter/dex, not just appending pages"
-	// Suppress during in-flight mutations to prevent unwanted animate-pulse.
+	const overlays = useTrackingStore((s) => s.overlays);
 	const isLoading =
-		(isFetching || isPlaceholderData) && !isFetchingNextPage && !hasAnyInflight;
+		(isFetching || isPlaceholderData) &&
+		!isFetchingNextPage &&
+		!(overlays.size > 0);
 
-	const showSkeleton = isLoading && entries.length === 0;
-	const showEmpty = !isLoading && !isPlaceholderData && entries.length === 0;
+	const visibleEntries = useMemo(() => {
+		if (!filters?.status) return entries;
+		return entries.filter((pokemon) => {
+			const overlay = overlays.get(pokemon.id);
+			const currentStates = overlay?.trackedStates ?? pokemon.trackedStates;
+			const isTracked = currentStates.length > 0;
+			if (filters.status === "MISSING") return !isTracked;
+			if (filters.status === "TRACKED") return isTracked;
+			return true;
+		});
+	}, [entries, overlays, filters?.status]);
 
-	// Sentinel for infinite scroll.
-	// We do NOT block on hasAnyInflight here anymore — patchPokemonInAllCaches
-	// handles cache consistency surgically, so scroll is safe to continue.
+	const showSkeleton = isLoading && visibleEntries.length === 0;
+	const showEmpty =
+		!isLoading && !isPlaceholderData && visibleEntries.length === 0;
+
+	const isAnyFetching = isFetching || isPlaceholderData;
+	useEffect(() => {
+		if (isAnyFetching) progress.start(0, 0, true);
+		else progress.stop();
+	}, [isAnyFetching, progress]);
+
 	const { ref: sentinelRef } = useInView({
 		onChange: (inView) => {
 			if (!inView || !hasNextPage || isFetchingNextPage) return;
@@ -63,15 +75,6 @@ export function usePokedex() {
 		rootMargin: "0px 0px 25% 0px",
 	});
 
-	// Progress bar: show for ANY fetching (filter change or infinite scroll)
-	const isAnyFetching = isFetching || isPlaceholderData;
-
-	useEffect(() => {
-		if (isAnyFetching) progress.start(0, 0, true);
-		else progress.stop();
-	}, [isAnyFetching, progress]);
-
-	// Scroll to top whenever the active dex or filters change
 	// biome-ignore lint/correctness/useExhaustiveDependencies: intentional watcher
 	useEffect(() => {
 		window.scrollTo({ behavior: "smooth", top: 0 });

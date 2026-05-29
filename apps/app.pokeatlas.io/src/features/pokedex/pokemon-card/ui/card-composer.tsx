@@ -50,7 +50,7 @@ export function CardComposer({
 		<Popover modal onOpenChange={setIsTrackLogShown} open={isTrackLogShown}>
 			<PopoverAnchor asChild>{children}</PopoverAnchor>
 			<PopoverContent
-				align="center"
+				align="start"
 				className="min-w-96 w-auto ring-transparent"
 				side="right"
 			>

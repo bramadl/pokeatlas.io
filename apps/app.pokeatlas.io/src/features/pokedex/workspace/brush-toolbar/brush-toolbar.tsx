@@ -1,7 +1,7 @@
 "use client";
 
 import { HandPointingIcon } from "@phosphor-icons/react";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -16,12 +16,14 @@ import { useWorkspace } from "../workspace.context";
 import {
 	applyBrushConstraints,
 	BRUSH_META,
+	BRUSH_ORDER,
 	type Brush,
 	getDisabledBrushes,
+	HOTKEY_MAP,
 	POINTER_META,
 } from "./brush";
 
-export function BrushToolbar() {
+export function BrushToolbar({ vertical = false }: { vertical?: boolean }) {
 	const { activeBrushes, activeView, setActiveBrushes } = useWorkspace();
 
 	const disabledBrushes = getDisabledBrushes(activeView);
@@ -44,10 +46,45 @@ export function BrushToolbar() {
 		[activeBrushes, disabledBrushes, setActiveBrushes],
 	);
 
-	return (
-		<aside className="flex items-center justify-center gap-4">
-			<Separator className="my-1 h-8" orientation="vertical" />
+	useEffect(() => {
+		const handleKeyDown = (e: KeyboardEvent) => {
+			const target = e.target as HTMLElement;
+			if (
+				target.isContentEditable ||
+				target.tagName === "INPUT" ||
+				target.tagName === "TEXTAREA" ||
+				target.tagName === "SELECT"
+			) {
+				return;
+			}
 
+			if (e.ctrlKey || e.metaKey || e.altKey) return;
+
+			const key = e.key.toLowerCase();
+			if (key === "escape" || key === "b") {
+				e.preventDefault();
+				setActiveBrushes([]);
+				return;
+			}
+
+			const brush = HOTKEY_MAP[key];
+			if (!brush || disabledBrushes.has(brush)) return;
+
+			e.preventDefault();
+			handleBrushClick(brush);
+		};
+
+		window.addEventListener("keydown", handleKeyDown);
+		return () => window.removeEventListener("keydown", handleKeyDown);
+	}, [disabledBrushes, handleBrushClick, setActiveBrushes]);
+
+	return (
+		<aside
+			className={cn(
+				"flex items-center justify-center gap-3",
+				vertical && "flex-col",
+			)}
+		>
 			<Tooltip>
 				<TooltipTrigger asChild>
 					<Button
@@ -55,7 +92,7 @@ export function BrushToolbar() {
 						aria-pressed={isPointerMode}
 						className={cn(
 							"transition-colors",
-							isPointerMode && "ring-2 ring-primary ring-offset-2",
+							isPointerMode && "ring-2 ring-primary/50 ring-offset-1",
 						)}
 						onClick={handlePointerClick}
 						size="icon"
@@ -64,8 +101,63 @@ export function BrushToolbar() {
 						<HandPointingIcon />
 					</Button>
 				</TooltipTrigger>
-				<TooltipContent>{POINTER_META.label}</TooltipContent>
+				<TooltipContent>
+					{POINTER_META.label}
+					<kbd className="ml-2 text-[10px] opacity-60 font-mono">B</kbd>
+				</TooltipContent>
 			</Tooltip>
+
+			<Separator
+				className={vertical ? "mx-1 w-full" : "my-1"}
+				orientation={vertical ? "horizontal" : "vertical"}
+			/>
+
+			<div className={cn("flex items-center gap-2", vertical && "flex-col")}>
+				{(Object.keys(BRUSH_ORDER) as Brush[])
+					.filter((b) => b !== "eraser")
+					.sort((a, b) => BRUSH_ORDER[a] - BRUSH_ORDER[b])
+					.map((brush) => {
+						const meta = BRUSH_META[brush];
+						const isActive = activeBrushes.includes(brush);
+						const isDisabled = disabledBrushes.has(brush);
+						const Icon = meta.icon;
+
+						return (
+							<Tooltip key={brush}>
+								<TooltipTrigger asChild>
+									<Button
+										aria-disabled={isDisabled}
+										aria-label={`${meta.label} brush`}
+										aria-pressed={isActive}
+										className={cn(
+											"transition-colors",
+											isActive && "ring-2 ring-primary/50 ring-offset-1",
+											isDisabled &&
+												"opacity-30 cursor-not-allowed pointer-events-none",
+										)}
+										disabled={isDisabled}
+										onClick={() => handleBrushClick(brush)}
+										size="icon"
+										variant={isActive ? "default" : "secondary"}
+									>
+										{meta.text || <Icon />}
+									</Button>
+								</TooltipTrigger>
+								<TooltipContent>
+									<span>{meta.label}</span>
+									<kbd className="ml-2 text-[10px] opacity-60 font-mono">
+										{meta.hotkey}
+									</kbd>
+								</TooltipContent>
+							</Tooltip>
+						);
+					})}
+			</div>
+
+			<Separator
+				className={vertical ? "mx-1 w-full" : "my-1"}
+				orientation={vertical ? "horizontal" : "vertical"}
+			/>
 
 			<Tooltip>
 				<TooltipTrigger asChild>
@@ -83,9 +175,9 @@ export function BrushToolbar() {
 								)}
 								onClick={() => handleBrushClick("eraser")}
 								size="icon"
-								variant={isActive ? "destructive" : "secondary"}
+								variant={isActive ? "default" : "secondary"}
 							>
-								<Icon />
+								{meta.text || <Icon />}
 							</Button>
 						);
 					})()}
@@ -97,49 +189,6 @@ export function BrushToolbar() {
 					</kbd>
 				</TooltipContent>
 			</Tooltip>
-
-			<Separator className="my-1 h-8" orientation="vertical" />
-
-			<div className="flex items-center gap-2">
-				{(
-					["shiny", "hundo", "nundo", "shadow", "purified", "lucky"] as Brush[]
-				).map((brush) => {
-					const meta = BRUSH_META[brush];
-					const isActive = activeBrushes.includes(brush);
-					const isDisabled = disabledBrushes.has(brush);
-					const Icon = meta.icon;
-
-					return (
-						<Tooltip key={brush}>
-							<TooltipTrigger asChild>
-								<Button
-									aria-disabled={isDisabled}
-									aria-label={`${meta.label} brush`}
-									aria-pressed={isActive}
-									className={cn(
-										"transition-colors",
-										isActive && "ring-2 ring-primary ring-offset-2",
-										isDisabled &&
-											"opacity-30 cursor-not-allowed pointer-events-none",
-									)}
-									disabled={isDisabled}
-									onClick={() => handleBrushClick(brush)}
-									size="icon"
-									variant={isActive ? "default" : "secondary"}
-								>
-									<Icon />
-								</Button>
-							</TooltipTrigger>
-							<TooltipContent>
-								<span>{meta.label}</span>
-								<kbd className="ml-2 text-[10px] opacity-60 font-mono">
-									{meta.hotkey}
-								</kbd>
-							</TooltipContent>
-						</Tooltip>
-					);
-				})}
-			</div>
 		</aside>
 	);
 }

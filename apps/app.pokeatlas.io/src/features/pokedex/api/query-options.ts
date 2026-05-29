@@ -13,17 +13,19 @@ import {
 
 import { browsePokedex, countPokedex } from "./server-actions";
 
+export interface BrowsePokedexQueryOptions {
+	dex?: BrowsePokedexInput["dex"];
+	filters?: BrowsePokedexInput["filters"];
+	trainerId: BrowsePokedexInput["trainerId"];
+}
+
 const LIMIT = 60;
 
 export function browsePokedexQueryOptions({
 	dex,
 	filters,
 	trainerId,
-}: {
-	dex?: BrowsePokedexInput["dex"];
-	filters?: BrowsePokedexInput["filters"];
-	trainerId: BrowsePokedexInput["trainerId"];
-}) {
+}: BrowsePokedexQueryOptions) {
 	return infiniteQueryOptions<
 		BrowsePokedexOutput,
 		Error,

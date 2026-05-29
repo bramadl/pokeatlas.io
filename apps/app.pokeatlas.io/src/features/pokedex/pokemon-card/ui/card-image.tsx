@@ -11,6 +11,10 @@ export function CardImage({ priority }: { priority?: boolean }) {
 	const isTracked = displayedStates.length > 0;
 	const theme = getPokemonTheme(pokemon);
 
+	const hasShiny = displayedStates.some((p) =>
+		p.toLowerCase().includes("shiny"),
+	);
+
 	return (
 		<figure
 			className={cn(
@@ -42,14 +46,18 @@ export function CardImage({ priority }: { priority?: boolean }) {
 					fill
 					priority={priority}
 					sizes="64px"
-					src={pokemon.sprites.url}
+					src={
+						hasShiny
+							? (pokemon.sprites.shinyUrl ?? pokemon.sprites.url)
+							: pokemon.sprites.url
+					}
 				/>
 			</div>
 
 			<button
 				aria-label={`Inspect ${pokemon.name}`}
 				className={cn(
-					"absolute inset-0 z-20 rounded-full",
+					"absolute inset-0 z-1 rounded-full",
 					"flex items-center justify-center outline-none",
 					"opacity-0 bg-black/0 backdrop-blur-none",
 					"transition-[opacity,background-colors,backdrop-filter,scale] duration-300",
