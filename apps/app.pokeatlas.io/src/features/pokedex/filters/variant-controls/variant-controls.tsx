@@ -14,17 +14,16 @@ import {
 import { variantsParser } from "../filter.params";
 import { VARIANT_CONTROL_OPTIONS } from "./variant.options";
 import {
-	getInitialVariants,
 	VARIANT_DEFINITIONS,
 	VARIANTS_BY_KEY,
 	type VariantKey,
-	writeStored,
+	writeVariantsCookie,
 } from "./variant.store";
 
 export function VariantControls() {
 	const [variants, setVariants] = useQueryState(
 		"variants",
-		variantsParser.withDefault(getInitialVariants()),
+		variantsParser.withDefault([]),
 	);
 
 	const variantSet = new Set(variants);
@@ -34,13 +33,14 @@ export function VariantControls() {
 
 	function toggle(key: VariantKey) {
 		const { urlValue } = VARIANTS_BY_KEY[key];
-		const next = !values[key];
-		writeStored(key, next);
-		setVariants(
-			next
-				? [...variantSet, urlValue]
-				: [...variantSet].filter((v) => v !== urlValue),
-		);
+		const isCurrentlyChecked = values[key];
+
+		const nextVariants = isCurrentlyChecked
+			? [...variantSet].filter((v) => v !== urlValue)
+			: [...variantSet, urlValue];
+
+		setVariants(nextVariants);
+		writeVariantsCookie(nextVariants);
 	}
 
 	const activeCount = VARIANT_DEFINITIONS.filter((v) => values[v.key]).length;
@@ -61,9 +61,13 @@ export function VariantControls() {
 					)}
 				</Button>
 			</PopoverTrigger>
-			<PopoverContent align="end" className="min-w-96" sideOffset={16}>
+			<PopoverContent
+				align="end"
+				className="min-w-64 xl:min-w-96"
+				sideOffset={16}
+			>
 				<div className="flex flex-col gap-1">
-					<p className="font-medium">Variant Controls</p>
+					<p className="font-bold text-base leading-none">Variant Controls</p>
 					<p className="text-muted-foreground text-xs">
 						Configure which Pokémon variants to show in your Pokédex.
 					</p>
@@ -85,7 +89,7 @@ export function VariantControls() {
 								<p className="text-sm font-medium leading-none group-hover:text-foreground transition-colors">
 									{label}
 								</p>
-								<p className="text-xs text-muted-foreground mt-0.5">
+								<p className="text-xs text-muted-foreground mt-1">
 									{description}
 								</p>
 							</div>

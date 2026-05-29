@@ -9,13 +9,26 @@ export function typesFilter(
 		const [a, b] = types;
 		if (!b) {
 			return {
-				OR: [{ primaryTypeId: a }, { secondaryTypeId: a }],
+				OR: [
+					{ primaryTypeId: { endsWith: a.toUpperCase() } },
+					{ secondaryTypeId: { endsWith: a.toUpperCase() } },
+				],
 			};
 		} else {
 			return {
 				OR: [
-					{ AND: [{ primaryTypeId: a }, { secondaryTypeId: b }] },
-					{ AND: [{ primaryTypeId: b }, { secondaryTypeId: a }] },
+					{
+						AND: [
+							{ primaryTypeId: { endsWith: a.toUpperCase() } },
+							{ secondaryTypeId: { endsWith: b.toUpperCase() } },
+						],
+					},
+					{
+						AND: [
+							{ primaryTypeId: { endsWith: b.toUpperCase() } },
+							{ secondaryTypeId: { endsWith: a.toUpperCase() } },
+						],
+					},
 				],
 			};
 		}

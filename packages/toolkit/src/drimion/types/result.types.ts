@@ -91,7 +91,7 @@ export interface IResultHook<Y> {
 	 * @param option The result state to handle (`success` or `error`).
 	 * @returns The result of the function execution, if applicable.
 	 */
-	on(option: IResultOption): Promise<IResult<Y, string>> | undefined;
+	on(option: IResultOption): Promise<IResult<Y, string, unknown>> | undefined;
 }
 
 /**

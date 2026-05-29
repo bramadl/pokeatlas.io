@@ -10,6 +10,7 @@ import {
 	infiniteQueryOptions,
 	queryOptions,
 } from "@tanstack/react-query";
+
 import { browsePokedex, countPokedex } from "./server-actions";
 
 const LIMIT = 60;
@@ -30,7 +31,9 @@ export function browsePokedexQueryOptions({
 		["browse-pokedex", typeof dex, typeof filters, typeof trainerId],
 		string | null
 	>({
-		getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
+		getNextPageParam: ({ hasMore, nextCursor }) => {
+			return hasMore ? (nextCursor ?? undefined) : undefined;
+		},
 		initialPageParam: null,
 		placeholderData: (prev) => prev,
 		queryFn: ({ pageParam }) => {

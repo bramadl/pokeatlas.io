@@ -7,7 +7,10 @@ export interface TrackPokemonInput {
 	trainerId: string;
 }
 
-export type TrackPokemonOutput = undefined;
+export type TrackPokemonOutput = {
+	pokemonRef: string;
+	trackedStates: string[];
+};
 
 export type TrackPokemonErrors = PokemonNotFoundError | DomainError;
 

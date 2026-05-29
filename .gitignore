@@ -68,5 +68,6 @@ packages/pipelines/src/game/previews
 
 # Repomix output files
 repomix-*
+repomix.config*
 .todo
 .memo.md

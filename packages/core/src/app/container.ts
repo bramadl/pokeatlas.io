@@ -2,8 +2,12 @@ import {
 	BrowsePokedexHandler,
 	CollectionContext,
 	CountPokedexHandler,
+	TrackPokemonHandler,
 } from "@context/collection";
-import { PrismaPokedexServiceAdapter } from "@pokeatlas/database";
+import {
+	PrismaPokedexServiceAdapter,
+	PrismaTrainerDexRepositoryAdapter,
+} from "@pokeatlas/database";
 import { ContainerBuilder, EventBus } from "@pokeatlas/toolkit";
 
 import { PokeAtlas } from "./client";
@@ -28,6 +32,10 @@ const container = ContainerBuilder.create()
 
 	.add("QueryService:Pokedex", () => new PrismaPokedexServiceAdapter())
 
+	// ----- Repositories --------------------------------------------------
+
+	.add("Repository:TrainerDex", () => new PrismaTrainerDexRepositoryAdapter())
+
 	// ----- Handlers ------------------------------------------------------
 
 	.add(
@@ -40,12 +48,22 @@ const container = ContainerBuilder.create()
 		(r) => new CountPokedexHandler(r["QueryService:Pokedex"]),
 	)
 
+	.add(
+		"Handler:TrackPokemon",
+		(r) =>
+			new TrackPokemonHandler(
+				r["QueryService:Pokedex"],
+				r["Repository:TrainerDex"],
+			),
+	)
+
 	// ----- Contexts ------------------------------------------------------
 
 	.add("collection", (r) => {
 		return new CollectionContext({
 			browsePokedex: r["Handler:BrowsePokedex"],
 			countPokedex: r["Handler:CountPokedex"],
+			trackPokemon: r["Handler:TrackPokemon"],
 		});
 	})
 

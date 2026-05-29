@@ -1,26 +1,13 @@
-// ── Single source of truth ────────────────────────────────────────────────────
+// ── Constants & Configuration ─────────────────────────────────────────────────
+
+export const VARIANTS_COOKIE = "pokedex.variants";
+export const DEFAULT_VARIANTS: VariantValue[] = ["alternate_form"];
 
 export const VARIANT_DEFINITIONS = [
-	{
-		key: "alternateForm",
-		storageKey: "pokedex.filter.variant.alternateForm",
-		urlValue: "alternate_form",
-	},
-	{
-		key: "costume",
-		storageKey: "pokedex.filter.variant.costume",
-		urlValue: "costume",
-	},
-	{
-		key: "gender",
-		storageKey: "pokedex.filter.variant.gender",
-		urlValue: "gender",
-	},
-	{
-		key: "temporaryEvolution",
-		storageKey: "pokedex.filter.variant.temporaryEvolution",
-		urlValue: "temporary_evolution",
-	},
+	{ key: "alternateForm", urlValue: "alternate_form" },
+	{ key: "costume", urlValue: "costume" },
+	{ key: "gender", urlValue: "gender" },
+	{ key: "temporaryEvolution", urlValue: "temporary_evolution" },
 ] as const;
 
 // ── Derived types & lookups ───────────────────────────────────────────────────
@@ -38,24 +25,13 @@ export const VARIANTS_BY_URL_VALUE = Object.fromEntries(
 	VARIANT_DEFINITIONS.map((v) => [v.urlValue, v]),
 ) as Record<VariantValue, (typeof VARIANT_DEFINITIONS)[number]>;
 
-// ── localStorage persistence helpers ─────────────────────────────────────────
+// ── Cookie Helpers ────────────────────────────────────────────────────────────
 
-export function readStored(key: VariantKey): boolean {
-	try {
-		return localStorage.getItem(VARIANTS_BY_KEY[key].storageKey) === "true";
-	} catch {
-		return false;
-	}
-}
+export function writeVariantsCookie(values: VariantValue[]): void {
+	let encoded: string;
+	if (values.length === 0) encoded = "none";
+	else encoded = encodeURIComponent(JSON.stringify(values));
 
-export function writeStored(key: VariantKey, value: boolean): void {
-	try {
-		localStorage.setItem(VARIANTS_BY_KEY[key].storageKey, String(value));
-	} catch {}
-}
-
-export function getInitialVariants(): VariantValue[] {
-	return VARIANT_DEFINITIONS.filter((v) => readStored(v.key)).map(
-		(v) => v.urlValue,
-	);
+	// biome-ignore lint/suspicious/noDocumentCookie: Needed for client-side persistence
+	document.cookie = `${VARIANTS_COOKIE}=${encoded}; max-age=31536000; path=/; SameSite=Lax`;
 }

@@ -4,6 +4,8 @@ import { atlas } from "@pokeatlas/core";
 import type {
 	BrowsePokedexInput,
 	CountPokedexInput,
+	TrackPokemonInput,
+	TrackPokemonOutput,
 } from "@pokeatlas/core/types";
 
 export async function browsePokedex(input: BrowsePokedexInput) {
@@ -18,15 +20,10 @@ export async function countPokedex(input: CountPokedexInput) {
 	return result.value();
 }
 
-// ===== TODO =====
-// export async function trackPokemon(
-// 	pokemonRef: string,
-// 	trackedStates: string[][],
-// ): Promise<void> {
-// 	const result = await atlas.collection.trackPokemon({
-// 		pokemonRef,
-// 		trackedStates,
-// 		trainerId: TRAINER_ID,
-// 	});
-// 	if (result.isError()) throw new Error(String(result.error()));
-// }
+export async function trackPokemon(
+	input: TrackPokemonInput,
+): Promise<TrackPokemonOutput> {
+	const result = await atlas.collection.trackPokemon(input);
+	if (result.isError()) throw new Error(String(result.error()));
+	return result.value();
+}

@@ -6,6 +6,7 @@ import type {
 	CountPokedexOutput,
 	IPokedex,
 } from "@context/collection/types";
+import type { PokemonRef } from "@context/shared";
 
 import { prisma } from "#prisma-client";
 import type { PokemonModelWhereInput } from "#prisma-client/models.ts";
@@ -37,6 +38,7 @@ export class PrismaPokedexServiceAdapter implements IPokedex {
 		const andConditions = conditions.filter(
 			Boolean,
 		) as PokemonModelWhereInput[];
+
 		return andConditions.length === 0
 			? {}
 			: andConditions.length === 1
@@ -54,12 +56,15 @@ export class PrismaPokedexServiceAdapter implements IPokedex {
 			take: limit + 1,
 			where: await this.buildWhere({ dex, trainerId, ...input }),
 			...(cursor ? { cursor: { ref: cursor }, skip: 1 } : {}),
-			orderBy: [
-				{ formSortGroup: "asc" },
-				{ pokedexNumber: "asc" },
-				{ formPriority: "asc" },
-				{ ref: "asc" },
-			],
+			orderBy:
+				dex === "NATIONAL"
+					? [{ pokedexNumber: "asc" }, { formPriority: "asc" }, { ref: "asc" }]
+					: [
+							{ formSortGroup: "asc" },
+							{ pokedexNumber: "asc" },
+							{ formPriority: "asc" },
+							{ ref: "asc" },
+						],
 			select: {
 				formCategory: true,
 				formName: true,
@@ -99,7 +104,7 @@ export class PrismaPokedexServiceAdapter implements IPokedex {
 		return {
 			entries: entries.map(toEntry),
 			hasMore,
-			nextCursor: last?.ref ?? null,
+			nextCursor: hasMore ? (last?.ref ?? null) : null,
 		};
 	}
 
@@ -107,5 +112,10 @@ export class PrismaPokedexServiceAdapter implements IPokedex {
 		input: CountPokedexInput,
 	): Promise<CountPokedexOutput> {
 		return prisma.pokemonModel.count({ where: await this.buildWhere(input) });
+	}
+
+	public async isPokemonExist(ref: PokemonRef): Promise<boolean> {
+		const count = await prisma.pokemonModel.count({ where: { ref } });
+		return count > 0;
 	}
 }

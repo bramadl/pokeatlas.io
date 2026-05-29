@@ -12,8 +12,7 @@ export * from "./prisma/generated/models";
 // ----- Prisma: Query Services -------------------------------------------------
 
 export { PrismaPokedexServiceAdapter } from "./prisma/providers/queries/pokedex/adapter";
-// export { PrismaPokemonCatalogAdapter } from "./prisma/providers/queries/pokemon-catalog/adapter";
 
 // ----- Prisma: Repositories ---------------------------------------------------
 
-// export { PrismaPokedexRepositoryAdapter } from "./prisma/providers/repositories/pokedex/adapter";
+export { PrismaTrainerDexRepositoryAdapter } from "./prisma/providers/repositories/trainer-dex/adapter";

@@ -206,8 +206,20 @@ function resolveFormPriority({
 	}
 }
 
-function resolveFormSortGroup(formCategory: FormCategory): number {
-	return formCategory === "ALTERNATE_FORM" ? 1 : 0;
+function resolveFormSortGroup(
+	formCategory: FormCategory,
+	isDefaultForm: boolean,
+): number {
+	switch (formCategory) {
+		case "BASE_FORM":
+			return 0;
+		case "ALTERNATE_FORM":
+			return isDefaultForm ? 0 : 1;
+		case "REGIONAL_FORM":
+			return 2;
+		default:
+			return 0;
+	}
 }
 
 // ─── Name derivation ─────────────────────────────────────────────────────────
@@ -517,7 +529,7 @@ export function transformPokemon(
 					isFemale: false,
 					isTemporaryEvolution: false,
 				}),
-				formSortGroup: resolveFormSortGroup(formCategory),
+				formSortGroup: resolveFormSortGroup(formCategory, isDefaultForm),
 				height: settings.pokedexHeightM ?? 0,
 				isCostume,
 				isDefaultForm,
@@ -628,7 +640,7 @@ export function transformPokemon(
 					isFemale: false,
 					isTemporaryEvolution: true,
 				}),
-				formSortGroup: resolveFormSortGroup(formCategory),
+				formSortGroup: resolveFormSortGroup(formCategory, false),
 				height: evo.averageHeightM ?? settings.pokedexHeightM ?? 0,
 				isCostume,
 				isDefaultForm: false,

@@ -43,6 +43,7 @@ export function TypeFilter() {
 						<Button
 							aria-label={type}
 							aria-pressed={isActive}
+							className="px-1 md:px-3"
 							disabled={isDisabled}
 							key={type}
 							onClick={() => toggleType(type)}

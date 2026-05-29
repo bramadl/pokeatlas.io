@@ -13,12 +13,12 @@ export const VARIANT_CONTROL_OPTIONS: {
 	{
 		description: "Include costume variants e.g. Pikachu (Rock Star)",
 		key: "costume",
-		label: "Costumes",
+		label: "Costume Variants",
 	},
 	{
 		description: "Include female variants e.g. Venusaur ♀",
 		key: "gender",
-		label: "Female Forms",
+		label: "Female Variants",
 	},
 	{
 		description: "Include temporary evolutions e.g. Mega Charizard X",

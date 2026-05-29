@@ -22,7 +22,9 @@ import type { AnyObject } from "../types/utils.types";
  * @typeParam `M` - The type of the metadata object. Defaults to an empty object `{}`.
  *
  */
-export class Result<T = void, D = string, M = AnyObject> implements IResult<T, D, M> {
+export class Result<T = void, D = string, M = AnyObject>
+	implements IResult<T, D, M>
+{
 	readonly #data: Readonly<T | null>;
 	readonly #error: Readonly<D | null>;
 	readonly #isError: Readonly<boolean>;
@@ -52,9 +54,16 @@ export class Result<T = void, D = string, M = AnyObject> implements IResult<T, D
 		metaData?: M,
 	): IResult<T, D, M> {
 		const errorMessage =
-			typeof error !== "undefined" && error !== null ? error : "void error. no message!";
+			typeof error !== "undefined" && error !== null
+				? error
+				: "void error. no message!";
 
-		const fail = new Result(false, null, errorMessage, metaData) as unknown as IResult<T, D, M>;
+		const fail = new Result(
+			false,
+			null,
+			errorMessage,
+			metaData,
+		) as unknown as IResult<T, D, M>;
 
 		return Object.freeze(fail) as IResult<T, D, M>;
 	}
@@ -74,11 +83,9 @@ export class Result<T = void, D = string, M = AnyObject> implements IResult<T, D
 	): IResult<A, B, M> {
 		const iterator = Result.iterate(results);
 		if (iterator.isEmpty()) {
-			return Result.error("No results provided on combine param" as B) as unknown as IResult<
-				A,
-				B,
-				M
-			>;
+			return Result.error(
+				"No results provided on combine param" as B,
+			) as unknown as IResult<A, B, M>;
 		}
 
 		while (iterator.hasNext()) {
@@ -109,7 +116,9 @@ export class Result<T = void, D = string, M = AnyObject> implements IResult<T, D
 	 */
 	public execute<X, Y>(command: ICommand<X, Y>): IResultExecuteFn<X, Y> {
 		return {
-			on: (option: IResultOption): Promise<IResult<Y, string, AnyObject>> | undefined => {
+			on: (
+				option: IResultOption,
+			): Promise<IResult<Y, string, unknown>> | undefined => {
 				if (option === "success" && this.isSuccess())
 					return command.execute(undefined as unknown as X);
 				if (option === "error" && this.isError())
@@ -117,9 +126,13 @@ export class Result<T = void, D = string, M = AnyObject> implements IResult<T, D
 			},
 			withData: (data: X): IResultHook<Y> => {
 				return {
-					on: (option: IResultOption): Promise<IResult<Y, string, AnyObject>> | undefined => {
-						if (option === "success" && this.isSuccess()) return command.execute(data);
-						if (option === "error" && this.isError()) return command.execute(data);
+					on: (
+						option: IResultOption,
+					): Promise<IResult<Y, string, unknown>> | undefined => {
+						if (option === "success" && this.isSuccess())
+							return command.execute(data);
+						if (option === "error" && this.isError())
+							return command.execute(data);
 					},
 				};
 			},
@@ -192,13 +205,20 @@ export class Result<T = void, D = string, M = AnyObject> implements IResult<T, D
 	 * @returns A `Result` instance representing success.
 	 */
 	public static success(): IResult<void>;
-	public static success<T, M = AnyObject, D = string>(data: T, metaData?: M): IResult<T, D, M>;
+	public static success<T, M = AnyObject, D = string>(
+		data: T,
+		metaData?: M,
+	): IResult<T, D, M>;
 	public static success<T, M = AnyObject, D = string>(
 		data?: T,
 		metaData?: M,
 	): IResult<T, D, M> {
 		const _data = typeof data === "undefined" ? null : data;
-		const ok = new Result(true, _data, null, metaData) as unknown as IResult<T, D, M>;
+		const ok = new Result(true, _data, null, metaData) as unknown as IResult<
+			T,
+			D,
+			M
+		>;
 		return Object.freeze(ok) as IResult<T, D, M>;
 	}
 

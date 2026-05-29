@@ -36,3 +36,5 @@ export const POKEDEX_VIEWS = {
 		value: "SHINY",
 	},
 } as const;
+
+export type ViewKey = keyof typeof POKEDEX_VIEWS;

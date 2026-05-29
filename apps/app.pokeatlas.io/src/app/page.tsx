@@ -3,12 +3,11 @@ import type { SearchParams } from "nuqs/server";
 
 import { GlobalFooter } from "@/components/global/footer";
 import { GlobalNavigation } from "@/components/global/navigation";
+import { ScrollToTop } from "@/components/ui/scroll-to-top";
 import { Pokedex } from "@/features/pokedex";
-import {
-	browsePokedexQueryOptions,
-	countPokedexQueryOptions,
-} from "@/features/pokedex/api/query-options";
+import { browsePokedexQueryOptions } from "@/features/pokedex/api/query-options";
 import { loadPokedexFilters } from "@/features/pokedex/filters/filter.loader";
+import { WorkspaceProvider } from "@/features/pokedex/workspace/workspace-provider";
 import { getQueryClient } from "@/lib/tanstack/query/get-query-client";
 import { trainerId } from "@/lib/trainer-id";
 
@@ -25,17 +24,16 @@ export default async function Home({ searchParams }: PageProps) {
 		browsePokedexQueryOptions({ dex, filters, trainerId: trainerId() }),
 	));
 
-	void (await queryClient.prefetchQuery(
-		countPokedexQueryOptions({ dex, filters, trainerId: trainerId() }),
-	));
-
 	return (
-		<main>
-			<GlobalNavigation />
-			<HydrationBoundary state={dehydrate(queryClient)}>
-				<Pokedex trainerId={trainerId()} />
-			</HydrationBoundary>
-			<GlobalFooter />
-		</main>
+		<HydrationBoundary state={dehydrate(queryClient)}>
+			<main>
+				<GlobalNavigation />
+				<WorkspaceProvider trainerId={trainerId()}>
+					<Pokedex />
+				</WorkspaceProvider>
+				<GlobalFooter />
+			</main>
+			<ScrollToTop />
+		</HydrationBoundary>
 	);
 }

@@ -3,6 +3,11 @@ export type {
 	BrowsePokedexQuery,
 	CountPokedexHandler,
 	CountPokedexQuery,
+	TrackPokemonCommand,
+	TrackPokemonErrors,
+	TrackPokemonHandler,
+	TrackPokemonInput,
+	TrackPokemonOutput,
 } from "../src/application";
 
 export {

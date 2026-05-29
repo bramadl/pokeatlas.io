@@ -32,14 +32,14 @@ export function SearchFilter() {
 	}
 
 	return (
-		<InputGroup className="w-full">
+		<InputGroup className="flex-1">
 			<InputGroupAddon align="inline-start">
 				<MagnifyingGlassIcon className="text-muted-foreground" />
 			</InputGroupAddon>
 
 			<InputGroupInput
 				onChange={handleChange}
-				placeholder="pikachu, 025, +charizard…"
+				placeholder="Search pokemon..."
 				value={localValue}
 			/>
 

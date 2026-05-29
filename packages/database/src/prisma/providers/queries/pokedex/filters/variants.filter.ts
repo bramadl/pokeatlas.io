@@ -12,19 +12,23 @@ export function variantsFilter(
 		temporaryEvolution = false,
 	} = variants ?? {};
 
+	const conditions: PokemonModelWhereInput[] = [];
+
 	if (!alternateForm) {
-		return {
+		conditions.push({
 			OR: [
 				{ formCategory: { not: "ALTERNATE_FORM" } },
 				{ isCostume: true },
 				{ isDefaultForm: true },
 			],
-		};
+		});
 	}
 
-	if (!costume) return { isCostume: false };
-	if (!gender) return { isFemale: false };
-	if (!temporaryEvolution) return { isTemporaryEvolution: false };
+	if (!costume) conditions.push({ isCostume: false });
+	if (!gender) conditions.push({ isFemale: false });
+	if (!temporaryEvolution) conditions.push({ isTemporaryEvolution: false });
 
-	return null;
+	if (conditions.length === 0) return null;
+	if (conditions.length === 1) return conditions[0] as PokemonModelWhereInput;
+	return { AND: conditions };
 }

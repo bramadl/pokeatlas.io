@@ -30,28 +30,39 @@ export function PokedexToolbar() {
 	return (
 		<header className="sticky top-16 z-10 shadow">
 			<Collapsible onOpenChange={setIsOpen} open={isOpen}>
-				<div className="relative z-1 p-4 grid grid-cols-[minmax(360px,auto)_1fr_minmax(360px,auto)] gap-x-8 bg-white items-center">
-					<DexSwitcher />
-					<StatusFilter />
-					<div className="flex items-center gap-2">
-						<SearchFilter />
-						<VariantControls />
-						<CollapsibleTrigger asChild>
-							<FilterButton
-								activeFilterCount={activeFilterCount}
-								isOpen={isOpen}
-								onClick={() => {}}
-							/>
-						</CollapsibleTrigger>
+				<div className="relative z-1 p-4 grid grid-cols-1 sm:grid-cols-[260px_260px] md:grid-cols-[320px_320px] lg:grid-cols-[300px_1fr_300px] xl:grid-cols-[320px_1fr_320px] gap-x-8 gap-y-4 bg-white items-center justify-between">
+					<div className="w-full">
+						<DexSwitcher />
+					</div>
+					<div className="flex justify-start">
+						<StatusFilter />
+					</div>
+					<div className="flex items-center gap-2 sm:col-span-2 lg:col-span-1">
+						<div className="order-1 lg:order-2">
+							<CollapsibleTrigger asChild>
+								<FilterButton
+									activeFilterCount={activeFilterCount}
+									isOpen={isOpen}
+									onClick={() => {}}
+								/>
+							</CollapsibleTrigger>
+						</div>
+						<div className="flex-1 order-2 lg:order-1">
+							<SearchFilter />
+						</div>
+						<div className="order-3 lg:order-3">
+							<VariantControls />
+						</div>
 					</div>
 				</div>
 
 				<CollapsibleContent>
-					<div className="bg-white">
-						<div className="bg-border h-px" />
-						<div className="p-4 grid lg:grid-cols-[3.5fr_1.45fr] gap-x-8 gap-y-4">
-							<TypeFilter />
+					<div className="bg-white border-t">
+						<div className="p-4 grid lg:grid-cols-[300px_1fr_300px] xl:grid-cols-[320px_1fr_320px] gap-x-8 gap-y-4">
 							<ClassificationFilter />
+							<div className="lg:col-span-2">
+								<TypeFilter />
+							</div>
 						</div>
 					</div>
 				</CollapsibleContent>

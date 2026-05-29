@@ -29,22 +29,67 @@ export interface PokedexFilterParams {
 	filters: BrowsePokedexInput["filters"];
 }
 
-export function usePokedexFilterParams(): PokedexFilterParams {
+export interface PokedexFilterParamsResult {
+	debounced: PokedexFilterParams;
+	raw: PokedexFilterParams;
+}
+
+export function usePokedexFilterParams(): PokedexFilterParamsResult {
+	const [{ dex }] = useQueryStates(dexParsers);
 	const [{ classification, search, status, types, variants }] =
 		useQueryStates(filterParsers);
 
-	const [{ dex }] = useQueryStates(dexParsers);
+	const [dDex] = useDebounceValue(dex, 400);
+	const [dClassification] = useDebounceValue(classification, 300);
+	const [dSearch] = useDebounceValue(search, 500);
+	const [dStatus] = useDebounceValue(status, 300);
+	const [dTypes] = useDebounceValue(types, 300);
+	const [dVariants] = useDebounceValue(variants, 300);
 
-	const [debouncedSearch] = useDebounceValue(search, 500);
-
-	return {
+	const raw: PokedexFilterParams = {
 		dex: buildDex({ dex }),
+		filters: buildFilters({ classification, search, status, types, variants }),
+	};
+
+	const debounced: PokedexFilterParams = {
+		dex: buildDex({ dex: dDex }),
 		filters: buildFilters({
-			classification,
-			search: debouncedSearch,
-			status,
-			types,
-			variants,
+			classification: dClassification,
+			search: dSearch,
+			status: dStatus,
+			types: dTypes,
+			variants: dVariants,
 		}),
 	};
+
+	return {
+		debounced,
+		raw,
+	};
 }
+
+// export function usePokedexFilterParams(): PokedexFilterParamsResult {
+// 	const [{ dex }] = useQueryStates(dexParsers);
+// 	const [{ classification, search, status, types, variants }] =
+// 		useQueryStates(filterParsers);
+
+// 	const [dSearch] = useDebounceValue(search, 500);
+
+// 	const raw: PokedexFilterParams = {
+// 		dex: buildDex({ dex }),
+// 		filters: buildFilters({ classification, search, status, types, variants }),
+// 	};
+
+// 	const debounced: PokedexFilterParams = {
+// 		dex: buildDex({ dex }),
+// 		filters: buildFilters({
+// 			classification,
+// 			search: dSearch, // hanya ini yang beda dari raw
+// 			status,
+// 			types,
+// 			variants,
+// 		}),
+// 	};
+
+// 	return { debounced, raw };
+// }

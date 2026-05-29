@@ -7,22 +7,25 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { filterParsers } from "../use-filter-params";
 import { STATUS_OPTIONS } from "./status.options";
 
+const DEFAULT_VALUE = "all";
+
 export function StatusFilter() {
 	const [{ status }, setFilters] = useQueryStates(filterParsers);
 	function toggleStatus(value: string | null) {
+		if (value === status || value === DEFAULT_VALUE) return;
 		setFilters({ status: status === value ? null : value });
 	}
 
 	return (
 		<Tabs
-			className="flex items-center justify-center"
-			defaultValue={status || "all"}
+			className="w-full flex items-center justify-center"
+			defaultValue={status || DEFAULT_VALUE}
 		>
-			<TabsList>
+			<TabsList className="w-full lg:w-auto">
 				<TabsTrigger
-					aria-pressed={status === "all"}
+					aria-pressed={status === DEFAULT_VALUE}
 					onClick={() => toggleStatus(null)}
-					value={"all"}
+					value={DEFAULT_VALUE}
 				>
 					All
 				</TabsTrigger>

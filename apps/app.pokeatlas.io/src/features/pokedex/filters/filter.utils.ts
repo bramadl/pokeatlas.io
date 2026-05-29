@@ -1,8 +1,8 @@
 import type {
 	BrowsePokedexInput,
+	Pokedex,
 	PokedexStatus,
 	PokemonClassification,
-	PokemonDex,
 } from "@pokeatlas/core/types";
 
 import { VARIANT_DEFINITIONS } from "./variant-controls/variant.store";
@@ -63,5 +63,5 @@ export function buildFilters(
 }
 
 export function buildDex(raw: RawDexParam): BrowsePokedexInput["dex"] {
-	return raw.dex ? (raw.dex.toUpperCase() as PokemonDex) : undefined;
+	return raw.dex ? (raw.dex.toUpperCase() as Pokedex) : undefined;
 }

@@ -7,10 +7,25 @@ export function statusFilter(
 	trainerId: BasePokedexInput["trainerId"],
 ): PokemonModelWhereInput | null {
 	if (status === "MISSING") {
-		return { trackedPokemons: { none: { trainerId } } };
+		return {
+			OR: [
+				{ trackedPokemons: { none: { trainerId } } },
+				{
+					trackedPokemons: {
+						some: { trackedStates: { isEmpty: true }, trainerId },
+					},
+				},
+			],
+		};
 	}
+
 	if (status === "TRACKED") {
-		return { trackedPokemons: { some: { trainerId } } };
+		return {
+			trackedPokemons: {
+				some: { trackedStates: { isEmpty: false }, trainerId },
+			},
+		};
 	}
+
 	return null;
 }

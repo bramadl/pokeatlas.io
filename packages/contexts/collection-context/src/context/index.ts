@@ -3,6 +3,9 @@ import {
 	BrowsePokedexQuery,
 	type CountPokedexHandler,
 	CountPokedexQuery,
+	TrackPokemonCommand,
+	type TrackPokemonHandler,
+	type TrackPokemonInput,
 } from "#application";
 
 import type { BrowsePokedexInput, CountPokedexInput } from "#core";
@@ -12,6 +15,7 @@ export class CollectionContext {
 		private readonly handlers: {
 			browsePokedex: BrowsePokedexHandler;
 			countPokedex: CountPokedexHandler;
+			trackPokemon: TrackPokemonHandler;
 		},
 	) {}
 
@@ -21,5 +25,9 @@ export class CollectionContext {
 
 	public countPokedex(input: CountPokedexInput) {
 		return this.handlers.countPokedex.execute(new CountPokedexQuery(input));
+	}
+
+	public trackPokemon(input: TrackPokemonInput) {
+		return this.handlers.trackPokemon.execute(new TrackPokemonCommand(input));
 	}
 }
