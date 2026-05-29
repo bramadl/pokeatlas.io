@@ -1,16 +1,14 @@
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 
-import type { Pokemon } from "../card.types";
-import {
-	getPokemonDex,
-	getPokemonTheme,
-	isPokemonTracked,
-} from "../card.utils";
+import { usePokemonCard } from "../card.context";
+import { getPokemonDex, getPokemonTheme } from "../card.utils";
 
-export function CardTrackLog({ pokemon }: { pokemon: Pokemon }) {
+export function CardTrackLog() {
+	const { displayedStates, pokemon } = usePokemonCard();
+
 	const theme = getPokemonTheme(pokemon);
-	const isTracked = isPokemonTracked(pokemon);
+	const isTracked = displayedStates.length > 0;
 
 	return (
 		<div className="flex flex-col gap-3">

@@ -1,192 +1,114 @@
-// import { create } from "zustand";
+"use client";
 
-// export interface TrackingOverlay {
-// 	inflightCount: number;
-// 	pendingStates: string[];
-// 	scopeKey: string;
-// }
+import { create } from "zustand";
 
-// interface TrackingState {
-// 	beginTrack: (
-// 		pokemonRef: string,
-// 		nextStates: string[],
-// 		scopeKey: string,
-// 	) => void;
-// 	clearOverlay: (pokemonRef: string) => void;
-// 	getOverlay: (pokemonRef: string) => TrackingOverlay | undefined;
-// 	hasAnyInflight: () => boolean;
-// 	overlays: Map<string, TrackingOverlay>;
-// 	settleTrack: (
-// 		pokemonRef: string,
-// 	) => { done: true; scopeKey: string } | { done: false };
-// 	version: number;
-// }
+// ─── Types ────────────────────────────────────────────────────────────────────
 
-// export const useTrackingStore = create<TrackingState>((set, get) => ({
-// 	beginTrack(pokemonRef, nextStates, scopeKey) {
-// 		const overlays = get().overlays;
-// 		const existing = overlays.get(pokemonRef);
+export interface OverlayEntry {
+	/**
+	 * Number of in-flight mutations for this pokemon.
+	 * Overlay stays alive as long as inflight > 0.
+	 */
+	inflight: number;
+	/**
+	 * Optimistic tracked states — what the card should show right now.
+	 * Always reflects the LATEST tap intent, even mid rapid-tap.
+	 */
+	trackedStates: string[];
+}
 
-// 		overlays.set(pokemonRef, {
-// 			inflightCount: (existing?.inflightCount ?? 0) + 1,
-// 			pendingStates: nextStates,
-// 			scopeKey,
-// 		});
+interface TrackingState {
+	/**
+	 * Set or update an overlay for a pokemon.
+	 * Increments inflight counter. Always overwrites trackedStates
+	 * with the latest intent (last-write-wins for UI).
+	 */
+	beginTrack: (pokemonRef: string, nextStates: string[]) => void;
 
-// 		set({ overlays, version: get().version + 1 });
-// 	},
+	/** Read current overlay for a pokemon (undefined = no overlay). */
+	getOverlay: (pokemonRef: string) => OverlayEntry | undefined;
+	overlays: Map<string, OverlayEntry>;
 
-// 	clearOverlay(pokemonRef) {
-// 		const overlays = get().overlays;
-// 		overlays.delete(pokemonRef);
-// 		set({ overlays, version: get().version + 1 });
-// 	},
+	/**
+	 * Remove the overlay entirely. Call only after settleTrack returns true
+	 * AND the TQ cache has been patched with confirmed server data.
+	 */
+	removeOverlay: (pokemonRef: string) => void;
 
-// 	getOverlay(pokemonRef) {
-// 		return get().overlays.get(pokemonRef);
-// 	},
+	/**
+	 * Rollback overlay to a previous state on error.
+	 * If previousStates is empty, removes the overlay entirely.
+	 */
+	rollbackOverlay: (pokemonRef: string, previousStates: string[]) => void;
 
-// 	hasAnyInflight() {
-// 		return get().overlays.size > 0;
-// 	},
+	/**
+	 * Decrement inflight for a pokemon after a mutation settles.
+	 * Returns true if this was the last in-flight mutation.
+	 * Does NOT remove the overlay — caller decides when to remove.
+	 */
+	settleTrack: (pokemonRef: string) => boolean;
+}
 
-// 	overlays: new Map(),
+// ─── Store ────────────────────────────────────────────────────────────────────
 
-// 	settleTrack(pokemonRef) {
-// 		const overlays = get().overlays;
-// 		const existing = overlays.get(pokemonRef);
-// 		if (!existing) return { done: false };
+export const useTrackingStore = create<TrackingState>((set, get) => ({
+	beginTrack(pokemonRef, nextStates) {
+		const overlays = new Map(get().overlays);
+		const existing = overlays.get(pokemonRef);
 
-// 		const newCount = existing.inflightCount - 1;
-// 		if (newCount > 0) {
-// 			overlays.set(pokemonRef, { ...existing, inflightCount: newCount });
-// 			set({ overlays, version: get().version + 1 });
-// 			return { done: false };
-// 		}
+		overlays.set(pokemonRef, {
+			inflight: (existing?.inflight ?? 0) + 1,
+			trackedStates: nextStates,
+		});
 
-// 		return { done: true, scopeKey: existing.scopeKey };
-// 	},
-// 	version: 0,
-// }));
+		set({ overlays });
+	},
 
-// import { create } from "zustand";
+	getOverlay(pokemonRef) {
+		return get().overlays.get(pokemonRef);
+	},
+	overlays: new Map(),
 
-// export interface TrackingOverlay {
-// 	inflightCount: number;
-// 	pendingStates: string[];
-// }
+	removeOverlay(pokemonRef) {
+		const overlays = new Map(get().overlays);
+		overlays.delete(pokemonRef);
+		set({ overlays });
+	},
 
-// interface TrackingState {
-// 	beginTrack: (pokemonRef: string, nextStates: string[]) => void;
-// 	clearOverlay: (pokemonRef: string) => void;
-// 	// Pokemon yang sudah di-mutate dan settled, tapi belum di-invalidate.
-// 	// Dipakai untuk "lazy invalidation" saat filter/dex berubah.
-// 	dirtyRefs: Set<string>;
-// 	flushDirty: () => Set<string>; // ambil dan reset dirtyRefs
-// 	getOverlay: (pokemonRef: string) => TrackingOverlay | undefined;
-// 	markDirty: (pokemonRef: string) => void;
-// 	overlays: Map<string, TrackingOverlay>;
-// 	settleTrack: (pokemonRef: string) => boolean; // true = last inflight
-// 	version: number;
-// }
+	rollbackOverlay(pokemonRef, previousStates) {
+		if (previousStates.length === 0) {
+			const overlays = new Map(get().overlays);
+			overlays.delete(pokemonRef);
+			return set({ overlays });
+		}
 
-// export const useTrackingStore = create<TrackingState>((set, get) => ({
-// 	beginTrack(pokemonRef, nextStates) {
-// 		const overlays = get().overlays;
-// 		const existing = overlays.get(pokemonRef);
-// 		overlays.set(pokemonRef, {
-// 			inflightCount: (existing?.inflightCount ?? 0) + 1,
-// 			pendingStates: nextStates,
-// 		});
-// 		set({ overlays, version: get().version + 1 });
-// 	},
+		const overlays = new Map(get().overlays);
+		const existing = overlays.get(pokemonRef);
+		if (!existing) return;
 
-// 	clearOverlay(pokemonRef) {
-// 		const overlays = get().overlays;
-// 		overlays.delete(pokemonRef);
-// 		set({ overlays, version: get().version + 1 });
-// 	},
-// 	dirtyRefs: new Set(),
+		overlays.set(pokemonRef, {
+			inflight: Math.max(0, existing.inflight - 1),
+			trackedStates: previousStates,
+		});
 
-// 	flushDirty() {
-// 		const dirtyRefs = get().dirtyRefs;
-// 		const copy = new Set(dirtyRefs);
-// 		set({ dirtyRefs: new Set() });
-// 		return copy;
-// 	},
+		return set({ overlays });
+	},
 
-// 	getOverlay(pokemonRef) {
-// 		return get().overlays.get(pokemonRef);
-// 	},
+	settleTrack(pokemonRef) {
+		const overlays = new Map(get().overlays);
 
-// 	markDirty(pokemonRef) {
-// 		const dirtyRefs = get().dirtyRefs;
-// 		dirtyRefs.add(pokemonRef);
-// 		set({ dirtyRefs });
-// 	},
-// 	overlays: new Map(),
+		const existing = overlays.get(pokemonRef);
+		if (!existing) return true;
 
-// 	settleTrack(pokemonRef) {
-// 		const overlays = get().overlays;
-// 		const existing = overlays.get(pokemonRef);
-// 		if (!existing) return true;
+		const newInflight = existing.inflight - 1;
+		if (newInflight > 0) {
+			overlays.set(pokemonRef, { ...existing, inflight: newInflight });
+			set({ overlays });
+			return false;
+		}
 
-// 		const newCount = existing.inflightCount - 1;
-// 		if (newCount > 0) {
-// 			overlays.set(pokemonRef, { ...existing, inflightCount: newCount });
-// 			set({ overlays, version: get().version + 1 });
-// 			return false;
-// 		}
-
-// 		return true; // last inflight
-// 	},
-// 	version: 0,
-// }));
-
-// ––– THIS
-// import { create } from "zustand";
-// import type { Pokemon } from "../../pokemon-card/card.types";
-
-// export interface TrackingEntry {
-// 	pokemon: Pokemon; // full object untuk inject ke TRACKED list
-// 	previousStates: string[]; // untuk rollback
-// 	states: string[]; // optimistic states
-// }
-
-// interface TrackingState {
-// 	getEntry: (pokemonRef: string) => TrackingEntry | undefined;
-// 	hasPendingFlush: boolean;
-// 	overlays: Map<string, TrackingEntry>;
-// 	removeOverlay: (pokemonRef: string) => void;
-
-// 	setOverlay: (
-// 		pokemon: Pokemon,
-// 		states: string[],
-// 		previousStates: string[],
-// 	) => void;
-// 	setPendingFlush: (value: boolean) => void;
-// }
-
-// export const useTrackingStore = create<TrackingState>((set, get) => ({
-// 	getEntry(pokemonRef) {
-// 		return get().overlays.get(pokemonRef);
-// 	},
-// 	hasPendingFlush: false,
-// 	overlays: new Map(),
-
-// 	removeOverlay(pokemonRef) {
-// 		const overlays = new Map(get().overlays);
-// 		overlays.delete(pokemonRef);
-// 		set({ overlays });
-// 	},
-
-// 	setOverlay(pokemon, states, previousStates) {
-// 		const overlays = new Map(get().overlays);
-// 		overlays.set(pokemon.id, { pokemon, previousStates, states });
-// 		set({ overlays });
-// 	},
-
-// 	setPendingFlush(value) {
-// 		set({ hasPendingFlush: value });
-// 	},
-// }));
+		overlays.set(pokemonRef, { ...existing, inflight: 0 });
+		set({ overlays });
+		return true;
+	},
+}));

@@ -1,33 +1,23 @@
-"use client";
-
-import { createContext } from "react";
-
+import { createContext, useContext } from "react";
 import type { Pokemon } from "./card.types";
 
-interface PokemonCardContext {
+export interface PokemonCardContextValue {
+	displayedStates: string[];
+	isPending: boolean;
 	isTrackLogShown: boolean;
+	onTap: () => void;
 	pokemon: Pokemon;
-	setIsTrackLogShown: React.Dispatch<React.SetStateAction<boolean>>;
+	setIsTrackLogShown: (value: boolean) => void;
 }
 
-export const PokemonCardContext = createContext<PokemonCardContext | null>(
+export const PokemonCardContext = createContext<PokemonCardContextValue | null>(
 	null,
 );
 
-// "use client";
-
-// import { createContext } from "react";
-// import type { Pokemon } from "./card.types";
-
-// interface PokemonCardContext {
-// 	displayedStates: string[];
-// 	isPending: boolean;
-// 	isTrackLogShown: boolean;
-// 	onTap: () => void;
-// 	pokemon: Pokemon;
-// 	setIsTrackLogShown: React.Dispatch<React.SetStateAction<boolean>>;
-// }
-
-// export const PokemonCardContext = createContext<PokemonCardContext | null>(
-// 	null,
-// );
+export function usePokemonCard(): PokemonCardContextValue {
+	const ctx = useContext(PokemonCardContext);
+	if (!ctx) {
+		throw new Error("usePokemonCard must be used inside PokemonCardContext");
+	}
+	return ctx;
+}

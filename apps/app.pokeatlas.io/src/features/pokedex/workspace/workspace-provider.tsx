@@ -2,7 +2,6 @@
 
 import { useCallback, useState } from "react";
 
-import { BrushToolbar } from "./brush-toolbar";
 import {
 	applyBrushConstraints,
 	type Brush,
@@ -10,6 +9,7 @@ import {
 } from "./brush-toolbar/brush";
 import type { ViewKey } from "./view.options";
 import { WorkspaceContext } from "./workspace.context";
+import { WorkspaceBar } from "./workspace-bar";
 
 interface WorkspaceProviderProps {
 	children: React.ReactNode;
@@ -56,7 +56,7 @@ export function WorkspaceProvider({
 			}}
 		>
 			{children}
-			<BrushToolbar />
+			<WorkspaceBar />
 		</WorkspaceContext.Provider>
 	);
 }

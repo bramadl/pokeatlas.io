@@ -34,7 +34,7 @@ export function PokedexToolbar() {
 					<div className="w-full">
 						<DexSwitcher />
 					</div>
-					<div className="flex justify-start">
+					<div className="flex items-center justify-start lg:justify-center gap-4">
 						<StatusFilter />
 					</div>
 					<div className="flex items-center gap-2 sm:col-span-2 lg:col-span-1">

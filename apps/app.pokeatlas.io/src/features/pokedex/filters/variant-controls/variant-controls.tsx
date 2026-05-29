@@ -67,7 +67,9 @@ export function VariantControls() {
 				sideOffset={16}
 			>
 				<div className="flex flex-col gap-1">
-					<p className="font-bold text-base leading-none">Variant Controls</p>
+					<p className="font-bold xl:text-base leading-none">
+						Variant Controls
+					</p>
 					<p className="text-muted-foreground text-xs">
 						Configure which Pokémon variants to show in your Pokédex.
 					</p>

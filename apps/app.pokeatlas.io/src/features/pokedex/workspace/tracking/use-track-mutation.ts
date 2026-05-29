@@ -1,226 +1,106 @@
-// "use client"; --- VERSION ONE
+"use client";
 
-// import { useMutation } from "@tanstack/react-query";
-// import { useCallback } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useCallback } from "react";
+import { toast } from "sonner";
 
-// import { trackPokemon } from "@/features/pokedex/api/server-actions";
-// import type { Pokemon } from "@/features/pokedex/pokemon-card/card.types";
-// import { applyBrushTap, type Brush, isDirty } from "../brush-toolbar/brush";
-// import { useTrackingStore } from "./tracking.store";
+import { trackPokemon } from "@/features/pokedex/api/server-actions";
+import type { Pokemon } from "@/features/pokedex/pokemon-card/card.types";
+import { applyBrushTap, type Brush, isDirty } from "../brush-toolbar/brush";
+import {
+	invalidateStatusFilteredCaches,
+	patchPokemonInAllCaches,
+} from "./patch-pokemon-cache";
+import { useTrackingStore } from "./tracking.store";
 
-// export function useTrackMutation() {
-// 	const { beginTrack, settleTrack, clearOverlay, markDirty } =
-// 		useTrackingStore();
+interface MutationContext {
+	pokemonRef: string;
+	previousStates: string[];
+}
 
-// 	const { mutate } = useMutation({
-// 		mutationFn: trackPokemon,
+export function useTrackMutation() {
+	const queryClient = useQueryClient();
+	const store = useTrackingStore;
 
-// 		onMutate({ pokemonRef, trackedStates }) {
-// 			const flatStates = trackedStates.map((combo) => combo.join("+"));
-// 			beginTrack(pokemonRef, flatStates);
-// 		},
+	const { mutate } = useMutation<
+		Awaited<ReturnType<typeof trackPokemon>>,
+		Error,
+		Parameters<typeof trackPokemon>[0],
+		MutationContext
+	>({
+		mutationFn: trackPokemon,
 
-// 		onSettled(_data, _err, { pokemonRef }) {
-// 			const isLast = settleTrack(pokemonRef);
-// 			if (!isLast) return;
+		onError(_err, _vars, context) {
+			if (!context) return;
+			const { pokemonRef, previousStates } = context;
 
-// 			// Tandai sebagai dirty (perlu sync) tapi TIDAK invalidate sekarang.
-// 			// Invalidation terjadi lazy — saat user ganti filter/dex di usePokedex.
-// 			markDirty(pokemonRef);
-// 			clearOverlay(pokemonRef);
-// 		},
-// 	});
+			store.getState().rollbackOverlay(pokemonRef, previousStates);
 
-// 	const tap = useCallback(
-// 		(pokemon: Pokemon, activeBrushes: Brush[], trainerId: string) => {
-// 			const overlay = useTrackingStore.getState().getOverlay(pokemon.id);
-// 			const currentStates = overlay?.pendingStates ?? pokemon.trackedStates;
-// 			const nextStates = applyBrushTap(currentStates, activeBrushes);
+			toast.error("Something went wrong, please try again");
+		},
 
-// 			if (!isDirty(currentStates, nextStates)) return;
+		onMutate({ pokemonRef, trackedStates }): MutationContext {
+			const flatStates = trackedStates.map((combo) => combo.join("+"));
 
-// 			mutate({
-// 				pokemonRef: pokemon.id,
-// 				trackedStates: nextStates.map((sig) =>
-// 					sig === "BASE" ? ["BASE"] : sig.split("+"),
-// 				),
-// 				trainerId,
-// 			});
-// 		},
-// 		[mutate],
-// 	);
+			const existing = store.getState().getOverlay(pokemonRef);
+			const previousStates = existing?.trackedStates ?? [];
 
-// 	return { tap };
-// }
+			store.getState().beginTrack(pokemonRef, flatStates);
 
-// "use client"; --- VERSION TWO
+			return { pokemonRef, previousStates };
+		},
 
-// import { useMutation } from "@tanstack/react-query";
-// import { useCallback } from "react";
+		onSuccess(data) {
+			const { pokemonRef, trackedStates: confirmedStates } = data;
 
-// import { trackPokemon } from "@/features/pokedex/api/server-actions";
-// import type { Pokemon } from "@/features/pokedex/pokemon-card/card.types";
-// import { applyBrushTap, type Brush, isDirty } from "../brush-toolbar/brush";
-// import { useTrackingStore } from "./tracking.store";
+			patchPokemonInAllCaches(queryClient, pokemonRef, confirmedStates);
+			invalidateStatusFilteredCaches(queryClient);
 
-// export function useTrackMutation() {
-// 	const { beginTrack, settleTrack, markDirty } = useTrackingStore();
-// 	// clearOverlay sengaja TIDAK diambil di sini
+			const isLast = store.getState().settleTrack(pokemonRef);
+			if (isLast) {
+				setTimeout(() => {
+					store.getState().removeOverlay(pokemonRef);
 
-// 	const { mutate } = useMutation({
-// 		mutationFn: trackPokemon,
+					const hasMoreInflight = store.getState().overlays.size > 0;
+					if (!hasMoreInflight) {
+						queryClient.invalidateQueries({
+							exact: false,
+							predicate: (query) => {
+								const filters = query.queryKey[2] as
+									| { status?: string }
+									| null
+									| undefined;
+								return (
+									filters?.status === "TRACKED" || filters?.status === "MISSING"
+								);
+							},
+							queryKey: ["browse-pokedex"],
+							refetchType: "active",
+						});
+					}
+				}, 100);
+			}
+		},
+	});
 
-// 		onMutate({ pokemonRef, trackedStates }) {
-// 			const flatStates = trackedStates.map((combo) => combo.join("+"));
-// 			beginTrack(pokemonRef, flatStates);
-// 		},
+	const tap = useCallback(
+		(pokemon: Pokemon, activeBrushes: Brush[], trainerId: string) => {
+			const existing = store.getState().getOverlay(pokemon.id);
+			const currentStates = existing?.trackedStates ?? pokemon.trackedStates;
+			const nextStates = applyBrushTap(currentStates, activeBrushes);
 
-// 		onSettled(_data, _err, { pokemonRef }) {
-// 			const isLast = settleTrack(pokemonRef);
-// 			if (!isLast) return;
+			if (!isDirty(currentStates, nextStates)) return;
 
-// 			// Hanya markDirty — overlay TETAP HIDUP.
-// 			// Card akan terus baca dari overlay (yang sudah benar)
-// 			// sampai user ganti filter/dex dan flushDirty() dipanggil.
-// 			markDirty(pokemonRef);
+			mutate({
+				pokemonRef: pokemon.id,
+				trackedStates: nextStates.map((sig) =>
+					sig === "BASE" ? ["BASE"] : sig.split("+"),
+				),
+				trainerId,
+			});
+		},
+		[mutate],
+	);
 
-// 			// TIDAK clearOverlay di sini. clearOverlay dipanggil di usePokedex
-// 			// setelah invalidation selesai dan data fresh sudah landing.
-// 		},
-// 	});
-
-// 	const tap = useCallback(
-// 		(pokemon: Pokemon, activeBrushes: Brush[], trainerId: string) => {
-// 			const overlay = useTrackingStore.getState().getOverlay(pokemon.id);
-// 			const currentStates = overlay?.pendingStates ?? pokemon.trackedStates;
-// 			const nextStates = applyBrushTap(currentStates, activeBrushes);
-
-// 			if (!isDirty(currentStates, nextStates)) return;
-
-// 			mutate({
-// 				pokemonRef: pokemon.id,
-// 				trackedStates: nextStates.map((sig) =>
-// 					sig === "BASE" ? ["BASE"] : sig.split("+"),
-// 				),
-// 				trainerId,
-// 			});
-// 		},
-// 		[mutate],
-// 	);
-
-// 	return { tap };
-// }
-
-// "use client"; ––– THIS IS THE LATEST ONE SMH!
-
-// import { useMutation } from "@tanstack/react-query";
-// import { useCallback } from "react";
-// import { toast } from "sonner";
-
-// import { trackPokemon } from "@/features/pokedex/api/server-actions";
-// import type { Pokemon } from "@/features/pokedex/pokemon-card/card.types";
-// import { getQueryClient } from "@/lib/tanstack/query/get-query-client";
-// import { applyBrushTap, type Brush, isDirty } from "../brush-toolbar/brush";
-// import { useTrackingStore } from "./tracking.store";
-
-// export function useTrackMutation() {
-// 	const queryClient = getQueryClient();
-
-// 	const { setOverlay, removeOverlay, getEntry, setPendingFlush } =
-// 		useTrackingStore();
-
-// 	const { mutate } = useMutation({
-// 		mutationFn: trackPokemon,
-
-// 		onError(_err, _vars, context) {
-// 			if (!context) return;
-// 			const { pokemonRef, previousStates } = context;
-
-// 			const existing = useTrackingStore.getState().getEntry(pokemonRef);
-// 			if (!existing) return;
-
-// 			if (previousStates.length === 0) {
-// 				// Sebelumnya tidak tracked sama sekali → remove overlay
-// 				removeOverlay(pokemonRef);
-// 			} else {
-// 				// Rollback ke previous states
-// 				setOverlay(existing.pokemon, previousStates, []);
-// 			}
-
-// 			toast.error("Gagal menyimpan. Coba lagi.");
-// 		},
-
-// 		onMutate({ pokemonRef, trackedStates }) {
-// 			// previousStates diambil dari entry yang ada (rapid tap) atau kosong
-// 			const existing = useTrackingStore.getState().getEntry(pokemonRef);
-// 			const previousStates = existing?.states ?? [];
-
-// 			// Kita butuh pokemon object — dipass via mutate variables
-// 			// tapi mutationFn hanya terima { pokemonRef, trackedStates, trainerId }
-// 			// jadi kita simpan via context trick di bawah
-// 			const flatStates = trackedStates.map((combo) => combo.join("+"));
-
-// 			return { flatStates, pokemonRef, previousStates };
-// 		},
-
-// 		// onSuccess(_data, { pokemonRef }) {
-// 		// 	setPendingFlush(true);
-// 		// },
-
-// 		// onSuccess(_data, { pokemonRef }) {
-// 		// 	setPendingFlush(true);
-
-// 		// 	// Invalidate TRACKED query untuk semua dex
-// 		// 	// supaya saat user pindah ke TRACKED, data sudah fresh
-// 		// 	queryClient.invalidateQueries({
-// 		// 		predicate: (query) => {
-// 		// 			const key = query.queryKey as unknown[];
-// 		// 			const filters = key[2] as { status?: string } | undefined;
-// 		// 			return filters?.status === "TRACKED" || filters?.status === "MISSING";
-// 		// 		},
-// 		// 		queryKey: ["browse-pokedex"],
-// 		// 	});
-// 		// },
-// 		onSuccess(_data, { pokemonRef }) {
-// 			setPendingFlush(true);
-
-// 			queryClient.invalidateQueries({
-// 				predicate: (query) => {
-// 					const key = query.queryKey as unknown[];
-// 					const filters = key[2] as { status?: string } | undefined;
-// 					// Invalidate TRACKED, MISSING, DAN ALL (status undefined)
-// 					return (
-// 						filters?.status === "TRACKED" ||
-// 						filters?.status === "MISSING" ||
-// 						filters?.status === undefined
-// 					);
-// 				},
-// 				queryKey: ["browse-pokedex"],
-// 			});
-// 		},
-// 	});
-
-// 	const tap = useCallback(
-// 		(pokemon: Pokemon, activeBrushes: Brush[], trainerId: string) => {
-// 			const existing = getEntry(pokemon.id);
-// 			const currentStates = existing?.states ?? pokemon.trackedStates;
-// 			const nextStates = applyBrushTap(currentStates, activeBrushes);
-
-// 			if (!isDirty(currentStates, nextStates)) return;
-
-// 			// Set overlay sebelum mutate supaya onMutate bisa akses previousStates
-// 			const previousStates = currentStates;
-// 			const flatNext = nextStates.map((sig) =>
-// 				sig === "BASE" ? ["BASE"] : sig.split("+"),
-// 			);
-
-// 			// Set overlay dulu (optimistic)
-// 			setOverlay(pokemon, nextStates, previousStates);
-
-// 			mutate({ pokemonRef: pokemon.id, trackedStates: flatNext, trainerId });
-// 		},
-// 		[mutate, getEntry, setOverlay],
-// 	);
-
-// 	return { tap };
-// }
+	return { tap };
+}

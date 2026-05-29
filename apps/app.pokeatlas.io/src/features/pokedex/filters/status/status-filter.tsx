@@ -18,7 +18,7 @@ export function StatusFilter() {
 
 	return (
 		<Tabs
-			className="w-full flex items-center justify-center"
+			className="flex items-center justify-center"
 			defaultValue={status || DEFAULT_VALUE}
 		>
 			<TabsList className="w-full lg:w-auto">

@@ -45,7 +45,9 @@ export function BrushToolbar() {
 	);
 
 	return (
-		<aside className="fixed z-10 bottom-10 left-1/2 -translate-x-1/2 min-w-64 flex items-center justify-center gap-4 rounded-full bg-background text-foreground p-3 drop-shadow-2xl border border-border/50">
+		<aside className="flex items-center justify-center gap-4">
+			<Separator className="my-1 h-8" orientation="vertical" />
+
 			<Tooltip>
 				<TooltipTrigger asChild>
 					<Button
@@ -63,6 +65,37 @@ export function BrushToolbar() {
 					</Button>
 				</TooltipTrigger>
 				<TooltipContent>{POINTER_META.label}</TooltipContent>
+			</Tooltip>
+
+			<Tooltip>
+				<TooltipTrigger asChild>
+					{(() => {
+						const meta = BRUSH_META.eraser;
+						const isActive = activeBrushes.includes("eraser");
+						const Icon = meta.icon;
+						return (
+							<Button
+								aria-label="Eraser — clear all tracked states"
+								aria-pressed={isActive}
+								className={cn(
+									"transition-colors",
+									isActive && "ring-2 ring-destructive ring-offset-2",
+								)}
+								onClick={() => handleBrushClick("eraser")}
+								size="icon"
+								variant={isActive ? "destructive" : "secondary"}
+							>
+								<Icon />
+							</Button>
+						);
+					})()}
+				</TooltipTrigger>
+				<TooltipContent>
+					<span>{BRUSH_META.eraser.label}</span>
+					<kbd className="ml-2 text-[10px] opacity-60 font-mono">
+						{BRUSH_META.eraser.hotkey}
+					</kbd>
+				</TooltipContent>
 			</Tooltip>
 
 			<Separator className="my-1 h-8" orientation="vertical" />
@@ -107,39 +140,6 @@ export function BrushToolbar() {
 					);
 				})}
 			</div>
-
-			<Separator className="my-1 h-8" orientation="vertical" />
-
-			<Tooltip>
-				<TooltipTrigger asChild>
-					{(() => {
-						const meta = BRUSH_META.eraser;
-						const isActive = activeBrushes.includes("eraser");
-						const Icon = meta.icon;
-						return (
-							<Button
-								aria-label="Eraser — clear all tracked states"
-								aria-pressed={isActive}
-								className={cn(
-									"transition-colors",
-									isActive && "ring-2 ring-destructive ring-offset-2",
-								)}
-								onClick={() => handleBrushClick("eraser")}
-								size="icon"
-								variant={isActive ? "destructive" : "secondary"}
-							>
-								<Icon />
-							</Button>
-						);
-					})()}
-				</TooltipTrigger>
-				<TooltipContent>
-					<span>{BRUSH_META.eraser.label}</span>
-					<kbd className="ml-2 text-[10px] opacity-60 font-mono">
-						{BRUSH_META.eraser.hotkey}
-					</kbd>
-				</TooltipContent>
-			</Tooltip>
 		</aside>
 	);
 }
