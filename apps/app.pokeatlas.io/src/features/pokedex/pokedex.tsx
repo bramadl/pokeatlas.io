@@ -1,17 +1,18 @@
 "use client";
 
+import { PokemonCard } from "../pokemon/card";
+import { useTrackPokemon } from "../workspace/tracking/use-track-pokemon";
+import { useWorkspace } from "../workspace/workspace.context";
+
 import { PokedexEmpty } from "./pokedex-empty";
 import { PokedexEntryLog } from "./pokedex-entry-log";
 import { PokedexGrid } from "./pokedex-grid";
 import { PokedexSkeleton } from "./pokedex-skeleton";
 import { PokedexToolbar } from "./pokedex-toolbar";
-import { PokemonCard } from "./pokemon/card";
 import { usePokedex } from "./use-pokedex";
 import { usePokedexEntries } from "./use-pokedex-entries";
 import { usePokedexParams } from "./use-pokedex-params";
 import { usePokedexProgressBar } from "./use-pokedex-progress-bar";
-import { useTrackPokemon } from "./workspace/tracking/use-track-pokemon";
-import { useWorkspace } from "./workspace/workspace.context";
 
 export function Pokedex() {
 	const { activeBrushes, trainerId } = useWorkspace();

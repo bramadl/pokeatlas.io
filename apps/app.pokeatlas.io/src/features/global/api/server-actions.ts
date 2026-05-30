@@ -1,12 +1,13 @@
 "use server";
 
 import { atlas } from "@pokeatlas/core";
+
 import type {
 	BrowsePokedexInput,
 	CountPokedexInput,
 	TrackPokemonInput,
 	TrackPokemonOutput,
-} from "@pokeatlas/core/types";
+} from "./api.contract";
 
 export async function browsePokedex(input: BrowsePokedexInput) {
 	const result = await atlas.collection.browsePokedex(input);

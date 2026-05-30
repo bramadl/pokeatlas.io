@@ -4,7 +4,7 @@ import type { BrowsePokedexInput } from "@pokeatlas/core/types";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
 import { useIsMounted } from "usehooks-ts";
-import { browsePokedexQueryOptions } from "./api/query-options";
+import { browsePokedexQueryOptions } from "../global/api/query-options";
 import { usePokedexSentinel } from "./use-pokedex-sentinel";
 
 interface UsePokedexOptions {

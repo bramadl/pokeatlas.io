@@ -3,9 +3,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import { toast } from "sonner";
-
-import { trackPokemon } from "@/features/pokedex/api/server-actions";
-import type { Pokemon } from "@/features/pokedex/pokemon/definitions/pokemon";
+import { trackPokemon } from "@/features/global/api/server-actions";
+import type { Pokemon } from "@/features/global/definitions/pokemon";
 import { applyBrushTap, type Brush, isDirty } from "../brush/brush";
 import { useTrackingStore } from "./tracking.store";
 import {

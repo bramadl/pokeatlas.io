@@ -1,7 +1,7 @@
 import type { PokedexEntry } from "@pokeatlas/core/types";
 import { useMemo } from "react";
 
-import { useTrackingStore } from "./workspace/tracking/tracking.store";
+import { useTrackingStore } from "../workspace/tracking/tracking.store";
 
 interface UsePokedexEntriesOptions {
 	data: PokedexEntry[];

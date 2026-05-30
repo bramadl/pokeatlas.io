@@ -2,7 +2,7 @@
 
 import { useCallback } from "react";
 
-import type { Pokemon } from "@/features/pokedex/pokemon/definitions/pokemon";
+import type { Pokemon } from "@/features/global/definitions/pokemon";
 
 import type { Brush } from "../brush/brush";
 import { useTrackMutation } from "./use-track-mutation";

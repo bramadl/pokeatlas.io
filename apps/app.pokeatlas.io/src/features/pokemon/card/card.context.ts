@@ -1,6 +1,6 @@
 import { createContext } from "react";
 
-import type { Pokemon } from "../definitions/pokemon";
+import type { Pokemon } from "../../global/definitions/pokemon";
 import type { PokemonTheme } from "./card.theme";
 
 export interface PokemonCardContextValue {

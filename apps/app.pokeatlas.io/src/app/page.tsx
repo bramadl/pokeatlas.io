@@ -4,10 +4,10 @@ import type { SearchParams } from "nuqs/server";
 import { GlobalFooter } from "@/components/global/footer";
 import { GlobalNavigation } from "@/components/global/navigation";
 import { ScrollToTop } from "@/components/ui/scroll-to-top";
+import { browsePokedexQueryOptions } from "@/features/global/api/query-options";
 import { Pokedex } from "@/features/pokedex";
-import { browsePokedexQueryOptions } from "@/features/pokedex/api/query-options";
 import { loadPokedexFilters } from "@/features/pokedex/filters/filter.loader";
-import { WorkspaceProvider } from "@/features/pokedex/workspace/workspace-provider";
+import { WorkspaceProvider } from "@/features/workspace/workspace-provider";
 import { getQueryClient } from "@/lib/tanstack/query/get-query-client";
 
 const TRAINER_ID = "00000000-0000-0000-0000-000000000001";

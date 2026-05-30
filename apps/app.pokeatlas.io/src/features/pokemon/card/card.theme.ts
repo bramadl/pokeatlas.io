@@ -1,4 +1,4 @@
-import type { PokemonType } from "../definitions/pokemon-types";
+import type { PokemonType } from "../../global/definitions/pokemon-types";
 
 export interface PokemonTheme {
 	badgeBg: string;

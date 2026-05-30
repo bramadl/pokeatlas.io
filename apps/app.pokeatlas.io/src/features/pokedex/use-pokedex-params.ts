@@ -1,7 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 
-import { browsePokedexQueryOptions } from "./api/query-options";
+import { browsePokedexQueryOptions } from "../global/api/query-options";
 import { usePokedexFilterParams } from "./filters/use-filter-params";
 
 interface UsePokedexParamsOptions {

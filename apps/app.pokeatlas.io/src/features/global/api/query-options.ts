@@ -1,16 +1,15 @@
-import type {
-	BrowsePokedexInput,
-	BrowsePokedexOutput,
-	CountPokedexInput,
-	CountPokedexOutput,
-} from "@pokeatlas/core/types";
-
 import {
 	type InfiniteData,
 	infiniteQueryOptions,
 	queryOptions,
 } from "@tanstack/react-query";
 
+import type {
+	BrowsePokedexInput,
+	BrowsePokedexOutput,
+	CountPokedexInput,
+	CountPokedexOutput,
+} from "./api.contract";
 import { browsePokedex, countPokedex } from "./server-actions";
 
 export interface BrowsePokedexQueryOptions {

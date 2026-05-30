@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 
-import type { Pokemon } from "../definitions/pokemon";
+import type { Pokemon } from "../../global/definitions/pokemon";
 import {
 	PokemonCardContext,
 	type PokemonCardContextValue,
