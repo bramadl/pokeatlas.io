@@ -7,8 +7,6 @@
       "**/.turbo/**",
       "**/dist/**",
       "apps/app.pokeatlas.io/public/**",
-      "apps/app.pokeatlas.io/src/features/pokedex/_bak/**",
-      "apps/app.pokeatlas.io/src/features/pokedex/workspace/brush-toolbar/bak",
       "packages/database/src/prisma/migrations/**"
     ],
     "useDefaultPatterns": true,
@@ -16,7 +14,10 @@
     "useGitignore": true
   },
   "include": [
-    "apps/app.pokeatlas.io/src/**/*"
+    "apps/app.pokeatlas.io/src/**/*",
+    "packages/contexts/**/*",
+    "packages/core/**/*",
+    "packages/database/**/*"
   ],
   "input": {
     "maxFileSize": 52428800

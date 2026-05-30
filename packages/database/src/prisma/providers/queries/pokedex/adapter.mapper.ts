@@ -1,13 +1,12 @@
-import type {
-	PokedexEntry,
-	PokemonForm,
-	PokemonRegion,
+import {
+	type PokedexEntry,
+	type PokemonForm,
+	type PokemonRegion,
+	REGION_DEX_RANGES,
 } from "@context/collection";
 import { PokemonRef, TypeRef } from "@context/shared";
 
 import type { PokemonModelGetPayload } from "#prisma-client/models.ts";
-
-import { REGION_DEX_RANGES } from "../../constants/region-dex-ranges";
 
 export type PokemonQueryResult = PokemonModelGetPayload<{
 	select: {
@@ -35,7 +34,7 @@ export type PokemonQueryResult = PokemonModelGetPayload<{
 
 const getRegion = (dex: number): PokemonRegion | null => {
 	for (const region in REGION_DEX_RANGES) {
-		const range = REGION_DEX_RANGES[region];
+		const range = REGION_DEX_RANGES[region as keyof typeof REGION_DEX_RANGES];
 		if (!range) return null;
 
 		const [min, max] = range;

@@ -1,16 +1,18 @@
-import type { BasePokedexInput } from "@context/collection";
+import {
+	type BasePokedexInput,
+	REGION_DEX_RANGES,
+	REGIONAL_ORIGIN_SUFFIXES,
+} from "@context/collection";
 
 import type { PokemonModelWhereInput } from "#prisma-client/models.ts";
-
-import { REGION_DEX_RANGES } from "../../../constants/region-dex-ranges";
-import { REGIONAL_ORIGIN_SUFFIXES } from "../../../constants/regional-origin-suffixes";
 
 export function dexFilter(
 	dex: BasePokedexInput["dex"],
 ): PokemonModelWhereInput | null {
 	if (dex && dex !== "NATIONAL") {
-		const range = REGION_DEX_RANGES[dex];
 		const suffix = REGIONAL_ORIGIN_SUFFIXES[dex];
+		const range =
+			REGION_DEX_RANGES[dex as unknown as keyof typeof REGION_DEX_RANGES];
 
 		if (dex === "HISUI") {
 			return { ref: { contains: "HISUIAN" } };

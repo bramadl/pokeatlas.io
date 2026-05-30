@@ -17,6 +17,7 @@ export {
 	type CountPokedexInput,
 	type CountPokedexOutput,
 	type IPokedex,
+	type ITrainerDex,
 	POKEDEX_STATUSES,
 	POKEDEXES,
 	POKEMON_CLASSIFICATIONS,
@@ -28,6 +29,10 @@ export {
 	type PokemonClassification,
 	type PokemonForm,
 	type PokemonRegion,
+	REGION_DEX_RANGES,
+	REGIONAL_ORIGIN_SUFFIXES,
+	type RegionalOriginSuffix,
+	type RegionDexRange,
 	TRACKABLE_STATES,
 	type TrackableState,
 } from "../src/core";
