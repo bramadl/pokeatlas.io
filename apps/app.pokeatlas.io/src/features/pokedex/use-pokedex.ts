@@ -1,28 +1,20 @@
 "use client";
 
-import { useProgress } from "@bprogress/next";
-import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useMemo } from "react";
-import { useInView } from "react-intersection-observer";
-
+import type { BrowsePokedexInput } from "@pokeatlas/core/types";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { useEffect, useRef } from "react";
+import { useIsMounted } from "usehooks-ts";
 import { browsePokedexQueryOptions } from "./api/query-options";
-import { usePokedexFilterParams } from "./filters/use-filter-params";
-import { useTrackingStore } from "./workspace/tracking/tracking.store";
-import { useWorkspace } from "./workspace/workspace.context";
+import { usePokedexSentinel } from "./use-pokedex-sentinel";
 
-export function usePokedex() {
-	const progress = useProgress();
-	const queryClient = useQueryClient();
+interface UsePokedexOptions {
+	dex?: BrowsePokedexInput["dex"];
+	filters?: BrowsePokedexInput["filters"];
+	trainerId: string;
+}
 
-	const { raw, debounced } = usePokedexFilterParams();
-	const { trainerId } = useWorkspace();
-
-	const isCached =
-		queryClient.getQueryData(
-			browsePokedexQueryOptions({ ...raw, trainerId }).queryKey,
-		) !== undefined;
-
-	const { dex, filters } = isCached ? raw : debounced;
+export function usePokedex({ dex, filters, trainerId }: UsePokedexOptions) {
+	const pokedexRef = useRef({ dex, status: filters?.status });
 	const {
 		data,
 		isFetching,
@@ -32,61 +24,47 @@ export function usePokedex() {
 		fetchNextPage,
 	} = useInfiniteQuery({
 		...browsePokedexQueryOptions({ dex, filters, trainerId }),
+		placeholderData: (prev) => prev,
+		select: (data) => data?.pages.flatMap((page) => page.entries),
 	});
 
-	const entries = useMemo(
-		() => data?.pages.flatMap((page) => page.entries) ?? [],
-		[data],
-	);
+	const sentinel = usePokedexSentinel({
+		do: () => fetchNextPage({ cancelRefetch: false }),
+		when: hasNextPage && !isFetchingNextPage,
+	});
 
-	const overlays = useTrackingStore((s) => s.overlays);
-	const isLoading =
-		(isFetching || isPlaceholderData) &&
+	const isLoading = (isFetching || isPlaceholderData) && !isFetchingNextPage;
+	const isPokedexChanged =
+		pokedexRef.current.dex !== dex ||
+		pokedexRef.current.status !== filters?.status;
+
+	const isSkeleton =
 		!isFetchingNextPage &&
-		!(overlays.size > 0);
+		isFetching &&
+		(isPokedexChanged || !data || data.length === 0);
 
-	const visibleEntries = useMemo(() => {
-		if (!filters?.status) return entries;
-		return entries.filter((pokemon) => {
-			const overlay = overlays.get(pokemon.id);
-			const currentStates = overlay?.trackedStates ?? pokemon.trackedStates;
-			const isTracked = currentStates.length > 0;
-			if (filters.status === "MISSING") return !isTracked;
-			if (filters.status === "TRACKED") return isTracked;
-			return true;
-		});
-	}, [entries, overlays, filters?.status]);
+	const isEmpty =
+		!isFetching && !isPlaceholderData && (!data || data.length === 0);
 
-	const showSkeleton = isLoading && visibleEntries.length === 0;
-	const showEmpty =
-		!isLoading && !isPlaceholderData && visibleEntries.length === 0;
+	const isMounted = useIsMounted();
 
-	const isAnyFetching = isFetching || isPlaceholderData;
 	useEffect(() => {
-		if (isAnyFetching) progress.start(0, 0, true);
-		else progress.stop();
-	}, [isAnyFetching, progress]);
+		if (!isMounted()) return;
+		if (!isFetching && !isPlaceholderData) {
+			pokedexRef.current = { dex, status: filters?.status };
+		}
+	}, [isFetching, isMounted, isPlaceholderData, dex, filters?.status]);
 
-	const { ref: sentinelRef } = useInView({
-		onChange: (inView) => {
-			if (!inView || !hasNextPage || isFetchingNextPage) return;
-			fetchNextPage({ cancelRefetch: false });
-		},
-		rootMargin: "0px 0px 25% 0px",
-	});
-
-	// biome-ignore lint/correctness/useExhaustiveDependencies: intentional watcher
 	useEffect(() => {
-		window.scrollTo({ behavior: "smooth", top: 0 });
-	}, [dex, filters]);
+		if (isPokedexChanged) window.scrollTo({ behavior: "smooth", top: 0 });
+	}, [isPokedexChanged]);
 
 	return {
-		dex,
-		entries,
-		filters,
+		data: data || [],
+		isEmpty,
 		isLoading,
-		sentinelRef,
-		showEmpty,
-		showSkeleton,
+		isLoadingMoreData: isFetchingNextPage,
+		isSkeleton,
+		sentinel,
 	};
 }

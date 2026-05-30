@@ -9,7 +9,8 @@ import { browsePokedexQueryOptions } from "@/features/pokedex/api/query-options"
 import { loadPokedexFilters } from "@/features/pokedex/filters/filter.loader";
 import { WorkspaceProvider } from "@/features/pokedex/workspace/workspace-provider";
 import { getQueryClient } from "@/lib/tanstack/query/get-query-client";
-import { trainerId } from "@/lib/trainer-id";
+
+const TRAINER_ID = "00000000-0000-0000-0000-000000000001";
 
 interface PageProps {
 	searchParams: Promise<SearchParams>;
@@ -19,16 +20,15 @@ export default async function Home({ searchParams }: PageProps) {
 	const { dex, filters } = await loadPokedexFilters(searchParams);
 
 	const queryClient = getQueryClient();
-
 	void (await queryClient.prefetchInfiniteQuery(
-		browsePokedexQueryOptions({ dex, filters, trainerId: trainerId() }),
+		browsePokedexQueryOptions({ dex, filters, trainerId: TRAINER_ID }),
 	));
 
 	return (
 		<HydrationBoundary state={dehydrate(queryClient)}>
 			<main>
 				<GlobalNavigation />
-				<WorkspaceProvider trainerId={trainerId()}>
+				<WorkspaceProvider trainerId={TRAINER_ID}>
 					<Pokedex />
 				</WorkspaceProvider>
 				<GlobalFooter />

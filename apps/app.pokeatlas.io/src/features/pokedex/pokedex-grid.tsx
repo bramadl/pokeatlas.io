@@ -10,7 +10,7 @@ export function PokedexGrid({
 	return (
 		<div
 			className={cn(
-				"min-h-160 lg:min-h-240",
+				"min-h-160 lg:min-h-120",
 				isLoading && "animate-pulse duration-300",
 			)}
 		>

@@ -12,7 +12,7 @@ export function PokedexEmpty({ status }: { status?: PokedexStatus }) {
 		<div className="col-span-full min-h-120 flex flex-col items-center justify-center gap-4 text-center">
 			<div className="text-6xl select-none">🌿</div>
 			<div>
-				<p className="font-semibold text-foreground">No Pokémon found</p>
+				<p className="font-semibold text-foreground">No result here</p>
 				<p className="text-sm text-muted-foreground mt-1">{message}</p>
 			</div>
 		</div>
