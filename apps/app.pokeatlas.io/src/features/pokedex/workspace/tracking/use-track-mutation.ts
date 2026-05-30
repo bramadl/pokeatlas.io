@@ -59,8 +59,6 @@ export function useTrackMutation() {
 			const isLast = store.getState().settleTrack(pokemonRef);
 			if (isLast) {
 				setTimeout(() => {
-					store.getState().removeOverlay(pokemonRef);
-
 					const hasMoreInflight = store.getState().overlays.size > 0;
 					if (!hasMoreInflight) {
 						queryClient.invalidateQueries({
@@ -78,6 +76,8 @@ export function useTrackMutation() {
 							refetchType: "active",
 						});
 					}
+
+					store.getState().removeOverlay(pokemonRef);
 				}, 100);
 			}
 		},
