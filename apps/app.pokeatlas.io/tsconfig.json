@@ -4,8 +4,7 @@
       "@/*": ["./src/*"],
       
       "#prisma-client": ["../../packages/database/src/prisma/client.ts"],
-      "#prisma-client/*": ["../../packages/database/src/prisma/generated/*"],
-      "#prisma/*": ["../../packages/database/src/prisma/providers/*"]
+      "#prisma-client/*": ["../../packages/database/src/prisma/generated/*"]
     },
   },
   "exclude": ["node_modules"],
