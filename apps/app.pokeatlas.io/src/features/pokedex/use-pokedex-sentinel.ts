@@ -11,7 +11,7 @@ export function usePokedexSentinel({
 	do: doAction,
 	when: conditionFulfilled,
 }: UsePokedexSentinelOptions) {
-	const offsetFromBottom = controls.offsetFromBottom ?? "80%";
+	const offsetFromBottom = controls.offsetFromBottom ?? "25%";
 	const { ref } = useInView({
 		onChange: (inView) => {
 			if (inView && conditionFulfilled) doAction();
