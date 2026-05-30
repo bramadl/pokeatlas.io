@@ -1,6 +1,7 @@
 "use client";
 
 import { PokedexEmpty } from "./pokedex-empty";
+import { PokedexEntryLog } from "./pokedex-entry-log";
 import { PokedexGrid } from "./pokedex-grid";
 import { PokedexSkeleton } from "./pokedex-skeleton";
 import { PokedexToolbar } from "./pokedex-toolbar";
