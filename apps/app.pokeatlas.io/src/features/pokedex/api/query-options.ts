@@ -19,7 +19,7 @@ export interface BrowsePokedexQueryOptions {
 	trainerId: BrowsePokedexInput["trainerId"];
 }
 
-const LIMIT = 60;
+const LIMIT = 30;
 
 export function browsePokedexQueryOptions({
 	dex,

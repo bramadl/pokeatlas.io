@@ -14,6 +14,8 @@ import {
 } from "./filter.params";
 import { buildDex, buildFilters } from "./filter.utils";
 
+export const dexParsers = { dex: dexParser } as const;
+
 export const filterParsers = {
 	classification: classificationParser,
 	search: searchParser,
@@ -21,8 +23,6 @@ export const filterParsers = {
 	types: typesParser,
 	variants: variantsParser,
 } as const;
-
-export const dexParsers = { dex: dexParser } as const;
 
 export interface PokedexFilterParams {
 	dex: BrowsePokedexInput["dex"];
@@ -46,50 +46,26 @@ export function usePokedexFilterParams(): PokedexFilterParamsResult {
 	const [dTypes] = useDebounceValue(types, 300);
 	const [dVariants] = useDebounceValue(variants, 300);
 
-	const raw: PokedexFilterParams = {
-		dex: buildDex({ dex }),
-		filters: buildFilters({ classification, search, status, types, variants }),
-	};
-
-	const debounced: PokedexFilterParams = {
-		dex: buildDex({ dex: dDex }),
-		filters: buildFilters({
-			classification: dClassification,
-			search: dSearch,
-			status: dStatus,
-			types: dTypes,
-			variants: dVariants,
-		}),
-	};
-
 	return {
-		debounced,
-		raw,
+		debounced: {
+			dex: buildDex({ dex: dDex }),
+			filters: buildFilters({
+				classification: dClassification,
+				search: dSearch,
+				status: dStatus,
+				types: dTypes,
+				variants: dVariants,
+			}),
+		},
+		raw: {
+			dex: buildDex({ dex }),
+			filters: buildFilters({
+				classification,
+				search,
+				status,
+				types,
+				variants,
+			}),
+		},
 	};
 }
-
-// export function usePokedexFilterParams(): PokedexFilterParamsResult {
-// 	const [{ dex }] = useQueryStates(dexParsers);
-// 	const [{ classification, search, status, types, variants }] =
-// 		useQueryStates(filterParsers);
-
-// 	const [dSearch] = useDebounceValue(search, 500);
-
-// 	const raw: PokedexFilterParams = {
-// 		dex: buildDex({ dex }),
-// 		filters: buildFilters({ classification, search, status, types, variants }),
-// 	};
-
-// 	const debounced: PokedexFilterParams = {
-// 		dex: buildDex({ dex }),
-// 		filters: buildFilters({
-// 			classification,
-// 			search: dSearch, // hanya ini yang beda dari raw
-// 			status,
-// 			types,
-// 			variants,
-// 		}),
-// 	};
-
-// 	return { debounced, raw };
-// }
