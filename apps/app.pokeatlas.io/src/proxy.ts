@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 
-import type { VariantValue } from "@/features/pokedex/filters/variant-controls/variant.store";
+import type { VariantValue } from "@/features/pokedex/filters/variants/variant.store";
 
 const DEFAULT_VARIANTS: VariantValue[] = [];
 const VARIANTS_COOKIE = "pokedex.variants";

@@ -6,8 +6,8 @@ import {
 	applyBrushConstraints,
 	type Brush,
 	getDisabledBrushes,
-} from "./brush-toolbar/brush";
-import type { ViewKey } from "./view.options";
+} from "./brush/brush";
+import type { ViewKey } from "./views/view.options";
 import { WorkspaceContext } from "./workspace.context";
 import { WorkspaceBar } from "./workspace-bar";
 

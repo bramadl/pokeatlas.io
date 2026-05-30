@@ -15,7 +15,7 @@ import {
 	SparkleIcon,
 } from "@phosphor-icons/react";
 import { TRACKABLE_STATES, type TrackableState } from "@pokeatlas/core/types";
-import type { ViewKey } from "../view.options";
+import type { ViewKey } from "../views/view.options";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -252,4 +252,69 @@ export function isDirty(prev: string[], next: string[]): boolean {
 /** Sort a brush array into canonical display order. */
 export function sortBrushes(brushes: Brush[]): Brush[] {
 	return [...brushes].sort((a, b) => BRUSH_ORDER[a] - BRUSH_ORDER[b]);
+}
+
+// ── Generate all valid combos ─────────────────────────────────────────────────
+
+const MEANINGFUL_BRUSHES: Brush[] = [
+	"shiny",
+	"hundo",
+	"nundo",
+	"shadow",
+	"purified",
+	"lucky",
+];
+
+function isValidCombo(combo: Brush[]): boolean {
+	for (const [a, b] of MUTUAL_EXCLUSIONS) {
+		if (combo.includes(a) && combo.includes(b)) return false;
+	}
+	return true;
+}
+
+function allSubsets<T>(arr: T[]): T[][] {
+	const result: T[][] = [];
+	const total = 1 << arr.length;
+	for (let mask = 1; mask < total; mask++) {
+		result.push(arr.filter((_, i) => mask & (1 << i)));
+	}
+	return result;
+}
+
+function comboLabel(combo: Brush[]): string {
+	return [...combo]
+		.sort((a, b) => BRUSH_ORDER[a] - BRUSH_ORDER[b])
+		.map((b) => BRUSH_META[b].label)
+		.join(" ");
+}
+
+export const ALL_VALID_COMBOS: { signature: string; label: string }[] =
+	allSubsets(MEANINGFUL_BRUSHES)
+		.filter(isValidCombo)
+		.sort((a, b) => {
+			if (a.length !== b.length) return a.length - b.length;
+
+			for (let i = 0; i < a.length; i++) {
+				const diff = BRUSH_ORDER[a[i] as Brush] - BRUSH_ORDER[b[i] as Brush];
+				if (diff !== 0) return diff;
+			}
+			return 0;
+		})
+		.map((combo) => {
+			const sorted = [...combo].sort((a, b) => BRUSH_ORDER[a] - BRUSH_ORDER[b]);
+			return { label: comboLabel(sorted), signature: computeSignature(sorted) };
+		});
+
+export function computeTrackedSet(trackedStates: string[]) {
+	return new Set(
+		trackedStates.map((s) => {
+			if (s === "BASE") return "BASE";
+			const parts = s.split("+").map((p) => p.toLowerCase()) as Brush[];
+			return computeSignature(parts);
+		}),
+	);
+}
+
+export function computeTrackedStates(trackedSet: Set<string>) {
+	return ALL_VALID_COMBOS.filter((c) => trackedSet.has(c.signature)).length;
 }

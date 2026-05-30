@@ -11,7 +11,7 @@ export function GlobalNavigation() {
 			<div className="container mx-auto flex items-center justify-between h-full px-4 sm:px-0 lg:px-4 xl:px-0">
 				<Link href="/">
 					<span>
-						Pokè<strong>Atlas</strong>
+						Poké<strong>Atlas</strong>
 					</span>
 					<span className="inline-flex items-center gap-2 ml-2 text-muted/80 text-xs">
 						<span>|</span>
@@ -34,7 +34,7 @@ export function GlobalNavigation() {
 							className="bg-foreground/25 hover:bg-foreground/25 focus-visible:bg-foreground/25"
 						>
 							<Link className="text-sm" href="/pokedex">
-								Pokèdex
+								Pokédex
 							</Link>
 						</Button>
 					</div>

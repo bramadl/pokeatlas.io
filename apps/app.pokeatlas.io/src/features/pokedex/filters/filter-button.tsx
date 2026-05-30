@@ -5,7 +5,7 @@ import { FadersIcon } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-interface FilterButtonProps extends React.ComponentProps<"button"> {
+interface FilterButtonProps extends React.ComponentProps<typeof Button> {
 	activeFilterCount?: number;
 	isOpen: boolean;
 }

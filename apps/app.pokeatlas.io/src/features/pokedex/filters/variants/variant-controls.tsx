@@ -10,6 +10,7 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 
 import { variantsParser } from "../filter.params";
 import { VARIANT_CONTROL_OPTIONS } from "./variant.options";
@@ -20,7 +21,10 @@ import {
 	writeVariantsCookie,
 } from "./variant.store";
 
-export function VariantControls() {
+export function VariantControls({
+	className,
+	...props
+}: React.ComponentProps<typeof PopoverTrigger>) {
 	const [variants, setVariants] = useQueryState(
 		"variants",
 		variantsParser.withDefault([]),
@@ -44,10 +48,9 @@ export function VariantControls() {
 	}
 
 	const activeCount = VARIANT_DEFINITIONS.filter((v) => values[v.key]).length;
-
 	return (
 		<Popover modal>
-			<PopoverTrigger asChild>
+			<PopoverTrigger asChild className={cn(className)} {...props}>
 				<Button
 					className="hover:[&>svg]:rotate-90 relative"
 					size="icon"

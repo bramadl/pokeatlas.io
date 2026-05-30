@@ -1,19 +1,27 @@
+"use client";
+
 import Image from "next/image";
 
 import { cn } from "@/lib/utils";
 
-import { getPokemonTheme } from "../card.utils";
 import { usePokemonCard } from "../use-pokemon-card";
 
-export function CardImage({ priority }: { priority?: boolean }) {
-	const { displayedStates, pokemon, setIsTrackLogShown } = usePokemonCard();
+interface CardImageProps extends React.ComponentProps<"figure"> {
+	priority?: boolean;
+}
 
-	const isTracked = displayedStates.length > 0;
-	const theme = getPokemonTheme(pokemon);
-
-	const hasShiny = displayedStates.some((p) =>
-		p.toLowerCase().includes("shiny"),
-	);
+export function CardImage({
+	className,
+	priority = false,
+	...props
+}: CardImageProps) {
+	const {
+		hasShinyState,
+		isPokemonTracked,
+		pokemon,
+		setIsTrackLogShown,
+		theme,
+	} = usePokemonCard();
 
 	return (
 		<figure
@@ -22,9 +30,12 @@ export function CardImage({ priority }: { priority?: boolean }) {
 				"size-20 p-2 rounded-full shadow-sm bg-linear-to-t to-white",
 				"transition-[filter,box-shadow,background-image] duration-300",
 				"group-hover:drop-shadow-2xl group-hover:shadow-none",
-				isTracked ? theme.cardBg : "from-slate-300",
+				isPokemonTracked ? theme.cardBg : "from-slate-300",
+				className,
 			)}
+			{...props}
 		>
+			{/* ----- Pokemon Types ----- */}
 			<div className="flex items-center absolute left-1/2 bottom-1 -translate-x-1/2 translate-y-1/2">
 				{pokemon.types.map((t, _, types) => (
 					<Image
@@ -39,21 +50,35 @@ export function CardImage({ priority }: { priority?: boolean }) {
 				))}
 			</div>
 
+			{/* ----- Pokemon Sprite: When the state contains a shiny, it turns shiny ----- */}
 			<div className="relative size-full overflow-hidden">
+				{pokemon.sprites.shinyUrl && (
+					<Image
+						alt={pokemon.name}
+						className={cn(
+							"object-contain p-1 transition-opacity duration-300",
+							hasShinyState ? "opacity-100" : "opacity-0",
+						)}
+						fill
+						priority={priority}
+						sizes="64px"
+						src={pokemon.sprites.shinyUrl}
+					/>
+				)}
 				<Image
 					alt={pokemon.name}
-					className="object-contain p-1"
+					className={cn(
+						"object-contain p-1 transition-opacity duration-300",
+						hasShinyState ? "opacity-0" : "opacity-100",
+					)}
 					fill
 					priority={priority}
 					sizes="64px"
-					src={
-						hasShiny
-							? (pokemon.sprites.shinyUrl ?? pokemon.sprites.url)
-							: pokemon.sprites.url
-					}
+					src={pokemon.sprites.url}
 				/>
 			</div>
 
+			{/* ----- Pokemon Info: A button in which clicked, opens the track log ----- */}
 			<button
 				aria-label={`Inspect ${pokemon.name}`}
 				className={cn(

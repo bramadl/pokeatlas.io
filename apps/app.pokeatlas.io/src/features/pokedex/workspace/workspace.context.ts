@@ -2,8 +2,8 @@
 
 import { createContext, useContext } from "react";
 
-import type { Brush } from "./brush-toolbar/brush";
-import type { ViewKey } from "./view.options";
+import type { Brush } from "./brush/brush";
+import type { ViewKey } from "./views/view.options";
 
 export interface WorkspaceContextValue {
 	activeBrushes: Brush[];

@@ -1,10 +1,6 @@
-import type { PokemonType } from "./card.constants";
+import type { Pokemon } from "../definitions/pokemon";
+import type { PokemonType } from "../definitions/pokemon-types";
 import { POKEMON_THEME_MAP } from "./card.theme";
-import type { Pokemon } from "./card.types";
-
-export function isPokemonTracked(pokemon: Pokemon) {
-	return pokemon.trackedStates.length > 0;
-}
 
 export function getPokemonDex(pokemon: Pokemon) {
 	return `#${String(pokemon.dex).padStart(3, "0")}`;

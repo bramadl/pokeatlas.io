@@ -5,7 +5,7 @@ import type {
 	PokemonClassification,
 } from "@pokeatlas/core/types";
 
-import { VARIANT_DEFINITIONS } from "./variant-controls/variant.store";
+import { VARIANT_DEFINITIONS } from "./variants/variant.store";
 
 export interface RawFilterParams {
 	classification?: string[] | null;

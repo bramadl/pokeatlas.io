@@ -1,13 +1,15 @@
+"use client";
+
 import { cn } from "@/lib/utils";
 
-import { getPokemonTheme } from "../card.utils";
 import { usePokemonCard } from "../use-pokemon-card";
 
-export function CardBadge() {
-	const { displayedStates, pokemon } = usePokemonCard();
+interface CardBadgeProps {
+	compoundCount: number;
+}
 
-	const compoundCount = displayedStates.filter((s) => s.includes("+")).length;
-	const theme = getPokemonTheme(pokemon);
+export function CardBadge({ compoundCount }: CardBadgeProps) {
+	const { theme } = usePokemonCard();
 
 	const pillClass = cn(
 		"flex items-center justify-center h-4 px-1 rounded-full border shadow-sm",
@@ -18,7 +20,6 @@ export function CardBadge() {
 		theme.badgeText,
 	);
 
-	if (compoundCount === 0) return;
 	return (
 		<div className="absolute left-1/2 bottom-0 translate-y-1/2 -translate-x-1/2 z-1 flex items-center gap-0.5 pointer-events-none">
 			<span className={pillClass}>

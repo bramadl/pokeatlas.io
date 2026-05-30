@@ -12,11 +12,15 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
 
 import { dexParser } from "../filters/filter.params";
-import { POKEDEX_OPTIONS } from "./dex.options";
+import { getPokedex, POKEDEX_OPTIONS } from "./switcher.options";
 
-export function DexSwitcher() {
+export function PokedexSwitcher({
+	className,
+	...props
+}: React.ComponentProps<"div">) {
 	const [dex, setDex] = useQueryState("dex", dexParser);
 
 	const currentIndex = useMemo(() => {
@@ -24,42 +28,25 @@ export function DexSwitcher() {
 		return Math.max(0, index);
 	}, [dex]);
 
-	const getDexAt = useCallback((index: number) => {
-		const item = POKEDEX_OPTIONS.at(index % POKEDEX_OPTIONS.length);
-		if (!item) throw new Error("POKEDEX_OPTIONS is empty");
-		return item;
-	}, []);
+	const prev = useCallback(() => {
+		const index = currentIndex - 1 + POKEDEX_OPTIONS.length;
+		setDex(getPokedex(index).value);
+	}, [currentIndex, setDex]);
 
-	const currentDex = useMemo(() => {
-		return getDexAt(currentIndex);
-	}, [getDexAt, currentIndex]);
-
-	const prev = useCallback(
-		function prev() {
-			const index = currentIndex - 1 + POKEDEX_OPTIONS.length;
-			setDex(getDexAt(index).value);
-		},
-		[currentIndex, getDexAt, setDex],
-	);
-
-	const next = useCallback(
-		function next() {
-			const index = currentIndex + 1;
-			setDex(getDexAt(index).value);
-		},
-		[currentIndex, getDexAt, setDex],
-	);
+	const next = useCallback(() => {
+		const index = currentIndex + 1;
+		setDex(getPokedex(index).value);
+	}, [currentIndex, setDex]);
 
 	return (
-		<div className="w-full flex items-center justify-between gap-4">
+		<div className={cn(className)} {...props}>
 			<Button onClick={prev} size="icon" variant="secondary">
 				<CaretLeftIcon />
 			</Button>
-
 			<DropdownMenu>
 				<DropdownMenuTrigger asChild>
 					<Button className="font-bold" variant="ghost">
-						{currentDex.label} Dex
+						{getPokedex(currentIndex).label}
 					</Button>
 				</DropdownMenuTrigger>
 				<DropdownMenuContent>
@@ -72,7 +59,6 @@ export function DexSwitcher() {
 					</DropdownMenuGroup>
 				</DropdownMenuContent>
 			</DropdownMenu>
-
 			<Button onClick={next} size="icon" variant="secondary">
 				<CaretRightIcon />
 			</Button>

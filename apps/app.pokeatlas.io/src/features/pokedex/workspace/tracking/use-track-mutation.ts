@@ -5,13 +5,13 @@ import { useCallback } from "react";
 import { toast } from "sonner";
 
 import { trackPokemon } from "@/features/pokedex/api/server-actions";
-import type { Pokemon } from "@/features/pokedex/pokemon-card/card.types";
-import { applyBrushTap, type Brush, isDirty } from "../brush-toolbar/brush";
+import type { Pokemon } from "@/features/pokedex/pokemon/definitions/pokemon";
+import { applyBrushTap, type Brush, isDirty } from "../brush/brush";
+import { useTrackingStore } from "./tracking.store";
 import {
 	invalidateStatusFilteredCaches,
 	patchPokemonInAllCaches,
-} from "./patch-pokemon-cache";
-import { useTrackingStore } from "./tracking.store";
+} from "./tracking.utils";
 
 interface MutationContext {
 	pokemonRef: string;

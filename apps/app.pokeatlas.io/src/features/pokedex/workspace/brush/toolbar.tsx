@@ -39,6 +39,7 @@ export function BrushToolbar({ vertical = false }: { vertical?: boolean }) {
 			const next = isActive
 				? activeBrushes.filter((b) => b !== brush)
 				: [...activeBrushes, brush];
+
 			setActiveBrushes(
 				applyBrushConstraints(activeBrushes, next, disabledBrushes),
 			);

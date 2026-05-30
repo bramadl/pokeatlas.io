@@ -3,13 +3,17 @@
 import { useQueryStates } from "nuqs";
 
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { cn } from "@/lib/utils";
 
 import { filterParsers } from "../use-filter-params";
 import { STATUS_OPTIONS } from "./status.options";
 
 const DEFAULT_VALUE = "all";
 
-export function StatusFilter() {
+export function StatusFilter({
+	className,
+	...props
+}: React.ComponentProps<typeof Tabs>) {
 	const [{ status }, setFilters] = useQueryStates(filterParsers);
 	function toggleStatus(value: string | null) {
 		if (value === status || value === DEFAULT_VALUE) return;
@@ -18,8 +22,9 @@ export function StatusFilter() {
 
 	return (
 		<Tabs
-			className="w-full flex items-center justify-center"
+			className={cn(className)}
 			defaultValue={status || DEFAULT_VALUE}
+			{...props}
 		>
 			<TabsList className="w-full lg:w-auto">
 				<TabsTrigger

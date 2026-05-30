@@ -37,7 +37,6 @@ export function browsePokedexQueryOptions({
 			return hasMore ? (nextCursor ?? undefined) : undefined;
 		},
 		initialPageParam: null,
-		placeholderData: (prev) => prev,
 		queryFn: ({ pageParam }) => {
 			return browsePokedex({
 				dex,

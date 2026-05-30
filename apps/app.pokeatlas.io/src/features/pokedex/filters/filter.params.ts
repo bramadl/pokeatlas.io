@@ -9,7 +9,7 @@ import {
 	parseAsStringLiteral,
 } from "nuqs/server";
 
-import { VARIANT_VALUES } from "./variant-controls/variant.store";
+import { VARIANT_VALUES } from "./variants/variant.store";
 
 export const searchParser = parseAsString;
 
