@@ -15,7 +15,7 @@ export async function fetchI18nEntries(): Promise<Map<string, string>> {
 }
 
 const TREE_URL =
-	"https://api.github.com/repos/PokeMiners/pogo_assets/git/trees/HEAD:Images/Pokemon/Addressable%20Assets";
+	"https://api.github.com/repos/PokeMiners/pogo_assets/git/trees/HEAD:Images/Pokemon%20-%20256x256/Addressable%20Assets";
 
 export async function fetchSpriteFilenames(): Promise<Set<string>> {
 	const data = await getJson<{ tree: Array<{ path: string; type: string }> }>(
