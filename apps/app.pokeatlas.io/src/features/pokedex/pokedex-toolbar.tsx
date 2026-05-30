@@ -17,7 +17,8 @@ import { StatusFilter } from "./filters/status";
 import { TypeFilter } from "./filters/types";
 import { filterParsers } from "./filters/use-filter-params";
 import { VariantControls } from "./filters/variants";
-import { PokedexSwitcher } from "./switcher/switcher";
+
+import { PokedexSwitcher } from "./pokedex-switcher";
 
 export function PokedexToolbar() {
 	const [isOpen, setIsOpen] = useState(false);

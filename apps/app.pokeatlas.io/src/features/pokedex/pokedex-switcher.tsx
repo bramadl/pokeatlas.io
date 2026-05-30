@@ -14,8 +14,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 
-import { dexParser } from "../filters/filter.params";
-import { getPokedex, POKEDEX_OPTIONS } from "./switcher.options";
+import { dexParser } from "./filters/filter.params";
+import { getPokedex, POKEDEX_OPTIONS } from "./pokedex.options";
 
 export function PokedexSwitcher({
 	className,
