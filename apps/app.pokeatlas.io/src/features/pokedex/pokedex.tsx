@@ -1,8 +1,10 @@
 "use client";
 
-import { PokedexEntries } from "./pokedex-entries";
+import { PokedexEmpty } from "./pokedex-empty";
 import { PokedexGrid } from "./pokedex-grid";
+import { PokedexSkeleton } from "./pokedex-skeleton";
 import { PokedexToolbar } from "./pokedex-toolbar";
+import { PokemonCard } from "./pokemon-card";
 import { usePokedex } from "./use-pokedex";
 import { usePokedexEntries } from "./use-pokedex-entries";
 import { usePokedexParams } from "./use-pokedex-params";
@@ -11,34 +13,41 @@ import { useWorkspace } from "./workspace/workspace.context";
 
 export function Pokedex() {
 	const { trainerId } = useWorkspace();
+
 	const { dex, filters } = usePokedexParams({ trainerId });
+	const { data, isEmpty, isLoading, isLoadingMoreData, isSkeleton, sentinel } =
+		usePokedex({ dex, filters, trainerId });
 
-	const pokedex = usePokedex({ dex, filters, trainerId });
-	const entries = usePokedexEntries({
-		data: pokedex.data,
-		status: filters ? filters.status : undefined,
+	const { entries, hasAnyInflights, hasOptimisticEmpty } = usePokedexEntries({
+		data,
+		status: filters?.status,
 	});
 
-	usePokedexProgressBar({
-		show: {
-			when:
-				(pokedex.isLoading || pokedex.isLoadingMoreData) &&
-				!entries.hasAnyInflights,
-		},
-	});
+	const isGridLoading = isLoading && !hasAnyInflights;
+	const showEmpty = isEmpty && !hasAnyInflights;
+	const showSkeleton = (isSkeleton || hasOptimisticEmpty) && !hasAnyInflights;
+
+	usePokedexProgressBar({ show: { when: isGridLoading || isLoadingMoreData } });
 
 	return (
 		<section className="container mx-auto bg-slate-50 sm:my-8">
 			<PokedexToolbar />
-			<PokedexGrid isLoading={pokedex.isLoading && !entries.hasAnyInflights}>
-				<PokedexEntries
-					entries={entries.entries}
-					showEmpty={pokedex.showEmpty}
-					showSkeleton={pokedex.showSkeleton || entries.hasOptimisticEmpty}
-					statusTab={pokedex.filters?.status}
-				/>
+			<PokedexGrid isLoading={isGridLoading}>
+				{showSkeleton ? (
+					<PokedexSkeleton />
+				) : showEmpty ? (
+					<PokedexEmpty status={filters?.status} />
+				) : (
+					entries.map((pokemon, index) => (
+						<PokemonCard
+							key={pokemon.id}
+							pokemon={pokemon}
+							shouldPreload={index <= 16}
+						/>
+					))
+				)}
 			</PokedexGrid>
-			<div ref={pokedex.sentinel} />
+			<div ref={sentinel} />
 		</section>
 	);
 }

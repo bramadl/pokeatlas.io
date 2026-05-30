@@ -3,19 +3,11 @@ import { useEffect } from "react";
 import { useIsClient, useIsMounted } from "usehooks-ts";
 
 interface UsePokedexProgressBarOptions {
-	/**
-	 * @description
-	 * Controls when does the progress bar should run.
-	 */
 	show: { when: boolean };
 }
 
-/**
- * @description
- * A hook that automatically shows progress bar for the given condition.
- */
 export function usePokedexProgressBar({
-	show: { when },
+	show: { when: satisfied },
 }: UsePokedexProgressBarOptions) {
 	const progress = useProgress();
 
@@ -24,7 +16,7 @@ export function usePokedexProgressBar({
 
 	useEffect(() => {
 		if (!isClient || !isMounted()) return;
-		if (when) progress.start(0, 0, true);
+		if (satisfied) progress.start(0, 0, true);
 		else progress.stop();
-	}, [when, isClient, isMounted, progress]);
+	}, [satisfied, isClient, isMounted, progress]);
 }

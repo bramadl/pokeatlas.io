@@ -24,7 +24,7 @@ export function usePokedexEntries({ data, status }: UsePokedexEntriesOptions) {
 		});
 	}, [data, overlays, status]);
 
-	const hasOptimisticEmpty = entries.length === 0 && !hasAnyInflights;
+	const hasOptimisticEmpty = entries.length === 0 && hasAnyInflights;
 
 	return { entries, hasAnyInflights, hasOptimisticEmpty };
 }
