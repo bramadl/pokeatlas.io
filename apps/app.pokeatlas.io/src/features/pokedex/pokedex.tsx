@@ -42,6 +42,7 @@ export function Pokedex() {
 				) : (
 					entries.map((pokemon, index) => (
 						<PokemonCard
+							CardContext={PokedexEntryLog}
 							key={pokemon.id}
 							onTap={() => tap(pokemon)}
 							pokemon={pokemon}
