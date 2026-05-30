@@ -1,8 +1,9 @@
 import type { BasePokedexInput } from "@context/collection";
 
-import { REGION_DEX_RANGES } from "#prisma/constants/region-dex-ranges";
-import { REGIONAL_ORIGIN_SUFFIXES } from "#prisma/constants/regional-origin-suffixes";
 import type { PokemonModelWhereInput } from "#prisma-client/models.ts";
+
+import { REGION_DEX_RANGES } from "../../../constants/region-dex-ranges";
+import { REGIONAL_ORIGIN_SUFFIXES } from "../../../constants/regional-origin-suffixes";
 
 export function dexFilter(
 	dex: BasePokedexInput["dex"],

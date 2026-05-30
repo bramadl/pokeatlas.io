@@ -2,8 +2,7 @@
   "compilerOptions": {
     "paths": {
       "#prisma-client": ["./src/prisma/client.ts"],
-      "#prisma-client/*": ["./src/prisma/generated/*"],
-      "#prisma/*": ["./src/prisma/providers/*"],
+      "#prisma-client/*": ["./src/prisma/generated/*"]
     }
   },
   "extends": "../config/typescript/tsconfig.base.json",
