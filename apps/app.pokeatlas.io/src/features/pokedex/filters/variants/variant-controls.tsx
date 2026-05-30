@@ -10,10 +10,14 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from "@/components/ui/popover";
+import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 
 import { variantsParser } from "../filter.params";
-import { VARIANT_CONTROL_OPTIONS } from "./variant.options";
+import {
+	APPEARANCE_CONTROL_OPTIONS,
+	COSMETIC_CONTROL_OPTIONS,
+} from "./variant.options";
 import {
 	VARIANT_DEFINITIONS,
 	VARIANTS_BY_KEY,
@@ -78,28 +82,61 @@ export function VariantControls({
 					</p>
 				</div>
 				<div className="flex flex-col gap-3">
-					{VARIANT_CONTROL_OPTIONS.map(({ key, label, description }) => (
-						<label
-							className="flex items-start gap-2 cursor-pointer group"
-							htmlFor={key}
-							key={key}
-						>
-							<Checkbox
-								checked={values[key]}
-								className="mt-0.5 shrink-0"
-								id={key}
-								onCheckedChange={() => toggle(key)}
-							/>
-							<div>
-								<p className="text-sm font-medium leading-none group-hover:text-foreground transition-colors">
-									{label}
-								</p>
-								<p className="text-xs text-muted-foreground mt-1">
-									{description}
-								</p>
-							</div>
-						</label>
-					))}
+					<div className="flex flex-col gap-2">
+						<p className="text-xs font-medium text-muted-foreground">
+							Appearance Variants
+						</p>
+						{APPEARANCE_CONTROL_OPTIONS.map(({ key, label, description }) => (
+							<label
+								className="flex items-start gap-2 cursor-pointer group"
+								htmlFor={key}
+								key={key}
+							>
+								<Checkbox
+									checked={values[key]}
+									className="mt-0.5 shrink-0"
+									id={key}
+									onCheckedChange={() => toggle(key)}
+								/>
+								<div>
+									<p className="text-sm font-medium leading-none group-hover:text-foreground transition-colors">
+										{label}
+									</p>
+									<p className="text-xs text-muted-foreground mt-1">
+										{description}
+									</p>
+								</div>
+							</label>
+						))}
+					</div>
+					<Separator />
+					<div className="flex flex-col gap-2">
+						<p className="text-xs font-medium text-muted-foreground">
+							Cosmetic Variants
+						</p>
+						{COSMETIC_CONTROL_OPTIONS.map(({ key, label, description }) => (
+							<label
+								className="flex items-start gap-2 cursor-pointer group"
+								htmlFor={key}
+								key={key}
+							>
+								<Checkbox
+									checked={values[key]}
+									className="mt-0.5 shrink-0"
+									id={key}
+									onCheckedChange={() => toggle(key)}
+								/>
+								<div>
+									<p className="text-sm font-medium leading-none group-hover:text-foreground transition-colors">
+										{label}
+									</p>
+									<p className="text-xs text-muted-foreground mt-1">
+										{description}
+									</p>
+								</div>
+							</label>
+						))}
+					</div>
 				</div>
 			</PopoverContent>
 		</Popover>
