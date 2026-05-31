@@ -13,7 +13,7 @@ export function CardContainer({
 	children,
 	...props
 }: CardContainerProps) {
-	const { isPokemonTracked, isTrackLogShown } = usePokemonCard();
+	const { isDisabled, isPokemonTracked, isTrackLogShown } = usePokemonCard();
 
 	return (
 		<div
@@ -21,6 +21,7 @@ export function CardContainer({
 				"relative group mt-10 bg-background drop-shadow-xl drop-shadow-black/5 rounded-lg",
 				"scale-100 hover:scale-105 duration-300 fill-mode-both",
 				isTrackLogShown && "scale-105",
+				isDisabled && "opacity-40 cursor-not-allowed pointer-events-none",
 				className,
 			)}
 			{...props}

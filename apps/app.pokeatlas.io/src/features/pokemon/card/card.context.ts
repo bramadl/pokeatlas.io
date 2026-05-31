@@ -5,8 +5,8 @@ import type { PokemonTheme } from "./card.theme";
 
 export interface PokemonCardContextValue {
 	hasShinyState: boolean;
-	index?: number;
 	isBaseStateTracked?: boolean;
+	isDisabled?: boolean;
 	isPokemonTracked: boolean;
 	isTrackLogShown: boolean;
 	onTap: () => void;
@@ -14,7 +14,6 @@ export interface PokemonCardContextValue {
 	pokemonBadge: string;
 	pokemonDexFormatted: string;
 	setIsTrackLogShown: (value: boolean) => void;
-	shouldAnimateEnter?: boolean;
 	theme: PokemonTheme;
 }
 

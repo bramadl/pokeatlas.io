@@ -10,7 +10,7 @@ import {
 import { getPokemonBadge, getPokemonDex, getPokemonTheme } from "./card.utils";
 
 import { CardBackground } from "./ui/card-background";
-import { CardBadge } from "./ui/card-badge";
+import { CardBadge, type CardBadgeProps } from "./ui/card-badge";
 import { CardComposer } from "./ui/card-composer";
 import { CardContainer } from "./ui/card-container";
 import { CardContent } from "./ui/card-content";
@@ -19,27 +19,30 @@ import { CardPointer } from "./ui/card-pointer";
 
 interface PokemonCardProps {
 	CardContext?: (props: PokemonCardContextValue) => React.JSX.Element;
+	isDisabled?: boolean;
 	onTap: () => void;
 	pokemon: Pokemon;
+	pokemonBadge: CardBadgeProps["badge"] | null;
 	pokemonHasShinyState?: boolean;
 	shouldPreload?: boolean;
 }
 
 export function PokemonCard({
 	CardContext,
+	isDisabled = false,
 	pokemon,
+	pokemonBadge,
 	pokemonHasShinyState: hasShinyState = false,
 	shouldPreload = false,
 	onTap,
 }: PokemonCardProps) {
 	const [isTrackLogShown, setIsTrackLogShown] = useState(false);
 
-	const compoundStatesNumber = pokemon.trackedStates.length;
-
-	const context = useMemo(
+	const context = useMemo<PokemonCardContextValue>(
 		() => ({
 			hasShinyState,
 			isBaseStateTracked: pokemon.trackedStates.includes("BASE"),
+			isDisabled,
 			isPokemonTracked: pokemon.trackedStates.length > 0,
 			isTrackLogShown,
 			onTap,
@@ -49,7 +52,7 @@ export function PokemonCard({
 			setIsTrackLogShown: () => setIsTrackLogShown((prev) => !prev),
 			theme: getPokemonTheme(pokemon),
 		}),
-		[hasShinyState, isTrackLogShown, onTap, pokemon],
+		[hasShinyState, isDisabled, isTrackLogShown, onTap, pokemon],
 	);
 
 	return (
@@ -60,9 +63,7 @@ export function PokemonCard({
 					<div className="size-full">
 						<CardBackground />
 						<CardContent />
-						{compoundStatesNumber > 0 && (
-							<CardBadge compoundCount={compoundStatesNumber} />
-						)}
+						{pokemonBadge && <CardBadge badge={pokemonBadge} />}
 					</div>
 					<CardPointer />
 				</CardContainer>

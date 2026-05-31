@@ -1,5 +1,6 @@
-import type { Pokemon } from "../../global/definitions/pokemon";
-import type { PokemonType } from "../../global/definitions/pokemon-types";
+import type { Pokemon } from "@/features/global/definitions/pokemon";
+import type { PokemonType } from "@/features/global/definitions/pokemon-types";
+
 import { POKEMON_THEME_MAP } from "./card.theme";
 
 export function getPokemonDex(pokemon: Pokemon) {

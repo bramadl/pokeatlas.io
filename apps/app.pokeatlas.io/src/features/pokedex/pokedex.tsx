@@ -8,6 +8,7 @@ import { PokedexEntryLog } from "./pokedex-entry-log";
 import { PokedexGrid } from "./pokedex-grid";
 import { PokedexSkeleton } from "./pokedex-skeleton";
 import { PokedexToolbar } from "./pokedex-toolbar";
+import { getTrackingBadge } from "./tracking/tracking.utils";
 import { useTracking } from "./tracking/use-tracking";
 import { usePokedex } from "./use-pokedex";
 import { usePokedexEntries } from "./use-pokedex-entries";
@@ -28,6 +29,10 @@ export function Pokedex() {
 	});
 
 	const isGridLoading = isLoading && !hasAnyInflights;
+	const isShadowBrushActive = activeBrushes.some(
+		(b) => b === "shadow" || b === "purified",
+	);
+
 	const showEmpty = isEmpty && !hasAnyInflights;
 	const showSkeleton = (isSkeleton || hasOptimisticEmpty) && !hasAnyInflights;
 
@@ -42,16 +47,30 @@ export function Pokedex() {
 				) : showEmpty ? (
 					<PokedexEmpty status={filters?.status} />
 				) : (
-					entries.map((pokemon, index) => (
-						<PokemonCard
-							CardContext={PokedexEntryLog}
-							key={pokemon.id}
-							onTap={() => track(pokemon)}
-							pokemon={pokemon}
-							pokemonHasShinyState={pokemon.trackedStates.includes("SHINY")}
-							shouldPreload={index <= 16}
-						/>
-					))
+					entries.map((pokemon, index) => {
+						const badge = getTrackingBadge(
+							pokemon.trackedStates,
+							activeBrushes,
+						);
+
+						const isDisabled =
+							isShadowBrushActive && !pokemon.isShadowAvailable;
+
+						return (
+							<PokemonCard
+								CardContext={PokedexEntryLog}
+								isDisabled={isDisabled}
+								key={pokemon.id}
+								onTap={() => track(pokemon)}
+								pokemon={pokemon}
+								pokemonBadge={badge}
+								pokemonHasShinyState={pokemon.trackedStates.some((s) =>
+									s.includes("SHINY"),
+								)}
+								shouldPreload={index <= 16}
+							/>
+						);
+					})
 				)}
 			</PokedexGrid>
 			<div ref={sentinel} />
