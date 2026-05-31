@@ -24,12 +24,13 @@ export class PrismaPokedexServiceAdapter implements IPokedex {
 		dex,
 		filters,
 		trainerId,
+		trackingSignature,
 	}: BasePokedexInput): Promise<PokemonModelWhereInput> {
 		const conditions = await Promise.all([
 			dexFilter(dex),
 			classificationFilter(filters?.classification),
 			searchFilter(filters?.search),
-			statusFilter(filters?.status, filters?.signature, trainerId),
+			statusFilter(filters?.status, trackingSignature, trainerId),
 			typesFilter(filters?.types),
 			variantsFilter(filters?.variants),
 			{ isTrackable: true },
@@ -48,11 +49,18 @@ export class PrismaPokedexServiceAdapter implements IPokedex {
 
 	public async browse({
 		dex,
-		trainerId,
 		pagination: { limit, cursor },
+		trackingSignature,
+		trainerId,
 		...input
 	}: BrowsePokedexInput): Promise<BrowsePokedexOutput> {
-		const where = await this.buildWhere({ dex, trainerId, ...input });
+		const where = await this.buildWhere({
+			...input,
+			dex,
+			trackingSignature,
+			trainerId,
+		});
+
 		const rows = await prisma.pokemonModel.findMany({
 			take: limit + 1,
 			where,

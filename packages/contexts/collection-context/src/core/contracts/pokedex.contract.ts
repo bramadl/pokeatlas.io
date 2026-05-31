@@ -8,7 +8,6 @@ export interface BasePokedexInput {
 	filters?: Partial<{
 		classification: PokemonClassification[];
 		search: string;
-		signature: string;
 		status: PokedexStatus;
 		types: [string] | [string, string];
 		variants: Partial<{
@@ -18,6 +17,7 @@ export interface BasePokedexInput {
 			temporaryEvolution: boolean;
 		}>;
 	}>;
+	trackingSignature?: string;
 	trainerId: string;
 }
 
