@@ -1,8 +1,7 @@
 "use client";
 
 import { HandPointingIcon, NutIcon } from "@phosphor-icons/react";
-import { useCallback, useMemo, useState } from "react";
-import { useWindowSize } from "usehooks-ts";
+import { Fragment, useCallback, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -13,11 +12,9 @@ import { WorkspaceMode } from "./workspace-mode";
 import { WorkspaceSyncButton } from "./workspace-sync-button";
 import { BrushToolbar } from "./workspace-toolbar";
 
-const BREAKPOINT = 768;
-
 function DesktopVersion() {
 	return (
-		<aside className="fixed bottom-8 xl:bottom-4 left-1/2 -translate-x-1/2 hidden md:flex items-center justify-center w-fit bg-background text-foreground drop-shadow-2xl border border-border/50 rounded-full animate-in slide-in-from-bottom fade-in-0 fill-mode-both duration-500 ease-in-out">
+		<aside className="hidden md:flex items-center justify-center fixed bottom-8 xl:bottom-4 left-1/2 -translate-x-1/2 w-fit bg-background text-foreground drop-shadow-2xl border border-border/50 rounded-full animate-in slide-in-from-bottom fade-in-0 fill-mode-both duration-500 ease-in-out">
 			<div className="flex items-center gap-3 p-2">
 				<WorkspaceMode />
 				<Separator className="my-1" orientation="vertical" />
@@ -41,10 +38,10 @@ function MobileVersion() {
 
 	return (
 		<div className="md:hidden">
-			<aside className="fixed bottom-4 left-4 z-50 bg-background text-foreground drop-shadow-2xl border border-border/50 rounded-full p-2">
+			<aside className="fixed bottom-4 left-4 z-50 bg-background text-foreground drop-shadow-2xl border border-border/50 rounded-full p-2 animate-in slide-in-from-bottom fade-in-0 fill-mode-both duration-500 ease-in-out">
 				<WorkspaceSyncButton />
 			</aside>
-			<aside className="fixed bottom-4 right-4 z-50 flex flex-col items-center gap-2">
+			<aside className="fixed bottom-4 right-4 z-50 flex flex-col items-center gap-2 animate-in slide-in-from-bottom fade-in-0 fill-mode-both duration-500 ease-in-out">
 				<div
 					className={cn(
 						"flex flex-col items-center gap-2",
@@ -78,7 +75,10 @@ function MobileVersion() {
 }
 
 export function WorkspaceBar() {
-	const { width } = useWindowSize();
-	if (width < BREAKPOINT) return <MobileVersion />;
-	return <DesktopVersion />;
+	return (
+		<Fragment>
+			<MobileVersion />
+			<DesktopVersion />
+		</Fragment>
+	);
 }
