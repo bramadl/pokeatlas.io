@@ -11,11 +11,11 @@ import {
 } from "@/components/ui/collapsible";
 
 import { ClassificationFilter } from "./filters/classifications";
+import { filterParsers } from "./filters/filter.parsers";
 import { FilterButton } from "./filters/filter-button";
 import { SearchFilter } from "./filters/search";
 import { StatusFilter } from "./filters/status";
 import { TypeFilter } from "./filters/types";
-import { filterParsers } from "./filters/use-filter-params";
 import { VariantControls } from "./filters/variants";
 
 import { PokedexSwitcher } from "./pokedex-switcher";
