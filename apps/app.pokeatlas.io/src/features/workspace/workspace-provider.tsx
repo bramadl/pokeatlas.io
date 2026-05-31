@@ -2,14 +2,9 @@
 
 import { useCallback, useState } from "react";
 
-import {
-	applyBrushConstraints,
-	type Brush,
-	getDisabledBrushes,
-} from "./brush/brush";
-import type { ViewKey } from "./views/view.options";
+import { applyBrushConstraints, type Brush, getDisabledBrushes } from "./brush";
+import { WorkspaceBar } from "./ui/workspace-bar";
 import { WorkspaceContext } from "./workspace.context";
-import { WorkspaceBar } from "./workspace-bar";
 
 interface WorkspaceProviderProps {
 	children: React.ReactNode;
@@ -21,19 +16,14 @@ export function WorkspaceProvider({
 	trainerId,
 }: WorkspaceProviderProps) {
 	const [activeBrushes, setActiveBrushesRaw] = useState<Brush[]>([]);
-	const [activeView, setActiveViewRaw] = useState<ViewKey>("BASE");
+	const [activeView, setActiveViewRaw] = useState<string>();
 
 	const setActiveBrushes = useCallback((next: Brush[]) => {
 		setActiveBrushesRaw(next);
 	}, []);
 
-	/**
-	 * When the view changes, strip any currently-active brushes that are now
-	 * invalid for the new view. This prevents silent illegal states.
-	 * e.g. user had "purified" active, switches to SHADOW view → purified stripped.
-	 */
 	const setActiveView = useCallback(
-		(next: ViewKey) => {
+		(next?: string) => {
 			setActiveViewRaw(next);
 			const disabled = getDisabledBrushes(next);
 			if (disabled.size > 0 && activeBrushes.some((b) => disabled.has(b))) {

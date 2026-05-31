@@ -14,10 +14,7 @@
     "useGitignore": true
   },
   "include": [
-    "apps/app.pokeatlas.io/src/**/*",
-    "packages/contexts/**/*",
-    "packages/core/**/*",
-    "packages/database/**/*"
+    "apps/app.pokeatlas.io/src/features/**/*"
   ],
   "input": {
     "maxFileSize": 52428800

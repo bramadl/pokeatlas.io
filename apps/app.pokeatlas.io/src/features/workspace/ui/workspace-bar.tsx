@@ -8,10 +8,10 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 
-import { BrushToolbar } from "./brush";
-import { RefreshButton } from "./refresh-button";
-import { ViewControls } from "./views";
-import { useWorkspace } from "./workspace.context";
+import { useWorkspace } from "../use-workspace";
+import { WorkspaceMode } from "./workspace-mode";
+import { WorkspaceSyncButton } from "./workspace-sync-button";
+import { BrushToolbar } from "./workspace-toolbar";
 
 const BREAKPOINT = 768;
 
@@ -19,11 +19,11 @@ function DesktopVersion() {
 	return (
 		<aside className="fixed bottom-8 xl:bottom-4 left-1/2 -translate-x-1/2 hidden md:flex items-center justify-center w-fit bg-background text-foreground drop-shadow-2xl border border-border/50 rounded-full animate-in slide-in-from-bottom fade-in-0 fill-mode-both duration-500 ease-in-out">
 			<div className="flex items-center gap-3 p-2">
-				<ViewControls />
+				<WorkspaceMode />
 				<Separator className="my-1" orientation="vertical" />
 				<BrushToolbar />
 				<Separator className="my-1" orientation="vertical" />
-				<RefreshButton mobile={false} />
+				<WorkspaceSyncButton mobile={false} />
 			</div>
 		</aside>
 	);
@@ -42,7 +42,7 @@ function MobileVersion() {
 	return (
 		<div className="md:hidden">
 			<aside className="fixed bottom-4 left-4 z-50 bg-background text-foreground drop-shadow-2xl border border-border/50 rounded-full p-2">
-				<RefreshButton />
+				<WorkspaceSyncButton />
 			</aside>
 			<aside className="fixed bottom-4 right-4 z-50 flex flex-col items-center gap-2">
 				<div

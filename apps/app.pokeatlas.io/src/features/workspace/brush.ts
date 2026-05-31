@@ -15,7 +15,6 @@ import {
 	SparkleIcon,
 } from "@phosphor-icons/react";
 import { TRACKABLE_STATES, type TrackableState } from "@pokeatlas/core/types";
-import type { ViewKey } from "../views/view.options";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -140,7 +139,7 @@ export const MUTUAL_EXCLUSIONS: [Brush, Brush][] = [
 /**
  * Given an active view, return the set of brushes that must be disabled.
  *
- * | View      | Disabled brushes      | Reason                                      |
+ * | State      | Disabled brushes      | Reason                                      |
  * |-----------|-----------------------|---------------------------------------------|
  * | SHADOW    | purified, lucky       | Shadow ≠ Purified; Shadow can't be traded   |
  * | PURIFIED  | shadow, nundo         | Already purified; purified IVs ≥ 2/2/2      |
@@ -150,8 +149,8 @@ export const MUTUAL_EXCLUSIONS: [Brush, Brush][] = [
  * | BASE      | —                     | All brushes valid                           |
  * | SHINY     | —                     | Shiny can combine with anything             |
  */
-export function getDisabledBrushes(activeView: ViewKey): Set<Brush> {
-	switch (activeView) {
+export function getDisabledBrushes(state?: string): Set<Brush> {
+	switch (state) {
 		case "SHADOW":
 			return new Set<Brush>(["purified", "lucky"]);
 		case "PURIFIED":

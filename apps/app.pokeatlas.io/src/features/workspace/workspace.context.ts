@@ -1,26 +1,17 @@
 "use client";
 
-import { createContext, useContext } from "react";
+import { createContext } from "react";
 
-import type { Brush } from "./brush/brush";
-import type { ViewKey } from "./views/view.options";
+import type { Brush } from "./brush";
 
 export interface WorkspaceContextValue {
 	activeBrushes: Brush[];
-	activeView: ViewKey;
+	activeView?: string;
 	setActiveBrushes: (brushes: Brush[]) => void;
-	setActiveView: (view: ViewKey) => void;
+	setActiveView: (view?: string) => void;
 	trainerId: string;
 }
 
 export const WorkspaceContext = createContext<WorkspaceContextValue | null>(
 	null,
 );
-
-export function useWorkspace() {
-	const ctx = useContext(WorkspaceContext);
-	if (!ctx) {
-		throw new Error("useWorkspace must be used inside <WorkspaceProvider>");
-	}
-	return ctx;
-}

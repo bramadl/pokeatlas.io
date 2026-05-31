@@ -8,7 +8,7 @@ import {
 	ALL_VALID_COMBOS,
 	computeTrackedSet,
 	computeTrackedStates,
-} from "../workspace/brush/brush";
+} from "../workspace/brush";
 
 function EntryLogHeader({
 	isBaseStateTracked,

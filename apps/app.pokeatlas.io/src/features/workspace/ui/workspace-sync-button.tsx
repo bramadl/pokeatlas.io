@@ -2,33 +2,34 @@
 
 import { ArrowsClockwiseIcon } from "@phosphor-icons/react";
 import { useIsFetching, useQueryClient } from "@tanstack/react-query";
+import { useCallback } from "react";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-import { useTrackingStore } from "./tracking/tracking.store";
+import { useTrackingStore } from "../../pokedex/tracking";
 
-interface RefreshButtonProps extends React.ComponentProps<typeof Button> {
+interface WorkspaceSyncButtonProps extends React.ComponentProps<typeof Button> {
 	mobile?: boolean;
 }
 
-export function RefreshButton({
+export function WorkspaceSyncButton({
 	className,
 	mobile = true,
 	...props
-}: RefreshButtonProps) {
+}: WorkspaceSyncButtonProps) {
 	const queryClient = useQueryClient();
-	const hasInflight = useTrackingStore((s) => s.overlays.size > 0);
+	const hasInflight = useTrackingStore((s) => s.overlayedPokemonMap.size > 0);
 
 	const isFetching = useIsFetching({ queryKey: ["browse-pokedex"] }) > 0;
 	const isDisabled = hasInflight || isFetching;
 
-	function handleSync() {
+	const handleSync = useCallback(() => {
 		queryClient.invalidateQueries({
 			queryKey: ["browse-pokedex"],
 			refetchType: "active",
 		});
-	}
+	}, [queryClient]);
 
 	return (
 		<Button
@@ -40,7 +41,7 @@ export function RefreshButton({
 			{...props}
 		>
 			<ArrowsClockwiseIcon className={cn(isFetching && "animate-spin")} />
-			{mobile ? null : isFetching ? "Syncing..." : "Sync State"}
+			{mobile ? null : isFetching ? "Loading..." : "Refresh"}
 		</Button>
 	);
 }

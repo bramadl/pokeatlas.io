@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
-import { useWorkspace } from "../workspace.context";
 import {
 	applyBrushConstraints,
 	BRUSH_META,
@@ -21,7 +20,8 @@ import {
 	getDisabledBrushes,
 	HOTKEY_MAP,
 	POINTER_META,
-} from "./brush";
+} from "../brush";
+import { useWorkspace } from "../use-workspace";
 
 export function BrushToolbar({ vertical = false }: { vertical?: boolean }) {
 	const { activeBrushes, activeView, setActiveBrushes } = useWorkspace();
@@ -166,6 +166,7 @@ export function BrushToolbar({ vertical = false }: { vertical?: boolean }) {
 						const meta = BRUSH_META.eraser;
 						const isActive = activeBrushes.includes("eraser");
 						const Icon = meta.icon;
+
 						return (
 							<Button
 								aria-label="Eraser — clear all tracked states"
