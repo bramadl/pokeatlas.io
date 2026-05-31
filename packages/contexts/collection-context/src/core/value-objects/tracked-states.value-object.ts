@@ -87,7 +87,18 @@ export class TrackedStates extends ValueObject<TrackedStatesProps> {
 	 * e.g. ["Shiny", "Hundo"] and ["Hundo", "Shiny"] → "Hundo+Shiny"
 	 */
 	public get signature(): string {
-		return [...this.props.states].sort((a, b) => a.localeCompare(b)).join("+");
+		const STATE_ORDER: Record<string, number> = {
+			HUNDO: 4,
+			LUCKY: 3,
+			NUNDO: 5,
+			PURIFIED: 2,
+			SHADOW: 1,
+			SHINY: 0,
+		};
+
+		return [...this.props.states]
+			.sort((a, b) => (STATE_ORDER[a] ?? 99) - (STATE_ORDER[b] ?? 99))
+			.join("+");
 	}
 
 	// ── Persistence ─────────────────────────────────────────────────────────

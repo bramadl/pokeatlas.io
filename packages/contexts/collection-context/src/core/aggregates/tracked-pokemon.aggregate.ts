@@ -83,6 +83,13 @@ export class TrackedPokemon extends Aggregate<TrackedPokemonProps> {
 	}
 
 	public updateStates(trackedStates: TrackedStates[]): void {
-		this.change("trackedStates", trackedStates);
+		const seen = new Set<string>();
+		const deduped = trackedStates.filter((state) => {
+			const sig = state.signature;
+			if (seen.has(sig)) return false;
+			seen.add(sig);
+			return true;
+		});
+		this.change("trackedStates", deduped);
 	}
 }

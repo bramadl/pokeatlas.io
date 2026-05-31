@@ -123,7 +123,7 @@ export function PokedexEntryLog({
 							<span
 								className={cn(
 									"font-mono text-[10px]",
-									tracked ? "text-green-600" : "text-muted-foreground/50",
+									tracked ? theme.badgeText : "text-muted-foreground/50",
 								)}
 							>
 								{tracked ? "✓" : "–"}

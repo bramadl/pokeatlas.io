@@ -34,10 +34,7 @@ export function PokemonCard({
 }: PokemonCardProps) {
 	const [isTrackLogShown, setIsTrackLogShown] = useState(false);
 
-	const compoundStatesNumber = useMemo(
-		() => pokemon.trackedStates.filter((s) => s.includes("+")).length,
-		[pokemon.trackedStates],
-	);
+	const compoundStatesNumber = pokemon.trackedStates.length;
 
 	const context = useMemo(
 		() => ({

@@ -14,6 +14,15 @@ export function useTracking(activeBrushes: Brush[], trainerId: string) {
 	const track = useCallback(
 		(pokemon: Pokemon) => {
 			const existing = getOverlayedPokemon(pokemon.id);
+			if (existing && existing.inflight > 0) {
+				const currentStates = existing.trackedStates;
+				const nextStates = applyBrushTap(currentStates, activeBrushes);
+
+				if (!isDirty(currentStates, nextStates)) return;
+
+				return;
+			}
+
 			const currentStates = existing?.trackedStates ?? pokemon.trackedStates;
 			const nextStates = applyBrushTap(currentStates, activeBrushes);
 
