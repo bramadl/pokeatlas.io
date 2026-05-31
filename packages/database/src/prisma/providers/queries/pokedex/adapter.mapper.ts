@@ -21,6 +21,7 @@ export type PokemonQueryResult = PokemonModelGetPayload<{
 		isDefaultForm: true;
 		isCostume: true;
 		isFemale: true;
+		isShadowAvailable: true;
 		isTemporaryEvolution: true;
 		regularSprite: true;
 		shinySprite: true;
@@ -61,6 +62,7 @@ export function toEntry(row: PokemonQueryResult): PokedexEntry {
 		dex,
 		form: row.formCategory as PokemonForm,
 		id: PokemonRef.from(row.ref),
+		isShadowAvailable: row.isShadowAvailable,
 		lastModifiedAt:
 			tracked && tracked.createdAt.getTime() !== tracked.updatedAt.getTime()
 				? tracked.updatedAt

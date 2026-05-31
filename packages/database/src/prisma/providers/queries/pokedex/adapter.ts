@@ -29,7 +29,7 @@ export class PrismaPokedexServiceAdapter implements IPokedex {
 			dexFilter(dex),
 			classificationFilter(filters?.classification),
 			searchFilter(filters?.search),
-			statusFilter(filters?.status, trainerId),
+			statusFilter(filters?.status, filters?.signature, trainerId),
 			typesFilter(filters?.types),
 			variantsFilter(filters?.variants),
 			{ isTrackable: true },
@@ -52,9 +52,10 @@ export class PrismaPokedexServiceAdapter implements IPokedex {
 		pagination: { limit, cursor },
 		...input
 	}: BrowsePokedexInput): Promise<BrowsePokedexOutput> {
+		const where = await this.buildWhere({ dex, trainerId, ...input });
 		const rows = await prisma.pokemonModel.findMany({
 			take: limit + 1,
-			where: await this.buildWhere({ dex, trainerId, ...input }),
+			where,
 			...(cursor ? { cursor: { ref: cursor }, skip: 1 } : {}),
 			orderBy:
 				dex === "NATIONAL"
@@ -73,6 +74,7 @@ export class PrismaPokedexServiceAdapter implements IPokedex {
 				isCostume: true,
 				isDefaultForm: true,
 				isFemale: true,
+				isShadowAvailable: true,
 				isTemporaryEvolution: true,
 				pokedexNumber: true,
 				pokemonClassification: true,
