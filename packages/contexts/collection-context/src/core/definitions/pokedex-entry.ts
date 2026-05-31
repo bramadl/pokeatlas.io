@@ -7,6 +7,7 @@ export interface PokedexEntry {
 	dex: number;
 	form: PokemonForm;
 	id: PokemonRef;
+	isShadowAvailable?: boolean;
 	lastModifiedAt: Date | null;
 	name: string;
 	region: PokemonRegion | null;
