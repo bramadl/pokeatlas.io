@@ -15,13 +15,15 @@ export function usePokedexEntries({ data, status }: UsePokedexEntriesOptions) {
 	);
 
 	const entries = useMemo(() => {
-		if (!status) return data;
-		return data.filter((pokemon) => {
-			const overlayedPokemon = overlayedPokemonMap.get(pokemon.id);
-			const trackedStates =
-				overlayedPokemon?.trackedStates ?? pokemon.trackedStates;
+		const merged = data.map((pokemon) => {
+			const overlay = overlayedPokemonMap.get(pokemon.id);
+			if (!overlay) return pokemon;
+			return { ...pokemon, trackedStates: overlay.trackedStates };
+		});
 
-			const isTracked = trackedStates.length > 0;
+		if (!status) return merged;
+		return merged.filter((pokemon) => {
+			const isTracked = pokemon.trackedStates.length > 0;
 			if (status === "MISSING") return !isTracked;
 			if (status === "TRACKED") return isTracked;
 			return true;

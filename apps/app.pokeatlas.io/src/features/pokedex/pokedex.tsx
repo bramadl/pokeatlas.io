@@ -48,6 +48,7 @@ export function Pokedex() {
 							key={pokemon.id}
 							onTap={() => track(pokemon)}
 							pokemon={pokemon}
+							pokemonHasShinyState={pokemon.trackedStates.includes("SHINY")}
 							shouldPreload={index <= 16}
 						/>
 					))
