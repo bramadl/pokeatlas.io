@@ -1,8 +1,13 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
-import { applyBrushConstraints, type Brush, getDisabledBrushes } from "./brush";
+import {
+	applyBrushConstraints,
+	type Brush,
+	computeSignature,
+	getDisabledBrushes,
+} from "./brush";
 import { WorkspaceBar } from "./ui/workspace-bar";
 import { WorkspaceContext } from "./workspace.context";
 
@@ -17,6 +22,13 @@ export function WorkspaceProvider({
 }: WorkspaceProviderProps) {
 	const [activeBrushes, setActiveBrushesRaw] = useState<Brush[]>([]);
 	const [activeView, setActiveViewRaw] = useState<string>();
+
+	const signature = useMemo(() => {
+		const isPointerMode =
+			activeBrushes.length === 0 || activeBrushes.includes("eraser");
+
+		return isPointerMode ? "BASE" : computeSignature(activeBrushes);
+	}, [activeBrushes]);
 
 	const setActiveBrushes = useCallback((next: Brush[]) => {
 		setActiveBrushesRaw(next);
@@ -42,6 +54,7 @@ export function WorkspaceProvider({
 				activeView,
 				setActiveBrushes,
 				setActiveView,
+				signature,
 				trainerId,
 			}}
 		>

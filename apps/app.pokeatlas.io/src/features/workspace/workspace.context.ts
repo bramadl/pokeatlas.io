@@ -9,6 +9,7 @@ export interface WorkspaceContextValue {
 	activeView?: string;
 	setActiveBrushes: (brushes: Brush[]) => void;
 	setActiveView: (view?: string) => void;
+	signature: string;
 	trainerId: string;
 }
 
