@@ -46,7 +46,10 @@ export function PokedexSwitcher({
 			<DropdownMenu>
 				<DropdownMenuTrigger asChild>
 					<Button className="font-bold" variant="ghost">
-						{getPokedex(currentIndex).label}
+						Pokedex:{" "}
+						<span className="text-primary">
+							{getPokedex(currentIndex).label}
+						</span>
 					</Button>
 				</DropdownMenuTrigger>
 				<DropdownMenuContent>
