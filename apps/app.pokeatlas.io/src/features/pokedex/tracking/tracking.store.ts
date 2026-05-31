@@ -14,6 +14,7 @@ interface TrackingState {
 	removeOverlay: (pokemonRef: string) => void;
 	rollbackOverlay: (pokemonRef: string, previousStates: string[]) => void;
 	settleTrack: (pokemonRef: string) => boolean;
+	updatePendingStates: (pokemonRef: string, nextStates: string[]) => void;
 }
 
 export const useTrackingStore = create<TrackingState>((set, get) => ({
@@ -80,5 +81,17 @@ export const useTrackingStore = create<TrackingState>((set, get) => ({
 		set({ overlayedPokemonMap });
 
 		return true;
+	},
+
+	updatePendingStates(pokemonRef: string, nextStates: string[]) {
+		const overlayedPokemonMap = new Map(get().overlayedPokemonMap);
+		const existing = overlayedPokemonMap.get(pokemonRef);
+		if (!existing) return;
+
+		overlayedPokemonMap.set(pokemonRef, {
+			...existing,
+			trackedStates: nextStates,
+		});
+		set({ overlayedPokemonMap });
 	},
 }));

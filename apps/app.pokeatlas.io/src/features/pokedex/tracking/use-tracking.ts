@@ -8,36 +8,34 @@ import { applyBrushTap, type Brush, isDirty } from "@/features/workspace/brush";
 import { useTrackingStore, useTrackMutation } from ".";
 
 export function useTracking(activeBrushes: Brush[], trainerId: string) {
+	const { mutate } = useTrackMutation(trainerId);
+
 	const getOverlayedPokemon = useTrackingStore((s) => s.getOverlayedPokemon);
-	const { mutate } = useTrackMutation();
+	const updatePendingStates = useTrackingStore((s) => s.updatePendingStates);
 
 	const track = useCallback(
 		(pokemon: Pokemon) => {
 			const existing = getOverlayedPokemon(pokemon.id);
-			if (existing && existing.inflight > 0) {
-				const currentStates = existing.trackedStates;
-				const nextStates = applyBrushTap(currentStates, activeBrushes);
-
-				if (!isDirty(currentStates, nextStates)) return;
-
-				return;
-			}
-
 			const currentStates = existing?.trackedStates ?? pokemon.trackedStates;
 			const nextStates = applyBrushTap(currentStates, activeBrushes);
 
 			if (!isDirty(currentStates, nextStates)) return;
+			if (existing && existing.inflight > 0) {
+				return void updatePendingStates(pokemon.id, nextStates);
+			}
 			const trackedStates = nextStates.map((sig) =>
 				sig === "BASE" ? ["BASE"] : sig.split("+"),
 			);
 
-			mutate({
-				pokemonRef: pokemon.id,
-				trackedStates,
-				trainerId,
-			});
+			mutate({ pokemonRef: pokemon.id, trackedStates, trainerId });
 		},
-		[activeBrushes, getOverlayedPokemon, mutate, trainerId],
+		[
+			activeBrushes,
+			getOverlayedPokemon,
+			mutate,
+			trainerId,
+			updatePendingStates,
+		],
 	);
 
 	return { track };

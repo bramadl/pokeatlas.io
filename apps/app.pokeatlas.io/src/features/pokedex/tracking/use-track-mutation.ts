@@ -4,6 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 import { trackPokemon } from "@/features/global/api/server-actions";
+import { isDirty } from "@/features/workspace/brush";
 
 import { useTrackingStore } from "./tracking.store";
 import {
@@ -17,10 +18,15 @@ interface MutationContext {
 	previousStates: string[];
 }
 
-export function useTrackMutation() {
+type TrackPokemonParams = Parameters<typeof trackPokemon>[0];
+
+interface TrackPokemonInput extends TrackPokemonParams {
+	_confirmedStates?: string[];
+}
+
+export function useTrackMutation(trainerId: string) {
 	const queryClient = useQueryClient();
 
-	const overlayedPokemonMap = useTrackingStore((s) => s.overlayedPokemonMap);
 	const beginTrack = useTrackingStore((s) => s.beginTrack);
 	const getOverlayedPokemon = useTrackingStore((s) => s.getOverlayedPokemon);
 	const removeOverlay = useTrackingStore((s) => s.removeOverlay);
@@ -30,10 +36,10 @@ export function useTrackMutation() {
 	const { mutate } = useMutation<
 		Awaited<ReturnType<typeof trackPokemon>>,
 		Error,
-		Parameters<typeof trackPokemon>[0],
+		TrackPokemonInput,
 		MutationContext
 	>({
-		mutationFn: trackPokemon,
+		mutationFn: ({ _confirmedStates: _, ...params }) => trackPokemon(params),
 
 		onError(_err, _vars, context) {
 			if (!context) return;
@@ -41,10 +47,12 @@ export function useTrackMutation() {
 			toast.error("Something went wrong, please try again");
 		},
 
-		onMutate({ pokemonRef, trackedStates }): MutationContext {
+		onMutate({ pokemonRef, trackedStates, _confirmedStates }): MutationContext {
 			const flatStates = trackedStates.map((combo) => combo.join("+"));
-			const existing = getOverlayedPokemon(pokemonRef);
-			const previousStates = existing?.trackedStates ?? [];
+			const previousStates =
+				_confirmedStates ??
+				getOverlayedPokemon(pokemonRef)?.trackedStates ??
+				[];
 
 			beginTrack(pokemonRef, flatStates);
 			return { pokemonRef, previousStates };
@@ -59,11 +67,31 @@ export function useTrackMutation() {
 			const isLast = settleTrack(pokemonRef);
 			if (isLast) {
 				setTimeout(() => {
-					const hasMoreInflight = overlayedPokemonMap.size > 0;
-					if (!hasMoreInflight) {
-						refetchStatusFilteredCaches(queryClient);
+					const currentOverlay = useTrackingStore
+						.getState()
+						.overlayedPokemonMap.get(pokemonRef);
+
+					if (
+						currentOverlay &&
+						isDirty(confirmedStates, currentOverlay.trackedStates)
+					) {
+						const trackedStates = currentOverlay.trackedStates.map((sig) =>
+							sig === "BASE" ? ["BASE"] : sig.split("+"),
+						);
+
+						mutate({
+							_confirmedStates: confirmedStates,
+							pokemonRef,
+							trackedStates,
+							trainerId,
+						});
+					} else {
+						removeOverlay(pokemonRef);
+						const hasMoreInflight =
+							useTrackingStore.getState().overlayedPokemonMap.size > 0;
+
+						if (!hasMoreInflight) refetchStatusFilteredCaches(queryClient);
 					}
-					removeOverlay(pokemonRef);
 				}, 100);
 			}
 		},
