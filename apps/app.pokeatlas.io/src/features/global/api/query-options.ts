@@ -1,16 +1,8 @@
-import {
-	type InfiniteData,
-	infiniteQueryOptions,
-	queryOptions,
-} from "@tanstack/react-query";
+import { TRACKABLE_STATES } from "@pokeatlas/core/types";
+import { type InfiniteData, infiniteQueryOptions } from "@tanstack/react-query";
 
-import type {
-	BrowsePokedexInput,
-	BrowsePokedexOutput,
-	CountPokedexInput,
-	CountPokedexOutput,
-} from "./api.contract";
-import { browsePokedex, countPokedex } from "./server-actions";
+import type { BrowsePokedexInput, BrowsePokedexOutput } from "./api.contract";
+import { browsePokedex } from "./server-actions";
 
 export interface BrowsePokedexQueryOptions {
 	dex?: BrowsePokedexInput["dex"];
@@ -18,18 +10,26 @@ export interface BrowsePokedexQueryOptions {
 	trainerId: BrowsePokedexInput["trainerId"];
 }
 
+const DEFAULT_SIGNATURE = TRACKABLE_STATES.BASE;
 const LIMIT = 30;
 
 export function browsePokedexQueryOptions({
 	dex,
 	filters,
 	trainerId,
-}: BrowsePokedexQueryOptions) {
+	trackingSignature = DEFAULT_SIGNATURE,
+}: Omit<BrowsePokedexInput, "pagination">) {
 	return infiniteQueryOptions<
 		BrowsePokedexOutput,
 		Error,
 		InfiniteData<BrowsePokedexOutput>,
-		["browse-pokedex", typeof dex, typeof filters, typeof trainerId],
+		[
+			"browse-pokedex",
+			typeof trainerId,
+			typeof trackingSignature,
+			typeof dex,
+			typeof filters,
+		],
 		string | null
 	>({
 		getNextPageParam: ({ hasMore, nextCursor }) => {
@@ -41,36 +41,10 @@ export function browsePokedexQueryOptions({
 				dex,
 				filters,
 				pagination: { cursor: pageParam, limit: LIMIT },
+				trackingSignature,
 				trainerId,
 			});
 		},
-		queryKey: ["browse-pokedex", dex, filters, trainerId],
-	});
-}
-
-export function countPokedexQueryOptions({
-	dex,
-	filters,
-	trainerId,
-}: {
-	dex?: CountPokedexInput["dex"];
-	filters?: CountPokedexInput["filters"];
-	trainerId: CountPokedexInput["trainerId"];
-}) {
-	return queryOptions<
-		CountPokedexOutput,
-		Error,
-		CountPokedexOutput,
-		["count-pokedex", typeof dex, typeof filters, typeof trainerId]
-	>({
-		placeholderData: (prev) => prev,
-		queryFn: () => {
-			return countPokedex({
-				dex,
-				filters,
-				trainerId,
-			});
-		},
-		queryKey: ["count-pokedex", dex, filters, trainerId],
+		queryKey: ["browse-pokedex", trainerId, trackingSignature, dex, filters],
 	});
 }
