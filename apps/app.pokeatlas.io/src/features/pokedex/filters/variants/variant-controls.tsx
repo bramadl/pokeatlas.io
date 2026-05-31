@@ -13,7 +13,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 
-import { variantsParser } from "../filter.params";
+import { variantsParser } from "../filter.parsers";
 import {
 	APPEARANCE_CONTROL_OPTIONS,
 	COSMETIC_CONTROL_OPTIONS,

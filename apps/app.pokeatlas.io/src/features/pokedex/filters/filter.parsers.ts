@@ -35,3 +35,11 @@ export const typesParser = parseAsArrayOf(parseAsString);
 export const variantsParser = parseAsArrayOf(
 	parseAsStringLiteral(VARIANT_VALUES),
 );
+
+export const filterParsers = {
+	classification: classificationParser,
+	search: searchParser,
+	status: statusParser,
+	types: typesParser,
+	variants: variantsParser,
+} as const;

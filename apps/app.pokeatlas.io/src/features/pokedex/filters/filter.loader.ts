@@ -9,7 +9,7 @@ import {
 	statusParser,
 	typesParser,
 	variantsParser,
-} from "./filter.params";
+} from "./filter.parsers";
 import { buildDex, buildFilters } from "./filter.utils";
 
 const searchParamsCache = createSearchParamsCache({

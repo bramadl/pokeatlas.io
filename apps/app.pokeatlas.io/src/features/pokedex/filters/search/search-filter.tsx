@@ -1,7 +1,7 @@
 "use client";
 
 import { MagnifyingGlassIcon, XCircleIcon } from "@phosphor-icons/react";
-import { useQueryState } from "nuqs";
+import { useQueryStates } from "nuqs";
 import { useRef, useState } from "react";
 import { useEventListener } from "usehooks-ts";
 
@@ -12,13 +12,13 @@ import {
 } from "@/components/ui/input-group";
 import { cn } from "@/lib/utils";
 
-import { searchParser } from "../filter.params";
+import { filterParsers } from "../filter.parsers";
 
 export function SearchFilter({
 	className,
 	...props
 }: React.ComponentProps<typeof InputGroup>) {
-	const [urlSearch, setUrlSearch] = useQueryState("search", searchParser);
+	const [{ search: urlSearch }, setUrlSearch] = useQueryStates(filterParsers);
 	const [localValue, setLocalValue] = useState(urlSearch ?? "");
 
 	const inputRef = useRef<HTMLInputElement>(null);
@@ -36,7 +36,7 @@ export function SearchFilter({
 		setLocalValue(value);
 
 		if (value === "") setUrlSearch(null);
-		else setUrlSearch(value, { scroll: false });
+		setUrlSearch({ search: value }, { scroll: true });
 	}
 
 	function handleClear() {

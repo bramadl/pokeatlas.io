@@ -4,37 +4,22 @@ import type { BrowsePokedexInput } from "@pokeatlas/core/types";
 import { useQueryStates } from "nuqs";
 import { useDebounceValue } from "usehooks-ts";
 
-import {
-	classificationParser,
-	dexParser,
-	searchParser,
-	statusParser,
-	typesParser,
-	variantsParser,
-} from "./filter.params";
+import { dexParser, filterParsers } from "./filter.parsers";
 import { buildDex, buildFilters } from "./filter.utils";
 
 export const dexParsers = { dex: dexParser } as const;
 
-export const filterParsers = {
-	classification: classificationParser,
-	search: searchParser,
-	status: statusParser,
-	types: typesParser,
-	variants: variantsParser,
-} as const;
-
-export interface PokedexFilterParams {
+export interface FilterParams {
 	dex: BrowsePokedexInput["dex"];
 	filters: BrowsePokedexInput["filters"];
 }
 
-export interface PokedexFilterParamsResult {
-	debounced: PokedexFilterParams;
-	raw: PokedexFilterParams;
+export interface FilterParamsResult {
+	debounced: FilterParams;
+	raw: FilterParams;
 }
 
-export function usePokedexFilterParams(): PokedexFilterParamsResult {
+export function useFilterParams(): FilterParamsResult {
 	const [{ dex }] = useQueryStates(dexParsers);
 	const [{ classification, search, status, types, variants }] =
 		useQueryStates(filterParsers);
