@@ -2,7 +2,9 @@
 
 import { useMemo, useState } from "react";
 
-import type { Pokemon } from "../../global/definitions/pokemon";
+import type { Pokemon } from "@/features/global/definitions/pokemon";
+import { cn } from "@/lib/utils";
+
 import {
 	PokemonCardContext,
 	type PokemonCardContextValue,
@@ -10,7 +12,7 @@ import {
 import { getPokemonBadge, getPokemonDex, getPokemonTheme } from "./card.utils";
 
 import { CardBackground } from "./ui/card-background";
-import { CardBadge, type CardBadgeProps } from "./ui/card-badge";
+import { CardBadge } from "./ui/card-badge";
 import { CardComposer } from "./ui/card-composer";
 import { CardContainer } from "./ui/card-container";
 import { CardContent } from "./ui/card-content";
@@ -20,30 +22,30 @@ import { CardPointer } from "./ui/card-pointer";
 interface PokemonCardProps {
 	CardContext?: (props: PokemonCardContextValue) => React.JSX.Element;
 	isDisabled?: boolean;
+	isTracked?: boolean;
 	onTap: () => void;
 	pokemon: Pokemon;
-	pokemonBadge: CardBadgeProps["badge"] | null;
-	pokemonHasShinyState?: boolean;
 	shouldPreload?: boolean;
+	suspense?: boolean;
 }
 
 export function PokemonCard({
 	CardContext,
 	isDisabled = false,
+	isTracked = false,
 	pokemon,
-	pokemonBadge,
-	pokemonHasShinyState: hasShinyState = false,
-	shouldPreload = false,
 	onTap,
+	shouldPreload = false,
+	suspense,
 }: PokemonCardProps) {
 	const [isTrackLogShown, setIsTrackLogShown] = useState(false);
 
-	const context = useMemo<PokemonCardContextValue>(
-		() => ({
-			hasShinyState,
+	const context = useMemo<PokemonCardContextValue>(() => {
+		return {
+			hasShinyState: pokemon.trackedStates.some((s) => s.includes("SHINY")),
 			isBaseStateTracked: pokemon.trackedStates.includes("BASE"),
 			isDisabled,
-			isPokemonTracked: pokemon.trackedStates.length > 0,
+			isPokemonTracked: isTracked,
 			isTrackLogShown,
 			onTap,
 			pokemon,
@@ -51,19 +53,23 @@ export function PokemonCard({
 			pokemonDexFormatted: getPokemonDex(pokemon),
 			setIsTrackLogShown: () => setIsTrackLogShown((prev) => !prev),
 			theme: getPokemonTheme(pokemon),
-		}),
-		[hasShinyState, isDisabled, isTrackLogShown, onTap, pokemon],
-	);
+		};
+	}, [isDisabled, isTrackLogShown, isTracked, onTap, pokemon]);
 
 	return (
 		<PokemonCardContext.Provider value={context}>
 			<CardComposer Context={CardContext}>
-				<CardContainer>
+				<CardContainer
+					className={cn(
+						"transition-[filter]",
+						suspense && "blur-[2px] pointer-events-none",
+					)}
+				>
 					<CardImage priority={shouldPreload} />
-					<div className="size-full">
+					<div className={"size-full"}>
 						<CardBackground />
 						<CardContent />
-						{pokemonBadge && <CardBadge badge={pokemonBadge} />}
+						<CardBadge />
 					</div>
 					<CardPointer />
 				</CardContainer>

@@ -12,10 +12,9 @@ export function CardBackground() {
 			<div
 				className={cn(
 					"size-full bg-linear-to-b to-white to-75%",
-					"origin-top transition-all duration-300 ease-in-out",
-					isPokemonTracked
-						? ["opacity-100 scale-100", theme.cardBg]
-						: "opacity-0 scale-y-0 group-hover:opacity-100 group-hover:scale-100 from-slate-300",
+					"origin-top transition-all",
+					theme.cardBg,
+					isPokemonTracked ? theme.cardBg : "from-slate-200",
 				)}
 			/>
 		</div>
