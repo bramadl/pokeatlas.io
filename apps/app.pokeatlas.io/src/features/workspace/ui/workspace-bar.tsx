@@ -1,9 +1,14 @@
 "use client";
 
 import { HandPointingIcon, NutIcon } from "@phosphor-icons/react";
-import { Fragment, useCallback, useMemo, useState } from "react";
+import { Fragment, useMemo } from "react";
 
 import { Button } from "@/components/ui/button";
+import {
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
+} from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 
@@ -28,9 +33,7 @@ function DesktopVersion() {
 
 function MobileVersion() {
 	const { activeBrushes } = useWorkspace();
-	const [open, setOpen] = useState(false);
 
-	const toggle = useCallback(() => setOpen((o) => !o), []);
 	const isPointerMode = useMemo(
 		() => activeBrushes.length === 0,
 		[activeBrushes],
@@ -42,33 +45,24 @@ function MobileVersion() {
 				<WorkspaceSyncButton />
 			</aside>
 			<aside className="fixed bottom-4 right-4 z-50 flex flex-col items-center gap-2 animate-in slide-in-from-bottom fade-in-0 fill-mode-both duration-500 ease-in-out">
-				<div
-					className={cn(
-						"flex flex-col items-center gap-2",
-						"bg-background drop-shadow-2xl border border-border/50 rounded-full p-2",
-						"transition-[opacity,translate-y] duration-300 ease-out",
-						open
-							? "opacity-100 translate-y-0 pointer-events-auto"
-							: "opacity-0 translate-y-4 pointer-events-none",
-					)}
-				>
-					<BrushToolbar vertical />
-				</div>
-				<div className="bg-background drop-shadow-2xl border border-border/50 rounded-full p-2">
-					<Button
-						aria-expanded={open}
-						aria-label="Toggle brush toolbar"
+				<Popover>
+					<div className="bg-background drop-shadow-2xl border border-border/50 rounded-full p-2">
+						<PopoverTrigger asChild>
+							<Button aria-label="Toggle brush toolbar" size="icon">
+								{isPointerMode ? <HandPointingIcon /> : <NutIcon />}
+							</Button>
+						</PopoverTrigger>
+					</div>
+					<PopoverContent
 						className={cn(
-							"transition-transform duration-200",
-							open && "rotate-45",
+							"flex flex-col items-center gap-2 w-auto outline-none shadow-none ring-0  ",
+							"bg-background drop-shadow-2xl border border-border/50 rounded-full p-2",
 						)}
-						onClick={toggle}
-						size="icon"
-						variant={open ? "default" : "secondary"}
+						sideOffset={16}
 					>
-						{isPointerMode ? <HandPointingIcon /> : <NutIcon />}
-					</Button>
-				</div>
+						<BrushToolbar vertical />
+					</PopoverContent>
+				</Popover>
 			</aside>
 		</div>
 	);
