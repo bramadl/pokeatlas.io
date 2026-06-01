@@ -8,16 +8,16 @@ import { cn } from "@/lib/utils";
 import {
 	PokemonCardContext,
 	type PokemonCardContextValue,
-} from "./card.context";
-import { getPokemonBadge, getPokemonDex, getPokemonTheme } from "./card.utils";
+} from "../card.context";
+import { getPokemonBadge, getPokemonDex, getPokemonTheme } from "../card.utils";
 
-import { CardBackground } from "./ui/card-background";
-import { CardBadge } from "./ui/card-badge";
-import { CardComposer } from "./ui/card-composer";
-import { CardContainer } from "./ui/card-container";
-import { CardContent } from "./ui/card-content";
-import { CardImage } from "./ui/card-image";
-import { CardPointer } from "./ui/card-pointer";
+import { CardBackground } from "./card-background";
+import { CardBadge } from "./card-badge";
+import { CardComposer } from "./card-composer";
+import { CardContainer } from "./card-container";
+import { CardContent } from "./card-content";
+import { CardImage } from "./card-image";
+import { CardPointer } from "./card-pointer";
 
 interface PokemonCardProps {
 	CardContext?: (props: PokemonCardContextValue) => React.JSX.Element;

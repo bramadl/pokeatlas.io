@@ -3,12 +3,12 @@
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 
-import type { PokemonCardContextValue } from "../pokemon/card/card.context";
+import type { PokemonCardContextValue } from "../../pokemon/card/card.context";
 import {
 	ALL_VALID_COMBOS,
 	computeTrackedSet,
 	computeTrackedStates,
-} from "../workspace/brush";
+} from "../../workspace/tracking/brush";
 
 function EntryLogHeader({
 	isBaseStateTracked,

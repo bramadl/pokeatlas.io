@@ -5,8 +5,8 @@ import { useQueryStates } from "nuqs";
 import { Button } from "@/components/ui/button";
 
 import { filterParsers } from "../../filters/filter.parsers";
-import { FilterGroup } from "../../filters/filter-group";
-import { FilterLabel } from "../../filters/filter-label";
+import { FilterGroup } from "../ui/filter-group";
+import { FilterLabel } from "../ui/filter-label";
 import { CLASSIFICATION_OPTIONS } from "./classification.options";
 
 export function ClassificationFilter() {

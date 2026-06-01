@@ -1,1 +1,1 @@
-export * from "./pokemon-card";
+export * from "./ui/pokemon-card";

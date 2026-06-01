@@ -10,13 +10,13 @@ import {
 	CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 
-import { ClassificationFilter } from "./filters/classifications";
-import { filterParsers } from "./filters/filter.parsers";
-import { FilterButton } from "./filters/filter-button";
-import { SearchFilter } from "./filters/search";
-import { StatusFilter } from "./filters/status";
-import { TypeFilter } from "./filters/types";
-import { VariantControls } from "./filters/variants";
+import { ClassificationFilter } from "../filters/classifications";
+import { filterParsers } from "../filters/filter.parsers";
+import { SearchFilter } from "../filters/search";
+import { StatusFilter } from "../filters/status";
+import { TypeFilter } from "../filters/types";
+import { FilterButton } from "../filters/ui/filter-button";
+import { VariantControls } from "../filters/variants";
 
 import { PokedexSwitcher } from "./pokedex-switcher";
 

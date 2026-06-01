@@ -1,36 +1,21 @@
-import type { PokedexEntry } from "@pokeatlas/core/types";
-import { useMemo } from "react";
-
-import { useTrackingStore } from "./tracking/tracking.store";
+import type { BrowsePokedexInput, PokedexEntry } from "@pokeatlas/core/types";
+import { useDeferredValue, useMemo } from "react";
 
 interface UsePokedexEntriesOptions {
 	data: PokedexEntry[];
-	status?: "MISSING" | "TRACKED";
+	status?: NonNullable<BrowsePokedexInput["filters"]>["status"];
 }
 
-export function usePokedexEntries({ data, status }: UsePokedexEntriesOptions) {
-	const overlayedPokemonMap = useTrackingStore((s) => s.overlayedPokemonMap);
-	const hasAnyInflights = useTrackingStore(
-		(s) => s.overlayedPokemonMap.size > 0,
-	);
-
+export function usePokedexEntries({ data }: UsePokedexEntriesOptions) {
 	const entries = useMemo(() => {
-		const merged = data.map((pokemon) => {
-			const overlay = overlayedPokemonMap.get(pokemon.id);
-			if (!overlay) return pokemon;
-			return { ...pokemon, trackedStates: overlay.trackedStates };
-		});
+		return data;
+	}, [data]);
 
-		if (!status) return merged;
-		return merged.filter((pokemon) => {
-			const isTracked = pokemon.trackedStates.length > 0;
-			if (status === "MISSING") return !isTracked;
-			if (status === "TRACKED") return isTracked;
-			return true;
-		});
-	}, [data, overlayedPokemonMap, status]);
+	const deferredEntries = useDeferredValue(entries);
+	const isDeffering = deferredEntries !== entries;
 
-	const hasOptimisticEmpty = entries.length === 0 && hasAnyInflights;
-
-	return { entries, hasAnyInflights, hasOptimisticEmpty };
+	return {
+		isDeffering,
+		pokemon: deferredEntries,
+	};
 }

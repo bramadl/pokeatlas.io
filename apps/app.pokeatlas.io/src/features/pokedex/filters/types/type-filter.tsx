@@ -6,7 +6,7 @@ import { useQueryStates } from "nuqs";
 import { Button } from "@/components/ui/button";
 
 import { filterParsers } from "../filter.parsers";
-import { FilterLabel } from "../filter-label";
+import { FilterLabel } from "../ui/filter-label";
 import { POKEMON_TYPE_OPTIONS } from "./type.options";
 
 export function TypeFilter() {
