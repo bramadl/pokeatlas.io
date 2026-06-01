@@ -3,9 +3,10 @@
 import type { PokedexEntry } from "@pokeatlas/core/types";
 import { useCallback } from "react";
 
-import { PokemonCard } from "../../pokemon/card";
-import { getTrackingStatus } from "../../workspace/tracking/tracking.utils";
-import { useWorkspace } from "../../workspace/use-workspace";
+import { PokemonCard } from "@/features/pokemon/card";
+import { getTrackingStatus } from "@/features/workspace/tracking/tracking.utils";
+import { useWorkspace } from "@/features/workspace/use-workspace";
+
 import { usePokedex } from "../use-pokedex";
 import { usePokedexEntries } from "../use-pokedex-entries";
 import { usePokedexParams } from "../use-pokedex-params";

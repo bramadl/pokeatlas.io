@@ -5,8 +5,8 @@ import { useQueryStates } from "nuqs";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 
+import { STATUS_OPTIONS } from "../filter.options";
 import { filterParsers } from "../filter.parsers";
-import { STATUS_OPTIONS } from "./status.options";
 
 const DEFAULT_VALUE = "all";
 

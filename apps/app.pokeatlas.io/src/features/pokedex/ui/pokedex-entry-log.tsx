@@ -1,14 +1,13 @@
 "use client";
 
 import { Separator } from "@/components/ui/separator";
-import { cn } from "@/lib/utils";
-
-import type { PokemonCardContextValue } from "../../pokemon/card/card.context";
+import type { PokemonCardContextValue } from "@/features/pokemon/card/card.context";
 import {
 	ALL_VALID_COMBOS,
 	computeTrackedSet,
 	computeTrackedStates,
-} from "../../workspace/tracking/brush";
+} from "@/features/workspace/tracking/brush";
+import { cn } from "@/lib/utils";
 
 function EntryLogHeader({
 	isBaseStateTracked,

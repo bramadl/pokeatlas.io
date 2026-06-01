@@ -3,11 +3,10 @@
 import { useQueryStates } from "nuqs";
 
 import { Button } from "@/components/ui/button";
-
-import { filterParsers } from "../../filters/filter.parsers";
-import { FilterGroup } from "../ui/filter-group";
-import { FilterLabel } from "../ui/filter-label";
-import { CLASSIFICATION_OPTIONS } from "./classification.options";
+import { CLASSIFICATION_OPTIONS } from "../filter.options";
+import { filterParsers } from "../filter.parsers";
+import { FilterGroup } from "./filter-group";
+import { FilterLabel } from "./filter-label";
 
 export function ClassificationFilter() {
 	const [{ classification }, setFilters] = useQueryStates(filterParsers);

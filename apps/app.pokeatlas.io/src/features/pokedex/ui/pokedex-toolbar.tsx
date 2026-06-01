@@ -10,12 +10,12 @@ import {
 	CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 
-import { ClassificationFilter } from "../filters/classifications";
 import { filterParsers } from "../filters/filter.parsers";
-import { SearchFilter } from "../filters/search";
-import { StatusFilter } from "../filters/status";
-import { TypeFilter } from "../filters/types";
+import { ClassificationFilter } from "../filters/ui/classifications-filter";
 import { FilterButton } from "../filters/ui/filter-button";
+import { SearchFilter } from "../filters/ui/search-filter";
+import { StatusFilter } from "../filters/ui/status-filter";
+import { TypesFilter } from "../filters/ui/types-filter";
 import { VariantControls } from "../filters/variants";
 
 import { PokedexSwitcher } from "./pokedex-switcher";
@@ -61,7 +61,7 @@ export function PokedexToolbar() {
 						<div className="p-4 grid lg:grid-cols-[300px_1fr_300px] xl:grid-cols-[320px_1fr_320px] gap-x-8 gap-y-4">
 							<ClassificationFilter />
 							<div className="lg:col-span-2">
-								<TypeFilter />
+								<TypesFilter />
 							</div>
 						</div>
 					</div>

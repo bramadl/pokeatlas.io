@@ -5,11 +5,11 @@ import { useQueryStates } from "nuqs";
 
 import { Button } from "@/components/ui/button";
 
+import { POKEMON_TYPE_OPTIONS } from "../filter.options";
 import { filterParsers } from "../filter.parsers";
-import { FilterLabel } from "../ui/filter-label";
-import { POKEMON_TYPE_OPTIONS } from "./type.options";
+import { FilterLabel } from "./filter-label";
 
-export function TypeFilter() {
+export function TypesFilter() {
 	const [{ types }, setFilters] = useQueryStates(filterParsers);
 
 	function toggleType(value: string) {
