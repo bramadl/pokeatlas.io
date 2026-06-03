@@ -5,6 +5,7 @@ export interface PokemonCardTheme {
 	badgeBorder: string;
 	badgeText: string;
 	cardBg: string;
+	cardBgOffset: string;
 	hoverBg: string;
 }
 
@@ -14,6 +15,7 @@ export const POKEMON_THEME_MAP: Record<PokemonType, PokemonCardTheme> = {
 		badgeBorder: "border-lime-400",
 		badgeText: "text-lime-700",
 		cardBg: "from-lime-200",
+		cardBgOffset: "to-lime-100",
 		hoverBg: "group-hover:from-lime-200",
 	},
 
@@ -22,6 +24,7 @@ export const POKEMON_THEME_MAP: Record<PokemonType, PokemonCardTheme> = {
 		badgeBorder: "border-zinc-400",
 		badgeText: "text-zinc-700",
 		cardBg: "from-zinc-400",
+		cardBgOffset: "to-zinc-100",
 		hoverBg: "group-hover:from-zinc-200",
 	},
 
@@ -30,6 +33,7 @@ export const POKEMON_THEME_MAP: Record<PokemonType, PokemonCardTheme> = {
 		badgeBorder: "border-indigo-400",
 		badgeText: "text-indigo-700",
 		cardBg: "from-indigo-200",
+		cardBgOffset: "to-indigo-100",
 		hoverBg: "group-hover:from-indigo-300",
 	},
 
@@ -38,6 +42,7 @@ export const POKEMON_THEME_MAP: Record<PokemonType, PokemonCardTheme> = {
 		badgeBorder: "border-yellow-400",
 		badgeText: "text-yellow-700",
 		cardBg: "from-yellow-200",
+		cardBgOffset: "to-yellow-100",
 		hoverBg: "group-hover:from-yellow-200",
 	},
 
@@ -46,6 +51,7 @@ export const POKEMON_THEME_MAP: Record<PokemonType, PokemonCardTheme> = {
 		badgeBorder: "border-pink-400",
 		badgeText: "text-pink-700",
 		cardBg: "from-pink-200",
+		cardBgOffset: "to-pink-100",
 		hoverBg: "group-hover:from-pink-200",
 	},
 
@@ -54,6 +60,7 @@ export const POKEMON_THEME_MAP: Record<PokemonType, PokemonCardTheme> = {
 		badgeBorder: "border-red-400",
 		badgeText: "text-red-700",
 		cardBg: "from-red-200",
+		cardBgOffset: "to-red-100",
 		hoverBg: "group-hover:from-red-200",
 	},
 
@@ -62,6 +69,7 @@ export const POKEMON_THEME_MAP: Record<PokemonType, PokemonCardTheme> = {
 		badgeBorder: "border-orange-400",
 		badgeText: "text-orange-700",
 		cardBg: "from-orange-200",
+		cardBgOffset: "to-orange-100",
 		hoverBg: "group-hover:from-orange-200",
 	},
 
@@ -70,6 +78,7 @@ export const POKEMON_THEME_MAP: Record<PokemonType, PokemonCardTheme> = {
 		badgeBorder: "border-sky-400",
 		badgeText: "text-sky-700",
 		cardBg: "from-sky-200",
+		cardBgOffset: "to-sky-100",
 		hoverBg: "group-hover:from-sky-200",
 	},
 
@@ -78,6 +87,7 @@ export const POKEMON_THEME_MAP: Record<PokemonType, PokemonCardTheme> = {
 		badgeBorder: "border-violet-400",
 		badgeText: "text-violet-700",
 		cardBg: "from-violet-200",
+		cardBgOffset: "to-violet-100",
 		hoverBg: "group-hover:from-violet-200",
 	},
 
@@ -86,6 +96,7 @@ export const POKEMON_THEME_MAP: Record<PokemonType, PokemonCardTheme> = {
 		badgeBorder: "border-green-400",
 		badgeText: "text-green-700",
 		cardBg: "from-green-200",
+		cardBgOffset: "to-green-100",
 		hoverBg: "group-hover:from-green-200",
 	},
 
@@ -94,6 +105,7 @@ export const POKEMON_THEME_MAP: Record<PokemonType, PokemonCardTheme> = {
 		badgeBorder: "border-orange-400",
 		badgeText: "text-orange-700",
 		cardBg: "from-orange-200",
+		cardBgOffset: "to-orange-100",
 		hoverBg: "group-hover:from-orange-300",
 	},
 
@@ -102,6 +114,7 @@ export const POKEMON_THEME_MAP: Record<PokemonType, PokemonCardTheme> = {
 		badgeBorder: "border-cyan-400",
 		badgeText: "text-cyan-700",
 		cardBg: "from-cyan-200",
+		cardBgOffset: "to-cyan-100",
 		hoverBg: "group-hover:from-cyan-200",
 	},
 
@@ -110,6 +123,7 @@ export const POKEMON_THEME_MAP: Record<PokemonType, PokemonCardTheme> = {
 		badgeBorder: "border-neutral-400",
 		badgeText: "text-neutral-700",
 		cardBg: "from-neutral-200",
+		cardBgOffset: "to-neutral-100",
 		hoverBg: "group-hover:from-neutral-300",
 	},
 
@@ -118,6 +132,7 @@ export const POKEMON_THEME_MAP: Record<PokemonType, PokemonCardTheme> = {
 		badgeBorder: "border-purple-400",
 		badgeText: "text-purple-700",
 		cardBg: "from-purple-200",
+		cardBgOffset: "to-purple-100",
 		hoverBg: "group-hover:from-purple-200",
 	},
 
@@ -126,6 +141,7 @@ export const POKEMON_THEME_MAP: Record<PokemonType, PokemonCardTheme> = {
 		badgeBorder: "border-fuchsia-400",
 		badgeText: "text-fuchsia-700",
 		cardBg: "from-fuchsia-200",
+		cardBgOffset: "to-fuchsia-100",
 		hoverBg: "group-hover:from-fuchsia-200",
 	},
 
@@ -134,6 +150,7 @@ export const POKEMON_THEME_MAP: Record<PokemonType, PokemonCardTheme> = {
 		badgeBorder: "border-amber-400",
 		badgeText: "text-amber-700",
 		cardBg: "from-amber-400",
+		cardBgOffset: "to-amber-100",
 		hoverBg: "group-hover:from-amber-200",
 	},
 
@@ -142,6 +159,7 @@ export const POKEMON_THEME_MAP: Record<PokemonType, PokemonCardTheme> = {
 		badgeBorder: "border-zinc-400",
 		badgeText: "text-zinc-700",
 		cardBg: "from-zinc-400",
+		cardBgOffset: "to-zinc-100",
 		hoverBg: "group-hover:from-zinc-300",
 	},
 
@@ -150,6 +168,7 @@ export const POKEMON_THEME_MAP: Record<PokemonType, PokemonCardTheme> = {
 		badgeBorder: "border-blue-400",
 		badgeText: "text-blue-700",
 		cardBg: "from-blue-200",
+		cardBgOffset: "to-blue-100",
 		hoverBg: "group-hover:from-blue-200",
 	},
 };

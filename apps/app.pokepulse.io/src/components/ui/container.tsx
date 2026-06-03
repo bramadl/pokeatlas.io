@@ -14,7 +14,7 @@ export function Container({
 		<div
 			className={cn(
 				"md:max-w-4xl lg:max-w-5xl xl:max-w-6xl mx-auto",
-				padded && "px-4 md:px-0",
+				padded && "px-4 lg:px-0",
 				className,
 			)}
 			{...props}

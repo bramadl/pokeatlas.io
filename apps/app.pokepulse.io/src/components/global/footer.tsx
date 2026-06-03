@@ -3,6 +3,8 @@ import { Separator } from "../ui/separator";
 import { FooterHeader } from "./footer-header";
 
 export function GlobalFooter() {
+	const currentYear = new Date().getFullYear();
+
 	return (
 		<footer className="bg-foreground dark:bg-sidebar text-background">
 			<Container
@@ -10,12 +12,13 @@ export function GlobalFooter() {
 				padded
 			>
 				<FooterHeader />
-				<Separator className="bg-slate-800" />
+				<Separator className="bg-slate-800/50" />
 				<div className="self-stretch flex flex-col md:flex-row-reverse md:items-center md:justify-between gap-4">
-					<small>
-						&copy; {new Date().getFullYear()} PokéPulse – All Rights Reserved
+					<small className="shrink-0">
+						&copy; {currentYear === 2026 ? currentYear : `2026–${currentYear}`}{" "}
+						PokéPulse – All Rights Reserved
 					</small>
-					<strong className="font-normal text-xs text-muted text-center">
+					<strong className="font-normal text-xs text-muted text-center italic opacity-75">
 						PokéPulse is a companion app made for tracker purposes only and is
 						not affiliated with the Pokemon brand, Niantic, Pokemon GO, or
 						Nintendo.

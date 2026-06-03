@@ -32,7 +32,7 @@ export function Workspace({ children }: React.PropsWithChildren) {
 	};
 
 	return (
-		<Container className="relative min-h-160 bg-slate-50 sm:my-8">
+		<Container className="relative min-h-[75svh] bg-slate-50 sm:my-8">
 			<ScrollToTop />
 			{children}
 			<WorkspaceToolbar
