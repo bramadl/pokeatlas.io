@@ -3,6 +3,7 @@ import type {
 	BrowsePokedexOutput,
 	IBrowsePokedexQueryService,
 } from "@context/collection";
+import { isGuest } from "@context/shared";
 
 import { prisma } from "#prisma-client";
 import type { PokemonModelWhereInput } from "#prisma-client/models";
@@ -83,14 +84,16 @@ export class PrismaBrowsePokedexQueryAdapter
 				},
 				shinySprite: true,
 				speciesName: true,
-				trackedPokemons: {
-					select: {
-						createdAt: true,
-						trackedStates: true,
-						updatedAt: true,
-					},
-					where: { trainerId: input.trainerId },
-				},
+				trackedPokemons: isGuest(input.trainerId)
+					? false
+					: {
+							select: {
+								createdAt: true,
+								trackedStates: true,
+								updatedAt: true,
+							},
+							where: { trainerId: input.trainerId },
+						},
 			},
 		});
 

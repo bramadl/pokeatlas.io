@@ -16,7 +16,14 @@ import { usePokedexFilter } from "./filters/use-pokedex-filter";
 import { VariantsControls } from "./filters/variants-controls";
 import { PokedexToolbarButton } from "./pokedex-toolbar-button";
 
-export function PokedexToolbar({ children }: React.PropsWithChildren) {
+interface PokedexToolbarProps extends React.PropsWithChildren {
+	hideTrackingStatus?: boolean;
+}
+
+export function PokedexToolbar({
+	children,
+	hideTrackingStatus,
+}: PokedexToolbarProps) {
 	const [{ classifications, types }] = usePokedexFilter();
 
 	const [isOpen, setIsOpen] = useState(false);
@@ -32,7 +39,7 @@ export function PokedexToolbar({ children }: React.PropsWithChildren) {
 						<PokedexSwitcher />
 					</div>
 					<div className="row-start-3 sm:row-start-[unset]">
-						<TrackingStatusSwitcher />
+						{!hideTrackingStatus && <TrackingStatusSwitcher />}
 					</div>
 					<div className="sm:col-span-2 lg:col-span-1 flex items-center gap-2">
 						<div className="flex-1 order-2 lg:order-1">

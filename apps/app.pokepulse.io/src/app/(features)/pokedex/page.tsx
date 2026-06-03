@@ -1,5 +1,7 @@
 import type { TrackableState } from "@pokepulse/core";
+import { guestSignature, trainerId } from "@pokepulse/core";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+import { redirect } from "next/navigation";
 import type { SearchParams } from "nuqs/server";
 
 import { getQueryClient } from "@/lib/tanstack/query/query-client";
@@ -14,9 +16,11 @@ import {
 } from "./toolbar";
 import { Workspace } from "./workspace";
 
+const GUEST_MODE = false;
+
 const DEFAULT_POKEDEX_LIMIT = 30;
 const DEFAULT_TRACKING_SIGNATURE: TrackableState = "BASE";
-const TRAINER_ID = "00000000-0000-0000-0000-000000000001";
+const TRAINER_ID = GUEST_MODE ? guestSignature() : trainerId();
 
 interface PageProps {
 	searchParams: Promise<SearchParams>;
@@ -24,6 +28,7 @@ interface PageProps {
 
 export default async function Page({ searchParams }: PageProps) {
 	const filters = await loadPokedexFilters.parse(searchParams);
+	if (GUEST_MODE && filters.status !== "ALL") redirect("/pokedex");
 
 	const queryClient = getQueryClient();
 	void (await queryClient.prefetchInfiniteQuery({
@@ -42,8 +47,8 @@ export default async function Page({ searchParams }: PageProps) {
 				initialTrackingSignature={DEFAULT_TRACKING_SIGNATURE}
 				trainerId={TRAINER_ID}
 			>
-				<Workspace>
-					<PokedexToolbar>
+				<Workspace hideToolbar={GUEST_MODE}>
+					<PokedexToolbar hideTrackingStatus={GUEST_MODE}>
 						<PokedexToolbarPanel />
 					</PokedexToolbar>
 					<Pokedex />

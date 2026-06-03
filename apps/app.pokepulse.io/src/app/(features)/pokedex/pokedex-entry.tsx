@@ -2,6 +2,7 @@
 
 import {
 	type PokedexEntry as IPokedexEntry,
+	isGuest,
 	type PokemonType,
 	TrackedStateRef,
 	type TrackingStatus,
@@ -21,6 +22,7 @@ import { usePokedexMutation } from "./use-pokedex-mutation";
 
 interface PokedexEntryProps {
 	entry: IPokedexEntry;
+	index?: number;
 	isEraserActive?: boolean;
 	trackingSignature: string;
 	trackingStatus: TrackingStatus;
@@ -29,11 +31,14 @@ interface PokedexEntryProps {
 
 export function PokedexEntry({
 	entry,
+	index,
 	isEraserActive,
 	trackingSignature,
 	trackingStatus,
 	trainerId,
 }: PokedexEntryProps) {
+	const guest = isGuest(trainerId);
+
 	const queryClient = getQueryClient();
 
 	const mutation = usePokedexMutation({ queryClient, scope: entry.species.id });
@@ -43,9 +48,9 @@ export function PokedexEntry({
 		POKEMON_THEME_MAP[entry.species.types[0]?.toLowerCase() as PokemonType];
 
 	const trackedStateRef = TrackedStateRef.from(trackingSignature);
-	const isEntryTracked = entry.trackedStates.includes(
-		trackedStateRef as TrackedStateRef,
-	);
+	const isEntryTracked = guest
+		? true
+		: entry.trackedStates.includes(trackedStateRef as TrackedStateRef);
 
 	const trackedStates = isEntryTracked
 		? entry.trackedStates.filter((s) => s !== trackedStateRef)
@@ -93,7 +98,8 @@ export function PokedexEntry({
 				pokedex: formatPokedexNumber(entry.species.dexNumber),
 				theme: cardTheme,
 			}}
-			isCardPrioritized
+			isCardDisabled={guest}
+			isCardPrioritized={index ? index < 10 : false}
 			key={entry.species.id}
 			onCardTapped={trackPokemon}
 			pokemon={{

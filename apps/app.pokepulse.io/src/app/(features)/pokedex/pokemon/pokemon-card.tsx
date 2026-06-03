@@ -29,6 +29,7 @@ interface Pokemon {
 interface PokemonCardProps<TContextProps extends Record<string, unknown>> {
 	CardContext?: React.ComponentType<TContextProps>;
 	CardContextProps?: TContextProps;
+	isCardDisabled?: boolean;
 	isCardPrioritized?: boolean;
 	onCardTapped?: () => void;
 	pokemon: Pokemon;
@@ -37,6 +38,7 @@ interface PokemonCardProps<TContextProps extends Record<string, unknown>> {
 export function PokemonCard<TContextProps extends Record<string, unknown>>({
 	CardContext,
 	CardContextProps,
+	isCardDisabled,
 	isCardPrioritized,
 	pokemon,
 	onCardTapped,
@@ -56,7 +58,7 @@ export function PokemonCard<TContextProps extends Record<string, unknown>>({
 			pokemonName={pokemon.name}
 		>
 			<PokemonCardContainer
-				isCardDisabled={false}
+				isCardDisabled={isCardDisabled}
 				isPokemonTracked={pokemon.isTracked}
 				isTrackLogShown={isTrackLogShown}
 			>

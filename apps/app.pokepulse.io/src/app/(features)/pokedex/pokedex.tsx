@@ -55,9 +55,10 @@ export function Pokedex() {
 	return (
 		<Fragment>
 			<PokedexGrid loading={isFetching || isDeferring}>
-				{entries.map((entry) => (
+				{entries.map((entry, index) => (
 					<PokedexEntry
 						entry={entry}
+						index={index}
 						isEraserActive={isEraserActive}
 						key={entry.species.id}
 						trackingSignature={trackingSignature}

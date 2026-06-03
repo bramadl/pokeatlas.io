@@ -1,5 +1,6 @@
 import type { BrowsePokedexInput } from "@context/collection";
 import { TRACKABLE_STATE } from "@context/collection/types";
+import { isGuest } from "@context/shared";
 
 import type { PokemonModelWhereInput } from "#prisma-client/models.ts";
 
@@ -8,6 +9,8 @@ export function statusFilter(
 	trackingSignature: BrowsePokedexInput["trackingSignature"],
 	trainerId: BrowsePokedexInput["trainerId"],
 ): PokemonModelWhereInput | null {
+	if (isGuest(trainerId)) return null;
+
 	const has = trackingSignature ?? TRACKABLE_STATE.BASE;
 
 	if (status === "MISSING") {

@@ -8,7 +8,11 @@ import { pokedexQueryKeys } from "../pokedex.query";
 import { usePokedexStore } from "../use-pokedex-store";
 import { WorkspaceToolbar } from "./workpace-toolbar";
 
-export function Workspace({ children }: React.PropsWithChildren) {
+interface WorkspaceProps extends React.PropsWithChildren {
+	hideToolbar?: boolean;
+}
+
+export function Workspace({ children, hideToolbar }: WorkspaceProps) {
 	const queryClient = useQueryClient();
 	const isFetching = useIsFetching({ queryKey: pokedexQueryKeys.all() }) > 0;
 
@@ -35,14 +39,16 @@ export function Workspace({ children }: React.PropsWithChildren) {
 		<Container className="relative min-h-[75svh] bg-slate-50 sm:my-8">
 			<ScrollToTop />
 			{children}
-			<WorkspaceToolbar
-				activateEraser={activateEraser}
-				disableRefresh={isFetching}
-				isEraserMode={isEraserActive}
-				refreshWorkspace={refreshWorkspace}
-				setTrackingSignature={setTrackingSignature}
-				trackingSignature={trackingSignature}
-			/>
+			{!hideToolbar && (
+				<WorkspaceToolbar
+					activateEraser={activateEraser}
+					disableRefresh={isFetching}
+					isEraserMode={isEraserActive}
+					refreshWorkspace={refreshWorkspace}
+					setTrackingSignature={setTrackingSignature}
+					trackingSignature={trackingSignature}
+				/>
+			)}
 		</Container>
 	);
 }

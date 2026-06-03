@@ -29,9 +29,11 @@ export type BrowsePokedexQueryResult = PokemonModelGetPayload<{
 		secondaryType: { select: { name: true; templateId: true } };
 		shinySprite: true;
 		speciesName: true;
-		trackedPokemons: {
-			select: { trackedStates: true; createdAt: true; updatedAt: true };
-		};
+		trackedPokemons:
+			| {
+					select: { trackedStates: true; createdAt: true; updatedAt: true };
+			  }
+			| false;
 	};
 }>;
 
@@ -59,7 +61,7 @@ const getTypes = (
 
 export function toPokedexEntry(row: BrowsePokedexQueryResult): PokedexEntry {
 	const pokedexNumber = row.pokedexNumber;
-	const tracked = row.trackedPokemons.find(() => true) ?? null;
+	const tracked = (row.trackedPokemons || []).find(() => true) ?? null;
 
 	const getEntryRegion = (): PokemonRegion => {
 		if (row.formCategory === "REGIONAL_FORM") {
