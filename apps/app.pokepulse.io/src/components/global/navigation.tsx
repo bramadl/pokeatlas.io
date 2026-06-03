@@ -7,7 +7,7 @@ import { TrainerDropdown } from "./trainer-dropdown";
 export function GlobalNavigation() {
 	return (
 		<header className="sticky top-0 h-16 bg-primary text-primary-foreground z-10">
-			<Container className="flex items-center justify-between h-full">
+			<Container className="flex items-center justify-between h-full" padded>
 				<AppLogo />
 				<div className="hidden md:flex items-center gap-4">
 					<NavigationLinks />

@@ -7,7 +7,7 @@ import {
 } from "@pokepulse/database";
 import { ContainerBuilder } from "@pokepulse/toolkit";
 
-import { PokeAtlas } from "./client";
+import { PokePulse } from "./client";
 
 /**
  * @description
@@ -62,14 +62,14 @@ const container = ContainerBuilder.create()
 		});
 	})
 
-	// ----- Atlas ---------------------------------------------------------
+	// ----- pulse ---------------------------------------------------------
 
-	.add("atlas", (r) => new PokeAtlas({ collection: r.collection }))
+	.add("pulse", (r) => new PokePulse({ collection: r.collection }))
 	.build();
 
 /**
  * @description
- * Unified Application Facade (`atlas`).
+ * Unified Application Facade (`pulse`).
  *
  * The primary public entry point for the presentation layer (e.g., Next.js API Routes, CLI).
  * It abstracts the underlying storage systems, repositories, and domain wiring,
@@ -77,9 +77,9 @@ const container = ContainerBuilder.create()
  *
  * @example
  * ```ts
- * import { atlas } from "@pokepulse/core";
- * const result = await atlas.collection.browsePokedex();
+ * import { pulse } from "@pokepulse/core";
+ * const result = await pulse.collection.browsePokedex();
  * ```
  */
-export const atlas = container.atlas;
-export type AtlasClient = typeof atlas;
+export const pulse = container.pulse;
+export type pulseClient = typeof pulse;

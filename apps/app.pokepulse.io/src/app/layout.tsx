@@ -30,7 +30,7 @@ const fontMono = IBM_Plex_Mono({
 
 export const metadata: Metadata = {
 	description: "Track your Pokémon GO collection progress in one place.",
-	title: "PokemonGO Progress Tracker | PokeAtlas",
+	title: "PokemonGO Progress Tracker | PokePulse",
 };
 
 export default function RootLayout({

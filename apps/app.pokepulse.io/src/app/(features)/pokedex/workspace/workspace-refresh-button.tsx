@@ -14,15 +14,20 @@ import { cn } from "@/lib/utils";
 interface WorkspaceRefreshButtonProps
 	extends React.ComponentProps<typeof Button> {
 	onRefreshed: () => void;
+	skipHotkey?: boolean;
 }
 
 export function WorkspaceRefreshButton({
 	className,
 	disabled,
 	onRefreshed,
+	skipHotkey,
 	...props
 }: WorkspaceRefreshButtonProps) {
-	useHotkey("R", onRefreshed, { conflictBehavior: "replace" });
+	useHotkey("R", onRefreshed, {
+		conflictBehavior: "replace",
+		enabled: !skipHotkey,
+	});
 
 	return (
 		<Tooltip>

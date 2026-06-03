@@ -2,7 +2,7 @@
 
 Epic: Collection Tracking
 Priority: P1
-Status: In Progress
+Status: Completed
 
 As a trainer, I want to filter Pokémon collection results. So that I can focus on specific collectible targets.
 

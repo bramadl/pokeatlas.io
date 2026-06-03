@@ -112,7 +112,7 @@ export class CliRenderer {
 
 	// ----- Header -------------------------------------------------------------
 	printHeader(): void {
-		const titleText = `${SYMBOLS.diamond} PokeAtlas Sync v${pkg.version}`;
+		const titleText = `${SYMBOLS.diamond} PokePulse Sync v${pkg.version}`;
 		const dryRunText = `• Dry Run: ${this.isDryRun ? "True" : "False"}`;
 		const verboseText = `• Verbose: ${this.isVerbose ? "True" : "False"}`;
 		const forceText = `• Force:   ${this.isForce ? "True" : "False"}`;
@@ -130,7 +130,7 @@ export class CliRenderer {
 
 		console.log(`${indent}╭${borderLine}╮`);
 
-		const styledTitle = `${c.cyan(SYMBOLS.diamond)}\x20${c.bold("PokeAtlas Sync")}\x20${c.dim(`v${pkg.version}`)}`;
+		const styledTitle = `${c.cyan(SYMBOLS.diamond)}\x20${c.bold("PokePulse Sync")}\x20${c.dim(`v${pkg.version}`)}`;
 		const titlePadding = innerWidth - titleText.length - 2;
 		console.log(
 			`${indent}${c.cyan("│")}\x20\x20${styledTitle}${"\x20".repeat(titlePadding)}${c.cyan("│")}`,

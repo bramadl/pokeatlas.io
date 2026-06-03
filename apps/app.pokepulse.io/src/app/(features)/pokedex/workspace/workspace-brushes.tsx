@@ -23,6 +23,7 @@ interface WorkspaceBrushesProps {
 	isEraserMode?: boolean;
 	onEraserActivated: () => void;
 	onSignatureChanged: (state: TrackableState, asState?: boolean) => void;
+	skipHotkeys?: boolean;
 	trackingStates: TrackableState[];
 	vertical?: boolean;
 }
@@ -31,6 +32,7 @@ export function WorkspaceBrushes({
 	isEraserMode,
 	onEraserActivated,
 	onSignatureChanged,
+	skipHotkeys,
 	trackingStates,
 	vertical = true,
 }: WorkspaceBrushesProps) {
@@ -47,26 +49,29 @@ export function WorkspaceBrushes({
 				TRACKING_SIGNATURE_CANONICAL_ORDER[b as TrackableState],
 		);
 
-	useHotkeys([
-		{
-			callback: () => debouncedSignatureChanged("BASE"),
-			hotkey: "Escape",
-			options: { conflictBehavior: "replace" },
-		},
-		{
-			callback: () => debouncedSignatureChanged("BASE"),
-			hotkey: TRACKABLE_STATE_BRUSHES.BASE.hotkey as RegisterableHotkey,
-		},
-		...orderedBrushes.map(([key, { hotkey }]) => ({
-			callback: () => debouncedSignatureChanged(key as TrackableState),
-			hotkey: hotkey as RegisterableHotkey,
-		})),
-		...orderedBrushes.map(([key, { hotkey }]) => ({
-			callback: () => debouncedSignatureChanged(key as TrackableState, true),
-			hotkey: `Shift+${hotkey}` as RegisterableHotkey,
-		})),
-		{ callback: onEraserActivated, hotkey: "Backspace" },
-	]);
+	useHotkeys(
+		[
+			{
+				callback: () => debouncedSignatureChanged("BASE"),
+				hotkey: "Escape",
+				options: { conflictBehavior: "replace" },
+			},
+			{
+				callback: () => debouncedSignatureChanged("BASE"),
+				hotkey: TRACKABLE_STATE_BRUSHES.BASE.hotkey as RegisterableHotkey,
+			},
+			...orderedBrushes.map(([key, { hotkey }]) => ({
+				callback: () => debouncedSignatureChanged(key as TrackableState),
+				hotkey: hotkey as RegisterableHotkey,
+			})),
+			...orderedBrushes.map(([key, { hotkey }]) => ({
+				callback: () => debouncedSignatureChanged(key as TrackableState, true),
+				hotkey: `Shift+${hotkey}` as RegisterableHotkey,
+			})),
+			{ callback: onEraserActivated, hotkey: "Backspace" },
+		],
+		{ enabled: !skipHotkeys },
+	);
 
 	return (
 		<Fragment>
@@ -100,7 +105,7 @@ export function WorkspaceBrushes({
 				orientation={!vertical ? "vertical" : "horizontal"}
 			/>
 
-			<div className="flex gap-1">
+			<div className={cn("flex gap-1", vertical && "flex-col")}>
 				{orderedBrushes.map(([brush, { emoji, hotkey }]) => (
 					<Tooltip key={brush}>
 						<TooltipTrigger asChild>

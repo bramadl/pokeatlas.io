@@ -2,7 +2,7 @@
 
 Epic: Collection Tracking
 Priority: P2
-Status: Not started
+Status: Completed
 
 As a trainer, I want to search inside filtered results. So that I can update specific subsets faster.
 

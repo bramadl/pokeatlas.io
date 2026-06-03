@@ -1,6 +1,6 @@
 "use server";
 
-import { atlas } from "@pokepulse/core/server";
+import { pulse } from "@pokepulse/core/server";
 
 import type {
 	BrowsePokedexInput,
@@ -12,7 +12,7 @@ import type {
 export async function browsePokedex(
 	input: BrowsePokedexInput,
 ): Promise<BrowsePokedexOutput> {
-	const result = await atlas.collection.browsePokedex(input);
+	const result = await pulse.collection.browsePokedex(input);
 	if (result.isError()) throw new Error(String(result.error()));
 	return result.value();
 }
@@ -20,7 +20,7 @@ export async function browsePokedex(
 export async function trackPokemon(
 	input: TrackPokemonInput,
 ): Promise<TrackPokemonOutput> {
-	const result = await atlas.collection.trackPokemon(input);
+	const result = await pulse.collection.trackPokemon(input);
 	if (result.isError()) throw new Error(String(result.error()));
 	return result.value();
 }

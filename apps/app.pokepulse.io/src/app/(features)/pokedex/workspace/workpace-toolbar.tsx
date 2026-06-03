@@ -58,6 +58,7 @@ export function WorkspaceToolbar({
 					<WorkspaceRefreshButton
 						disabled={disableRefresh}
 						onRefreshed={refreshWorkspace}
+						skipHotkey
 					/>
 					<PopoverTrigger asChild>
 						<Button aria-label="Toggle brush toolbar" size="icon">
@@ -76,6 +77,7 @@ export function WorkspaceToolbar({
 						isEraserMode={isEraserMode}
 						onEraserActivated={activateEraser}
 						onSignatureChanged={signatureChangedHandler}
+						skipHotkeys
 						trackingStates={trackingStates}
 					/>
 				</PopoverContent>

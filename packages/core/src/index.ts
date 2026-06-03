@@ -1,3 +1,3 @@
 export * from "@context/collection";
 
-export { atlas } from "./app/container";
+export { pulse } from "./app/container";
