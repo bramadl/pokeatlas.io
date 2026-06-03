@@ -61,6 +61,7 @@ export function PokemonCard<TContextProps extends Record<string, unknown>>({
 				isTrackLogShown={isTrackLogShown}
 			>
 				<PokemonCardImage
+					hasShinyState={pokemon.includeShiny}
 					onInfoClicked={openTrackLog}
 					pokemonName={pokemon.name}
 					pokemonSprite={pokemon.sprites}
