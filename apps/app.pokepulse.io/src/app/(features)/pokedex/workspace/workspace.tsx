@@ -6,7 +6,6 @@ import { ScrollToTop } from "@/components/ui/scroll-to-top";
 
 import { pokedexQueryKeys } from "../pokedex.query";
 import { usePokedexStore } from "../use-pokedex-store";
-import { useTrackingStates } from "./tracking/use-tracking-states";
 import { WorkspaceToolbar } from "./workpace-toolbar";
 
 export function Workspace({ children }: React.PropsWithChildren) {
@@ -25,7 +24,6 @@ export function Workspace({ children }: React.PropsWithChildren) {
 		setIsEraserActive(!isEraserActive);
 	};
 
-	const trackingStates = useTrackingStates({ trackingSignature });
 	const refreshWorkspace = () => {
 		queryClient.invalidateQueries({
 			queryKey: pokedexQueryKeys.all(),
@@ -44,7 +42,6 @@ export function Workspace({ children }: React.PropsWithChildren) {
 				refreshWorkspace={refreshWorkspace}
 				setTrackingSignature={setTrackingSignature}
 				trackingSignature={trackingSignature}
-				trackingStates={trackingStates}
 			/>
 		</Container>
 	);

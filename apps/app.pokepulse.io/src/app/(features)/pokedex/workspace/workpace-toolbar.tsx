@@ -2,7 +2,8 @@
 
 import { PlusIcon } from "@phosphor-icons/react";
 import { computeSignature, type TrackableState } from "@pokepulse/core";
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
+import { useDebounceCallback } from "usehooks-ts";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -13,6 +14,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 
+import { useTrackingStates } from "./tracking/use-tracking-states";
 import { WorkspaceBrushes } from "./workspace-brushes";
 import { WorkspaceMode } from "./workspace-mode";
 import { WorkspaceRefreshButton } from "./workspace-refresh-button";
@@ -30,7 +32,6 @@ interface WorkspaceToolbar {
 	refreshWorkspace: () => void;
 	setTrackingSignature: (signature: string) => void;
 	trackingSignature: string;
-	trackingStates: TrackableState[];
 }
 
 export function WorkspaceToolbar({
@@ -40,19 +41,56 @@ export function WorkspaceToolbar({
 	refreshWorkspace,
 	setTrackingSignature,
 	trackingSignature,
-	trackingStates,
 }: WorkspaceToolbar) {
 	const [isHidden, setIsHidden] = useState<boolean>(false);
 
+	const pendingSignatureRef = useRef(trackingSignature);
+	const [displaySignature, setDisplaySignature] = useState(trackingSignature);
+	const displayTrackingStates = useTrackingStates({
+		trackingSignature: displaySignature,
+	});
+
+	useEffect(() => {
+		pendingSignatureRef.current = trackingSignature;
+		setDisplaySignature(trackingSignature);
+	}, [trackingSignature]);
+
+	const commitHotkeySignature = useDebounceCallback(() => {
+		setTrackingSignature(pendingSignatureRef.current);
+	}, 300);
+
 	const signatureChangedHandler = (
 		state: TrackableState,
-		asState?: boolean,
+		options?: {
+			asState?: boolean;
+			fromHotkey?: boolean;
+		},
 	) => {
 		if (isEraserMode) activateEraser();
 
-		let nextSignature: string = state;
-		if (!asState) nextSignature = computeSignature(trackingStates, state);
-		setTrackingSignature(nextSignature);
+		const { asState, fromHotkey } = options ?? {};
+
+		const currentStates = pendingSignatureRef.current
+			.split("+")
+			.filter(Boolean) as TrackableState[];
+
+		const nextSignature = asState
+			? state
+			: computeSignature(currentStates, state);
+
+		pendingSignatureRef.current = nextSignature;
+
+		// instant UI feedback
+		setDisplaySignature(nextSignature);
+
+		// mouse click => immediate commit
+		if (!fromHotkey) {
+			setTrackingSignature(nextSignature);
+			return;
+		}
+
+		// keyboard => debounce commit
+		commitHotkeySignature();
 	};
 
 	return (
@@ -82,7 +120,7 @@ export function WorkspaceToolbar({
 						onEraserActivated={activateEraser}
 						onSignatureChanged={signatureChangedHandler}
 						skipHotkeys
-						trackingStates={trackingStates}
+						trackingStates={displayTrackingStates}
 					/>
 				</PopoverContent>
 			</Popover>
@@ -97,13 +135,13 @@ export function WorkspaceToolbar({
 					isEraserMode={isEraserMode}
 					isHidden={isHidden}
 					onClicked={() => setIsHidden(!isHidden)}
-					trackingSignature={trackingSignature}
+					trackingSignature={displaySignature}
 				/>
 				<WorkspaceBrushes
 					isEraserMode={isEraserMode}
 					onEraserActivated={activateEraser}
 					onSignatureChanged={signatureChangedHandler}
-					trackingStates={trackingStates}
+					trackingStates={displayTrackingStates}
 					vertical={false}
 				/>
 				<Separator className="my-1" orientation="vertical" />

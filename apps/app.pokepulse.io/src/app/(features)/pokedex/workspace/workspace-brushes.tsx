@@ -8,7 +8,6 @@ import {
 } from "@pokepulse/core";
 import { type RegisterableHotkey, useHotkeys } from "@tanstack/react-hotkeys";
 import { Fragment } from "react/jsx-runtime";
-import { useDebounceCallback } from "usehooks-ts";
 
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -22,7 +21,13 @@ import { cn } from "@/lib/utils";
 interface WorkspaceBrushesProps {
 	isEraserMode?: boolean;
 	onEraserActivated: () => void;
-	onSignatureChanged: (state: TrackableState, asState?: boolean) => void;
+	onSignatureChanged: (
+		state: TrackableState,
+		options?: {
+			asState?: boolean;
+			fromHotkey?: boolean;
+		},
+	) => void;
 	skipHotkeys?: boolean;
 	trackingStates: TrackableState[];
 	vertical?: boolean;
@@ -36,11 +41,6 @@ export function WorkspaceBrushes({
 	trackingStates,
 	vertical = true,
 }: WorkspaceBrushesProps) {
-	const debouncedSignatureChanged = useDebounceCallback(
-		onSignatureChanged,
-		300,
-	);
-
 	const orderedBrushes = Object.entries(TRACKABLE_STATE_BRUSHES)
 		.filter(([key]) => key !== "BASE" && key !== "ERASER")
 		.sort(
@@ -52,22 +52,33 @@ export function WorkspaceBrushes({
 	useHotkeys(
 		[
 			{
-				callback: () => debouncedSignatureChanged("BASE"),
+				callback: () => onSignatureChanged("BASE", { fromHotkey: true }),
 				hotkey: "Escape",
 				options: { conflictBehavior: "replace" },
 			},
+
 			{
-				callback: () => debouncedSignatureChanged("BASE"),
+				callback: () => onSignatureChanged("BASE", { fromHotkey: true }),
 				hotkey: TRACKABLE_STATE_BRUSHES.BASE.hotkey as RegisterableHotkey,
 			},
+
 			...orderedBrushes.map(([key, { hotkey }]) => ({
-				callback: () => debouncedSignatureChanged(key as TrackableState),
+				callback: () =>
+					onSignatureChanged(key as TrackableState, { fromHotkey: true }),
+
 				hotkey: hotkey as RegisterableHotkey,
 			})),
+
 			...orderedBrushes.map(([key, { hotkey }]) => ({
-				callback: () => debouncedSignatureChanged(key as TrackableState, true),
+				callback: () =>
+					onSignatureChanged(key as TrackableState, {
+						asState: true,
+						fromHotkey: true,
+					}),
+
 				hotkey: `Shift+${hotkey}` as RegisterableHotkey,
 			})),
+
 			{ callback: onEraserActivated, hotkey: "Backspace" },
 		],
 		{ enabled: !skipHotkeys },
