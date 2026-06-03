@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 import { NavigationLink } from "./navigation-link";
 
 const LINKS = [
-	{ label: "Dashboard", url: "/" },
+	{ label: "Dashboard", url: "/dashboard" },
 	{ label: "Pokédex", url: "/pokedex" },
 	{ label: "Guides", url: "/guides" },
 ] as const;
