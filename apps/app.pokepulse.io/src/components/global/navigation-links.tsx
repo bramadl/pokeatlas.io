@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 import { NavigationLink } from "./navigation-link";
 
 const LINKS = [
@@ -6,11 +7,24 @@ const LINKS = [
 	{ label: "Guides", url: "/guides" },
 ] as const;
 
-export function NavigationLinks() {
+interface NavigationLinksProps {
+	mobile?: boolean;
+	onLinkClicked?: () => void;
+}
+
+export function NavigationLinks({
+	mobile = false,
+	onLinkClicked,
+}: NavigationLinksProps) {
 	return (
-		<div className="flex items-center gap-3">
+		<div className={cn("flex items-center gap-3", mobile && "flex-col gap-1")}>
 			{LINKS.map((link) => (
-				<NavigationLink key={link.label} {...link} />
+				<NavigationLink
+					key={link.label}
+					mobile={mobile}
+					{...link}
+					onLinkClicked={onLinkClicked}
+				/>
 			))}
 		</div>
 	);

@@ -51,7 +51,7 @@ export default function RootLayout({
 							<QueryProvider>
 								<TooltipProvider>
 									<GlobalNavigation />
-									{children}
+									<main>{children}</main>
 									<GlobalFooter />
 								</TooltipProvider>
 							</QueryProvider>

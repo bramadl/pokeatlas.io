@@ -37,20 +37,18 @@ export default async function Page({ searchParams }: PageProps) {
 
 	return (
 		<HydrationBoundary state={dehydrate(queryClient)}>
-			<main>
-				<PokedexStoreProvider
-					initialPokedexEntriesLimit={DEFAULT_POKEDEX_LIMIT}
-					initialTrackingSignature={DEFAULT_TRACKING_SIGNATURE}
-					trainerId={TRAINER_ID}
-				>
-					<Workspace>
-						<PokedexToolbar>
-							<PokedexToolbarPanel />
-						</PokedexToolbar>
-						<Pokedex />
-					</Workspace>
-				</PokedexStoreProvider>
-			</main>
+			<PokedexStoreProvider
+				initialPokedexEntriesLimit={DEFAULT_POKEDEX_LIMIT}
+				initialTrackingSignature={DEFAULT_TRACKING_SIGNATURE}
+				trainerId={TRAINER_ID}
+			>
+				<Workspace>
+					<PokedexToolbar>
+						<PokedexToolbarPanel />
+					</PokedexToolbar>
+					<Pokedex />
+				</Workspace>
+			</PokedexStoreProvider>
 		</HydrationBoundary>
 	);
 }

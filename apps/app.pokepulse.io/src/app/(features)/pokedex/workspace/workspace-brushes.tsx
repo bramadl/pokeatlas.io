@@ -75,7 +75,7 @@ export function WorkspaceBrushes({
 
 	return (
 		<Fragment>
-			<Tooltip>
+			<Tooltip disableHoverableContent>
 				<TooltipTrigger asChild>
 					<Button
 						className="transition-transform [&>svg]:transition-transform hover:scale-95 hover:[&>svg]:scale-110 hover:[&>svg]:rotate-45"
@@ -107,7 +107,7 @@ export function WorkspaceBrushes({
 
 			<div className={cn("flex gap-1", vertical && "flex-col")}>
 				{orderedBrushes.map(([brush, { emoji, hotkey }]) => (
-					<Tooltip key={brush}>
+					<Tooltip disableHoverableContent key={brush}>
 						<TooltipTrigger asChild>
 							<Button
 								className="transition-transform [&>svg]:transition-transform hover:scale-95 hover:[&>svg]:scale-110 hover:[&>svg]:rotate-45"
@@ -139,7 +139,7 @@ export function WorkspaceBrushes({
 				orientation={!vertical ? "vertical" : "horizontal"}
 			/>
 
-			<Tooltip>
+			<Tooltip disableHoverableContent>
 				<TooltipTrigger asChild>
 					<Button
 						className="transition-transform [&>svg]:transition-transform hover:scale-95 hover:[&>svg]:scale-110 hover:[&>svg]:rotate-45"

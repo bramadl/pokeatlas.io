@@ -1,19 +1,6 @@
 "use client";
 
-import {
-	BugIcon,
-	ChatCircleDotsIcon,
-	ClockCounterClockwiseIcon,
-	CoffeeIcon,
-	DiscordLogoIcon,
-	GearIcon,
-	GlobeIcon,
-	KeyboardIcon,
-	MapTrifoldIcon,
-	SignOutIcon,
-	UserIcon,
-	WrenchIcon,
-} from "@phosphor-icons/react";
+import { GearIcon, GlobeIcon, SignOutIcon } from "@phosphor-icons/react";
 
 import { Avatar, AvatarImage } from "../ui/avatar";
 import { Button } from "../ui/button";
@@ -32,41 +19,13 @@ import {
 	DropdownMenuSubTrigger,
 	DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-
-const LANGUAGES = [
-	{ emoji: "🇮🇩", label: "Bahasa Indonesia", value: "id" },
-	{ emoji: "🇺🇸", label: "English", value: "en" },
-	// { emoji: "🇯🇵", label: "日本語", value: "ja" },
-] as const;
-
-const SETTINGS_ITEMS = [
-	{ icon: KeyboardIcon, label: "Keyboard Shortcuts" },
-	{ icon: WrenchIcon, label: "Tracking Preferences" },
-] as const;
-
-const ACCOUNT_ITEMS = [
-	{ icon: UserIcon, label: "Profile", shortcut: "⇧⌘P" },
-] as const;
-
-const RESOURCE_ITEMS = [
-	{ href: "/changelog", icon: ClockCounterClockwiseIcon, label: "Changelog" },
-	{ href: "/roadmap", icon: MapTrifoldIcon, label: "Roadmap" },
-	{
-		href: "https://discord.gg/pokepulse",
-		icon: DiscordLogoIcon,
-		label: "Join Discord",
-	},
-] as const;
-
-const SUPPORT_ITEMS = [
-	{ href: "/bug", icon: BugIcon, label: "Report a Bug" },
-	{ href: "/feedback", icon: ChatCircleDotsIcon, label: "Feedback" },
-	{
-		href: "https://buymeacoffee.com/pokepulse",
-		icon: CoffeeIcon,
-		label: "Buy me a Coffee",
-	},
-] as const;
+import {
+	ACCOUNT_ITEMS,
+	LANGUAGES,
+	RESOURCE_ITEMS,
+	SETTINGS_ITEMS,
+	SUPPORT_ITEMS,
+} from "./menu";
 
 function AccountMenu() {
 	return (

@@ -1,6 +1,7 @@
 import { Container } from "../ui/container";
 import { Separator } from "../ui/separator";
 import { AppLogo } from "./app-logo";
+import { MobileNavigation } from "./mobile-navigation";
 import { NavigationLinks } from "./navigation-links";
 import { TrainerDropdown } from "./trainer-dropdown";
 
@@ -13,6 +14,9 @@ export function GlobalNavigation() {
 					<NavigationLinks />
 					<Separator className="my-2 opacity-30" orientation="vertical" />
 					<TrainerDropdown />
+				</div>
+				<div className="md:hidden">
+					<MobileNavigation />
 				</div>
 			</Container>
 		</header>

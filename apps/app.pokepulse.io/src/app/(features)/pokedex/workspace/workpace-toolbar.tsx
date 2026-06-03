@@ -1,6 +1,8 @@
+"use client";
+
 import { PlusIcon } from "@phosphor-icons/react";
 import { computeSignature, type TrackableState } from "@pokepulse/core";
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -40,6 +42,8 @@ export function WorkspaceToolbar({
 	trackingSignature,
 	trackingStates,
 }: WorkspaceToolbar) {
+	const [isHidden, setIsHidden] = useState<boolean>(false);
+
 	const signatureChangedHandler = (
 		state: TrackableState,
 		asState?: boolean,
@@ -83,10 +87,16 @@ export function WorkspaceToolbar({
 				</PopoverContent>
 			</Popover>
 			<aside
-				className={cn(pillClass, "hidden md:flex left-1/2 -translate-x-1/2")}
+				className={cn(
+					pillClass,
+					"hidden md:flex left-1/2 -translate-x-1/2",
+					isHidden && "-bottom-12!",
+				)}
 			>
 				<WorkspaceMode
 					isEraserMode={isEraserMode}
+					isHidden={isHidden}
+					onClicked={() => setIsHidden(!isHidden)}
 					trackingSignature={trackingSignature}
 				/>
 				<WorkspaceBrushes

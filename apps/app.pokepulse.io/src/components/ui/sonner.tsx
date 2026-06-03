@@ -7,12 +7,9 @@ import {
 	WarningIcon,
 	XCircleIcon,
 } from "@phosphor-icons/react";
-import { useTheme } from "next-themes";
 import { Toaster as Sonner, type ToasterProps } from "sonner";
 
 const Toaster = ({ ...props }: ToasterProps) => {
-	const { theme = "light" } = useTheme();
-
 	return (
 		<Sonner
 			className="toaster group"
@@ -32,7 +29,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
 					"--normal-text": "var(--popover-foreground)",
 				} as React.CSSProperties
 			}
-			theme={theme as ToasterProps["theme"]}
+			theme="light"
 			toastOptions={{
 				classNames: {
 					toast: "cn-toast",
