@@ -1,12 +1,12 @@
 import { PokemonRef } from "@context/shared";
 import { type ICommand, Id, type IResult, Result } from "@pokepulse/toolkit";
 
-import { PokemonNotFoundError } from "#contracts/pokemon-not-found.error.ts";
-import type { IPokedex } from "#core/pokedex.ts";
-import { TrackedPokemon } from "#core/tracked-pokemon.ts";
-import { TrackedStates } from "#core/tracked-states.ts";
-import { TrackingSignature } from "#core/tracking-signature.ts";
-import type { ITrainerDex } from "#core/trainer-dex.ts";
+import { PokemonNotFoundError } from "#collection:contracts/pokemon-not-found.error.ts";
+import type { IPokedex } from "#collection:core/pokedex.ts";
+import { TrackedPokemon } from "#collection:core/tracked-pokemon.ts";
+import { TrackedStates } from "#collection:core/tracked-states.ts";
+import { TrackingSignature } from "#collection:core/tracking-signature.ts";
+import type { ITrainerDex } from "#collection:core/trainer-dex.ts";
 
 import type {
 	TrackPokemonCommand,

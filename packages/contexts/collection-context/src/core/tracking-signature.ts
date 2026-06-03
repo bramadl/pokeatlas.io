@@ -3,12 +3,12 @@ import { DomainError, ValueObject, validator as v } from "@pokepulse/toolkit";
 import {
 	TRACKABLE_STATE,
 	type TrackableState,
-} from "#contracts/trackable-state";
-import { TrackedStateRef } from "#contracts/tracked-state-ref";
+} from "#collection:contracts/trackable-state";
+import { TrackedStateRef } from "#collection:contracts/tracked-state-ref";
 import {
 	sortSignature,
 	TRACKING_SIGNATURE_MUTUAL_EXCLUSIONS,
-} from "#contracts/tracking-signature";
+} from "#collection:contracts/tracking-signature";
 
 export class TrackingSignature extends ValueObject<string> {
 	private static readonly DELIMITTER = "+";

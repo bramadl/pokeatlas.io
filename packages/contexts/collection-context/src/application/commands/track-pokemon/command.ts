@@ -1,8 +1,8 @@
 import type { PokemonRef } from "@context/shared";
 import type { DomainError } from "@pokepulse/toolkit";
 
-import type { PokemonNotFoundError } from "#contracts/pokemon-not-found.error.ts";
-import type { TrackedStateRef } from "#contracts/tracked-state-ref";
+import type { PokemonNotFoundError } from "#collection:contracts/pokemon-not-found.error.ts";
+import type { TrackedStateRef } from "#collection:contracts/tracked-state-ref";
 
 export interface TrackPokemonInput {
 	pokemonRef: string;

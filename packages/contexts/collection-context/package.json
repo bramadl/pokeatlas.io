@@ -4,14 +4,14 @@
   "type": "module",
   "private": true,
   "imports": {
-    "#application/*": "./src/application/*",
-    "#contracts/*": "./src/contracts/*",
-    "#core/*": "./src/core/*"
+    "#collection:application/*": "./src/application/*",
+    "#collection:contracts/*": "./src/contracts/*",
+    "#collection:core/*": "./src/core/*"
   },
   "exports": {
     ".": "./index.ts",
     "./context": "./src/index.ts",
-    "./contracts": "./src/contracts/index.ts"
+    "./types": "./src/contracts/index.ts"
   },
   "dependencies": {
     "@pokepulse/toolkit": "workspace:*",

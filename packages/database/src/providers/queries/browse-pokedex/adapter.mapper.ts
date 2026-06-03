@@ -5,7 +5,7 @@ import {
 	type PokemonForm,
 	type PokemonRegion,
 	TrackedStateRef,
-} from "@context/collection/contracts";
+} from "@context/collection/types";
 import { PokemonRef, TypeRef } from "@context/shared";
 
 import type { PokemonModelGetPayload } from "#prisma-client/models.ts";

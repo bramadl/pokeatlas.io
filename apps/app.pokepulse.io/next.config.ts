@@ -10,7 +10,7 @@ const nextConfig: NextConfig = {
 		],
 	},
 	reactCompiler: true,
-	transpilePackages: ["@pokepulse/database"],
+	transpilePackages: ["@pokepulse/core", "@pokepulse/database"],
 };
 
 export default nextConfig;

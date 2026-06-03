@@ -1,5 +1,5 @@
 import type { BrowsePokedexInput } from "@context/collection";
-import { TRACKABLE_STATE } from "@context/collection/contracts";
+import { TRACKABLE_STATE } from "@context/collection/types";
 
 import type { PokemonModelWhereInput } from "#prisma-client/models.ts";
 

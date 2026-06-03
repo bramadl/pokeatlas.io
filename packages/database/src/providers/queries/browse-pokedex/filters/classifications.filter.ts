@@ -5,7 +5,7 @@ import type { PokemonModelWhereInput } from "#prisma-client/models.ts";
 export function classificationsFilter(
 	classifications?: NonNullable<
 		BrowsePokedexInput["filters"]
-	>["classification"],
+	>["classifications"],
 ): PokemonModelWhereInput | null {
 	if (!classifications || classifications.length === 0) return null;
 

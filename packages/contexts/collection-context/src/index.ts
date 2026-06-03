@@ -5,14 +5,14 @@ import {
 	type TrackPokemonErrors,
 	type TrackPokemonInput,
 	type TrackPokemonOutput,
-} from "#application/commands/track-pokemon/command";
-import type { TrackPokemonHandler } from "#application/commands/track-pokemon/command.handler";
+} from "#collection:application/commands/track-pokemon/command";
+import type { TrackPokemonHandler } from "#collection:application/commands/track-pokemon/command.handler";
 import {
 	type BrowsePokedexInput,
 	type BrowsePokedexOutput,
 	BrowsePokedexQuery,
-} from "#application/queries/browse-pokedex/query";
-import type { BrowsePokedexHandler } from "#application/queries/browse-pokedex/query.handler";
+} from "#collection:application/queries/browse-pokedex/query";
+import type { BrowsePokedexHandler } from "#collection:application/queries/browse-pokedex/query.handler";
 
 export class CollectionContext {
 	public constructor(

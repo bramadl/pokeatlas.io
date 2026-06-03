@@ -10,9 +10,6 @@
   "iconLibrary": "phosphor",
   "menuAccent": "subtle",
   "menuColor": "default-translucent",
-  "registries": {
-    "@animate-ui": "https://animate-ui.com/r/{name}.json"
-  },
   "rsc": true,
   "rtl": false,
   "style": "radix-luma",

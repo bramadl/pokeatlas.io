@@ -3,10 +3,10 @@ import type {
 	InfinitePaginationReturns,
 } from "@context/shared";
 
-import type { PokedexEntry } from "#contracts/pokedex-entry.ts";
-import type { PokedexOption } from "#contracts/pokedex-options.ts";
-import type { PokemonClassification } from "#contracts/pokemon-classification.ts";
-import type { TrackingStatus } from "#contracts/tracking-status.ts";
+import type { PokedexEntry } from "#collection:contracts/pokedex-entry.ts";
+import type { PokedexOption } from "#collection:contracts/pokedex-options.ts";
+import type { PokemonClassification } from "#collection:contracts/pokemon-classification.ts";
+import type { TrackingStatus } from "#collection:contracts/tracking-status.ts";
 
 export interface BrowsePokedexInput extends InfinitePagination {
 	filters?: Partial<{
