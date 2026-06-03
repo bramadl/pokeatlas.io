@@ -3,13 +3,15 @@
   "version": "0.1.0",
   "type": "module",
   "private": true,
-  "exports": {
-    ".": "./src/index.ts",
-    "./types": "./types/index.ts"
-  },
   "imports": {
-    "#application": "./src/application/index.ts",
-    "#core": "./src/core/index.ts"
+    "#application/*": "./src/application/*",
+    "#contracts/*": "./src/contracts/*",
+    "#core/*": "./src/core/*"
+  },
+  "exports": {
+    ".": "./index.ts",
+    "./context": "./src/index.ts",
+    "./contracts": "./src/contracts/index.ts"
   },
   "dependencies": {
     "@pokeatlas/toolkit": "workspace:*",

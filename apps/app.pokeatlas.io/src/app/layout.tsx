@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
 import { IBM_Plex_Mono, Lora, Plus_Jakarta_Sans } from "next/font/google";
-import { NuqsAdapter } from "nuqs/adapters/next/app";
 
-import { GlobalProgressBar } from "@/components/global/progress-bar";
+import { GlobalFooter } from "@/components/global/footer";
+import { GlobalNavigation } from "@/components/global/navigation";
+import { ThemeProvider } from "@/components/global/theme-provider";
+import { GlobalProgressBar } from "@/components/ui/progress-bar";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { ReactQueryProvider } from "@/lib/tanstack/query/provider";
+import { NuqsProvider } from "@/lib/nuqs/nuqs-provider";
+import { QueryProvider } from "@/lib/tanstack/query/query-provider";
 
 import "./globals.css";
 
@@ -39,15 +42,22 @@ export default function RootLayout({
 		<html
 			className={`${fontSans.variable} ${fontSerif.variable} ${fontMono.variable} antialiased`}
 			lang="en"
+			suppressHydrationWarning
 		>
 			<body>
-				<NuqsAdapter>
+				<ThemeProvider forcedTheme="light">
 					<GlobalProgressBar>
-						<ReactQueryProvider>
-							<TooltipProvider>{children}</TooltipProvider>
-						</ReactQueryProvider>
+						<NuqsProvider>
+							<QueryProvider>
+								<TooltipProvider>
+									<GlobalNavigation />
+									{children}
+									<GlobalFooter />
+								</TooltipProvider>
+							</QueryProvider>
+						</NuqsProvider>
 					</GlobalProgressBar>
-				</NuqsAdapter>
+				</ThemeProvider>
 				<Toaster />
 			</body>
 		</html>

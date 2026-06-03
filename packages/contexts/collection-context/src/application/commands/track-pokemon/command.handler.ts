@@ -1,12 +1,12 @@
-import { PokemonNotFoundError, PokemonRef } from "@context/shared";
+import { PokemonRef } from "@context/shared";
 import { type ICommand, Id, type IResult, Result } from "@pokeatlas/toolkit";
 
-import {
-	type IPokedex,
-	type ITrainerDex,
-	TrackedPokemon,
-	TrackedStates,
-} from "#core";
+import { PokemonNotFoundError } from "#contracts/pokemon-not-found.error.ts";
+import type { IPokedex } from "#core/pokedex.ts";
+import { TrackedPokemon } from "#core/tracked-pokemon.ts";
+import { TrackedStates } from "#core/tracked-states.ts";
+import { TrackingSignature } from "#core/tracking-signature.ts";
+import type { ITrainerDex } from "#core/trainer-dex.ts";
 
 import type {
 	TrackPokemonCommand,
@@ -19,8 +19,8 @@ export class TrackPokemonHandler
 		ICommand<TrackPokemonCommand, TrackPokemonOutput, TrackPokemonErrors>
 {
 	public constructor(
-		private pokedex: IPokedex,
-		private trainerDex: ITrainerDex,
+		private readonly pokedex: IPokedex,
+		private readonly trainerDex: ITrainerDex,
 	) {}
 
 	public async execute({
@@ -31,17 +31,20 @@ export class TrackPokemonHandler
 		const pokemonRef = PokemonRef.from(input.pokemonRef);
 		const trainerId = Id(input.trainerId);
 
-		const exists = await this.pokedex.isPokemonExist(pokemonRef);
+		const exists = await this.pokedex.checkExistence(pokemonRef);
 		if (!exists) {
 			return Result.error(new PokemonNotFoundError(pokemonRef));
 		}
 
-		const trackedStates: TrackedStates[] = [];
-		for (const combo of input.trackedStates) {
-			const vo = TrackedStates.create({ states: combo });
-			if (vo.isError()) return Result.error(vo.error());
-			trackedStates.push(vo.value());
+		const signatures: TrackingSignature[] = [];
+		for (const trackedState of input.trackedStates) {
+			const signature = TrackingSignature.create(trackedState);
+			if (signature.isError()) return Result.error(signature.error());
+			signatures.push(signature.value().sorted());
 		}
+
+		const trackedStates = TrackedStates.create({ signatures });
+		if (trackedStates.isError()) return Result.error(trackedStates.error());
 
 		let trackedPokemon = await this.trainerDex.getPokemon(
 			pokemonRef,
@@ -52,21 +55,20 @@ export class TrackPokemonHandler
 			const result = TrackedPokemon.create({
 				pokemonRef,
 				trackedBy: trainerId,
-				trackedStates,
+				trackedStates: trackedStates.value(),
 			});
 
 			if (result.isError()) return Result.error(result.error());
 			trackedPokemon = result.value();
 		} else {
-			trackedPokemon.updateStates(trackedStates);
+			trackedPokemon.updateTrackedStates(trackedStates.value());
 		}
 
 		await this.trainerDex.save(trackedPokemon);
+
 		return Result.success({
 			pokemonRef: trackedPokemon.get("pokemonRef"),
-			trackedStates: trackedPokemon
-				.get("trackedStates")
-				.map((state) => state.signature),
+			trackedStates: trackedPokemon.get("trackedStates").toRef(),
 		});
 	}
 }

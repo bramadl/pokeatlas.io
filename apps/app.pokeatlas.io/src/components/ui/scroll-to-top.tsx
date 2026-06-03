@@ -21,7 +21,7 @@ export function ScrollToTop() {
 	return (
 		<div
 			className={cn(
-				"fixed bottom-8 xl:bottom-4 right-1/2 translate-x-1/2 sm:translate-x-0 sm:right-6 z-50 p-2",
+				"fixed bottom-8 xl:bottom-4 right-1/2 translate-x-1/2 sm:translate-x-0 sm:right-6 z-50 p-1",
 				"bg-background text-foreground drop-shadow-2xl border border-border/50 rounded-full",
 				"transition-all duration-300 ease-out",
 				visible

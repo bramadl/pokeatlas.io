@@ -4,11 +4,7 @@
   "type": "module",
   "private": true,
   "exports": {
-    ".": "./src/index.ts",
-    "./types": "./types/index.ts"
-  },
-  "imports": {
-    "#/*": "./src/*"
+    ".": "./src/index.ts"
   },
   "dependencies": {
     "@pokeatlas/toolkit": "workspace:*"

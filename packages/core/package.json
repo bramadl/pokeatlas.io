@@ -4,8 +4,8 @@
   "type": "module",
   "private": true,
   "exports": {
-    ".": "./src/index.ts",
-    "./types": "./types/index.ts"
+    "./server": "./src/index.ts",
+    ".": "./client/index.ts"
   },
   "dependencies": {
     "@context/collection": "workspace:*",

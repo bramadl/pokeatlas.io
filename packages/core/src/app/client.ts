@@ -1,4 +1,4 @@
-import type { CollectionContext } from "@context/collection";
+import type { CollectionContext } from "@context/collection/context";
 
 /**
  * @description

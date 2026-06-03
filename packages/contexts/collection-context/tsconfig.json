@@ -1,8 +1,9 @@
 {
   "compilerOptions": {
     "paths": {
-      "#application": ["./src/application/index.ts"],
-      "#core": ["./src/core/index.ts"],
+      "#application/*": ["./src/application/*"],
+      "#contracts/*": ["./src/contracts/*"],
+      "#core/*": ["./src/core/*"],
     }
   },
   "extends": ["../../config/typescript/tsconfig.base.json"]

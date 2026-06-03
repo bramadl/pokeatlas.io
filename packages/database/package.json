@@ -3,12 +3,13 @@
   "version": "0.1.0",
   "type": "module",
   "private": true,
-  "exports": {
-    ".": "./src/index.ts"
-  },
   "imports": {
     "#prisma-client": "./src/prisma/client.ts",
-    "#prisma-client/*": "./src/prisma/generated/*"
+    "#prisma-client/*": "./src/prisma/generated/*",
+    "#providers/*": "./src/providers/*"
+  },
+  "exports": {
+    ".": "./src/index.ts"
   },
   "scripts": {
     "db:generate": "bunx --bun prisma generate",

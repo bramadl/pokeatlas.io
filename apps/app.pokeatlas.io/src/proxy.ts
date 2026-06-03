@@ -1,13 +1,13 @@
 import { type NextRequest, NextResponse } from "next/server";
 
-import type { VariantValue } from "@/features/pokedex/filters/variants/variant.store";
+import type { VariantValue } from "./bak/pokedex/toolbar/filters/filter.options";
 
 const DEFAULT_VARIANTS: VariantValue[] = [];
 const VARIANTS_COOKIE = "pokedex.variants";
 
 export function proxy(request: NextRequest) {
 	const { pathname, searchParams } = request.nextUrl;
-	if (pathname !== "/" || searchParams.has("variants")) {
+	if (pathname !== "/pokedex" || searchParams.has("variants")) {
 		return NextResponse.next();
 	}
 
@@ -34,4 +34,4 @@ export function proxy(request: NextRequest) {
 	return NextResponse.redirect(url);
 }
 
-export const config = { matcher: "/" };
+export const config = { matcher: "/pokedex" };

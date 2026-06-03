@@ -1,14 +1,11 @@
+import { BrowsePokedexHandler, TrackPokemonHandler } from "@context/collection";
+import { CollectionContext } from "@context/collection/context";
 import {
-	BrowsePokedexHandler,
-	CollectionContext,
-	CountPokedexHandler,
-	TrackPokemonHandler,
-} from "@context/collection";
-import {
-	PrismaPokedexServiceAdapter,
-	PrismaTrainerDexRepositoryAdapter,
+	PrismaBrowsePokedexQueryAdapter,
+	PrismaPokedexAdapter,
+	PrismaTrainerDexAdapter,
 } from "@pokeatlas/database";
-import { ContainerBuilder, EventBus } from "@pokeatlas/toolkit";
+import { ContainerBuilder } from "@pokeatlas/toolkit";
 
 import { PokeAtlas } from "./client";
 
@@ -26,33 +23,32 @@ import { PokeAtlas } from "./client";
 const container = ContainerBuilder.create()
 	// ----- Infrastructure ------------------------------------------------
 
-	.add("EventBus", () => new EventBus())
+	// .add("EventBus", () => new EventBus())
 
 	// ----- Query Services ------------------------------------------------
 
-	.add("QueryService:Pokedex", () => new PrismaPokedexServiceAdapter())
+	.add(
+		"QueryService:BrowsePokedexQuery",
+		() => new PrismaBrowsePokedexQueryAdapter(),
+	)
 
 	// ----- Repositories --------------------------------------------------
 
-	.add("Repository:TrainerDex", () => new PrismaTrainerDexRepositoryAdapter())
+	.add("Repository:Pokedex", () => new PrismaPokedexAdapter())
+	.add("Repository:TrainerDex", () => new PrismaTrainerDexAdapter())
 
 	// ----- Handlers ------------------------------------------------------
 
 	.add(
 		"Handler:BrowsePokedex",
-		(r) => new BrowsePokedexHandler(r["QueryService:Pokedex"]),
-	)
-
-	.add(
-		"Handler:CountPokedex",
-		(r) => new CountPokedexHandler(r["QueryService:Pokedex"]),
+		(r) => new BrowsePokedexHandler(r["QueryService:BrowsePokedexQuery"]),
 	)
 
 	.add(
 		"Handler:TrackPokemon",
 		(r) =>
 			new TrackPokemonHandler(
-				r["QueryService:Pokedex"],
+				r["Repository:Pokedex"],
 				r["Repository:TrainerDex"],
 			),
 	)
@@ -62,7 +58,6 @@ const container = ContainerBuilder.create()
 	.add("collection", (r) => {
 		return new CollectionContext({
 			browsePokedex: r["Handler:BrowsePokedex"],
-			countPokedex: r["Handler:CountPokedex"],
 			trackPokemon: r["Handler:TrackPokemon"],
 		});
 	})

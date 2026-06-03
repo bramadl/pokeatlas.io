@@ -1,9 +1,11 @@
+import { Container } from "../ui/container";
+
 export function GlobalFooter() {
 	return (
-		<footer className="bg-foreground text-background h-40">
-			<div className="container mx-auto flex items-center justify-between h-full px-4 sm:px-0 lg:px-4 xl:px-0">
+		<footer className="bg-foreground dark:bg-sidebar text-background h-40">
+			<Container className="flex items-center justify-between h-full">
 				Footer goes here
-			</div>
+			</Container>
 		</footer>
 	);
 }
