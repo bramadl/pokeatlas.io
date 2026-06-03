@@ -1,5 +1,5 @@
 import type { PokemonRef, TrainerRef } from "@context/shared";
-import { Aggregate, DomainError, validator as v } from "@pokeatlas/toolkit";
+import { Aggregate, DomainError, validator as v } from "@pokepulse/toolkit";
 
 import type { TrackedStates } from "./tracked-states";
 

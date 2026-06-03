@@ -1,4 +1,4 @@
-import type { DomainError } from "@pokeatlas/toolkit";
+import type { DomainError } from "@pokepulse/toolkit";
 
 export class DataCorruptionError extends Error {
 	constructor(name: string, id?: string, cause?: DomainError) {

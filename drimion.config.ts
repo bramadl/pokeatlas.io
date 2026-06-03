@@ -1,7 +1,7 @@
 export default {
 	drimion: {
 		corePath: "packages/toolkit/src/drimion",
-		importAlias: "@pokeatlas/toolkit",
+		importAlias: "@pokepulse/toolkit",
 		naming: "kebab-case",
 		targets: {
 			aggregate: {

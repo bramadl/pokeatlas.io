@@ -1,6 +1,6 @@
 import { ExitPromptError } from "@inquirer/core";
 import { checkbox, select } from "@inquirer/prompts";
-import { prisma } from "@pokeatlas/database";
+import { prisma } from "@pokepulse/database";
 
 import { classifyError } from "../game/error.classifier";
 import type { AppContext } from "../game/pipelines/core/app-context";

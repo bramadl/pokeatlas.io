@@ -1,5 +1,5 @@
 {
-  "name": "pokeatlas.io",
+  "name": "pokepulse.io",
   "version": "0.0.1",
   "private": true,
   "type": "module",
@@ -12,10 +12,10 @@
     "packages/toolkit"
   ],
   "scripts": {
-    "app:add": "bunx --bun shadcn@latest add -c apps/app.pokeatlas.io",
-    "app:dev": "cd apps/app.pokeatlas.io && bun run dev",
-    "app:build": "cd apps/app.pokeatlas.io && bun run build",
-    "app:start": "cd apps/app.pokeatlas.io && bun run start",
+    "app:add": "bunx --bun shadcn@latest add -c apps/app.pokepulse.io",
+    "app:dev": "cd apps/app.pokepulse.io && bun run dev",
+    "app:build": "cd apps/app.pokepulse.io && bun run build",
+    "app:start": "cd apps/app.pokepulse.io && bun run start",
     "biome:check": "biome check .",
     "biome:format": "biome format . --write",
     "biome:lint": "biome lint .",

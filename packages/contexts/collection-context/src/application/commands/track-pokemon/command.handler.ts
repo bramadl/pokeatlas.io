@@ -1,5 +1,5 @@
 import { PokemonRef } from "@context/shared";
-import { type ICommand, Id, type IResult, Result } from "@pokeatlas/toolkit";
+import { type ICommand, Id, type IResult, Result } from "@pokepulse/toolkit";
 
 import { PokemonNotFoundError } from "#contracts/pokemon-not-found.error.ts";
 import type { IPokedex } from "#core/pokedex.ts";

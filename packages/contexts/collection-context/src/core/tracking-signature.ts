@@ -1,4 +1,4 @@
-import { DomainError, ValueObject, validator as v } from "@pokeatlas/toolkit";
+import { DomainError, ValueObject, validator as v } from "@pokepulse/toolkit";
 
 import {
 	TRACKABLE_STATE,

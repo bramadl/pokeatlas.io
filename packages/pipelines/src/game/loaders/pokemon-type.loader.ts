@@ -1,4 +1,4 @@
-import type { PrismaClient } from "@pokeatlas/database";
+import type { PrismaClient } from "@pokepulse/database";
 
 import type { TransformedPokemonType } from "../types/contract.types";
 import type { PipelineEvent } from "../types/event.types";

@@ -1,4 +1,4 @@
-# pokeatlas.io
+# pokepulse.io
 
 To install dependencies:
 

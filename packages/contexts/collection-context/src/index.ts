@@ -1,4 +1,4 @@
-import type { IResult } from "@pokeatlas/toolkit";
+import type { IResult } from "@pokepulse/toolkit";
 
 import {
 	TrackPokemonCommand,

@@ -4,8 +4,8 @@ import {
 	PrismaBrowsePokedexQueryAdapter,
 	PrismaPokedexAdapter,
 	PrismaTrainerDexAdapter,
-} from "@pokeatlas/database";
-import { ContainerBuilder } from "@pokeatlas/toolkit";
+} from "@pokepulse/database";
+import { ContainerBuilder } from "@pokepulse/toolkit";
 
 import { PokeAtlas } from "./client";
 
@@ -77,7 +77,7 @@ const container = ContainerBuilder.create()
  *
  * @example
  * ```ts
- * import { atlas } from "@pokeatlas/core";
+ * import { atlas } from "@pokepulse/core";
  * const result = await atlas.collection.browsePokedex();
  * ```
  */

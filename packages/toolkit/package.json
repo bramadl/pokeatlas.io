@@ -1,5 +1,5 @@
 {
-  "name": "@pokeatlas/toolkit",
+  "name": "@pokepulse/toolkit",
   "version": "0.1.0",
   "main": "src/index.ts",
   "type": "module",

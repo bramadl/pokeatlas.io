@@ -14,7 +14,7 @@
     "./contracts": "./src/contracts/index.ts"
   },
   "dependencies": {
-    "@pokeatlas/toolkit": "workspace:*",
+    "@pokepulse/toolkit": "workspace:*",
     "@context/shared": "workspace:*"
   }
 }

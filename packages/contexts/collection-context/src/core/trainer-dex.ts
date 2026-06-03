@@ -1,5 +1,5 @@
 import type { PokemonRef } from "@context/shared";
-import type { UID } from "@pokeatlas/toolkit";
+import type { UID } from "@pokepulse/toolkit";
 
 import type { TrackedPokemon } from "./tracked-pokemon";
 

@@ -1,3 +1,3 @@
-import type { UID } from "@pokeatlas/toolkit";
+import type { UID } from "@pokepulse/toolkit";
 
 export type TrainerRef = UID;

@@ -1,4 +1,4 @@
-import { type IQuery, type IResult, Result } from "@pokeatlas/toolkit";
+import { type IQuery, type IResult, Result } from "@pokepulse/toolkit";
 
 import type { BrowsePokedexOutput, BrowsePokedexQuery } from "./query";
 import type { IBrowsePokedexQueryService } from "./query.service";
