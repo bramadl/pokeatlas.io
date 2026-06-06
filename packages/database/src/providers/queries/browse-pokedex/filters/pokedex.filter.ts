@@ -3,7 +3,7 @@ import {
 	POKEDEX_REGIONAL_RANGES,
 	POKEMON_REGIONAL_ORIGIN_SUFFIX,
 	type PokemonRegional,
-} from "@context/collection/types";
+} from "@context/game";
 
 import type { PokemonModelWhereInput } from "#prisma-client/models.ts";
 

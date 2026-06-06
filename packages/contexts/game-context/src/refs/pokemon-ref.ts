@@ -1,4 +1,4 @@
-import type { Brand } from "../types/brand.type";
+import type { Brand } from "@context/shared";
 
 export type PokemonRef = Brand<string, "PokemonRef">;
 

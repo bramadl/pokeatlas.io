@@ -1,8 +1,13 @@
-import { PokemonRef } from "@context/shared";
-import { type ICommand, Id, type IResult, Result } from "@pokepulse/toolkit";
+import { type IPokedex, PokemonRef } from "@context/game";
+import {
+	type ICommand,
+	Id,
+	type IEventBus,
+	type IResult,
+	Result,
+} from "@pokepulse/toolkit";
 
-import { PokemonNotFoundError } from "#collection:contracts/pokemon-not-found.error.ts";
-import type { IPokedex } from "#collection:core/pokedex.ts";
+import { PokemonNotFoundError } from "#collection:core/pokemon-not-found.ts";
 import { TrackedPokemon } from "#collection:core/tracked-pokemon.ts";
 import { TrackedStates } from "#collection:core/tracked-states.ts";
 import { TrackingSignature } from "#collection:core/tracking-signature.ts";
@@ -19,6 +24,7 @@ export class TrackPokemonHandler
 		ICommand<TrackPokemonCommand, TrackPokemonOutput, TrackPokemonErrors>
 {
 	public constructor(
+		private readonly eventBus: IEventBus,
 		private readonly pokedex: IPokedex,
 		private readonly trainerDex: ITrainerDex,
 	) {}
@@ -60,11 +66,15 @@ export class TrackPokemonHandler
 
 			if (result.isError()) return Result.error(result.error());
 			trackedPokemon = result.value();
+			trackedPokemon.markAsNew();
 		} else {
 			trackedPokemon.updateTrackedStates(trackedStates.value());
 		}
 
-		await this.trainerDex.save(trackedPokemon);
+		await this.trainerDex.save(trackedPokemon).then(() => {
+			const events = trackedPokemon.pullEvents();
+			this.eventBus.publishAll(events);
+		});
 
 		return Result.success({
 			pokemonRef: trackedPokemon.get("pokemonRef"),

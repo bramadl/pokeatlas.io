@@ -1,0 +1,13 @@
+{
+  "name": "@context/game",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@context/shared": "workspace:*",
+    "@pokepulse/toolkit": "workspace:*"
+  }
+}

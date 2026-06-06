@@ -1,0 +1,53 @@
+import type { TrackingStatesChangedPayload } from "@context/collection";
+import type { DomainEvent } from "@pokepulse/toolkit";
+
+import type { IPokedexMetadataProvider } from "#progress:application/ports/pokedex-metadata-provider.ts";
+import type { IProgressProjectionStore } from "#progress:application/ports/progress-projection-store.ts";
+import { computeProgressDelta } from "#progress:application/projections/policies/compute-progress-delta.ts";
+
+export class TrackingStatesChangedHandler {
+	public constructor(
+		private readonly provider: IPokedexMetadataProvider,
+		private readonly store: IProgressProjectionStore,
+	) {}
+
+	public async handle(
+		event: DomainEvent<TrackingStatesChangedPayload>,
+	): Promise<void> {
+		if (!event.payload) return;
+
+		const { by, from, on, to } = event.payload;
+
+		const [traits, metadata] = await Promise.all([
+			this.provider.getTraits(on),
+			this.provider.getMetadata(on),
+		]);
+
+		if (!traits) {
+			console.warn(`[TrackingStatesChangedHandler] traits not found: ${on}`);
+			return;
+		} else if (!metadata) {
+			console.warn(`[TrackingStatesChangedHandler] metadata not found: ${on}`);
+			return;
+		}
+
+		const added = to.filter((s) => !from.includes(s));
+		const removed = from.filter((s) => !to.includes(s));
+
+		if (added.length === 0 && removed.length === 0) return;
+		if (added.length > 0) {
+			await this.store.updateLatestAcquisition(
+				by.value(),
+				on,
+				metadata,
+				to,
+				"UPDATED",
+			);
+		}
+
+		const deltas = computeProgressDelta(added, removed, traits);
+		if (deltas.length === 0) return;
+
+		await this.store.applyDeltas(by.value(), deltas);
+	}
+}

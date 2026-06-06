@@ -2,7 +2,6 @@
   "compilerOptions": {
     "paths": {
       "#collection:application/*": ["./src/application/*"],
-      "#collection:contracts/*": ["./src/contracts/*"],
       "#collection:core/*": ["./src/core/*"],
     }
   },

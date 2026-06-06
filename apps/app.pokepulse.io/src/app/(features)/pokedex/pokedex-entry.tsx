@@ -4,6 +4,7 @@ import {
 	type PokedexEntry as IPokedexEntry,
 	isGuest,
 	type PokemonType,
+	PokemonTypeRef,
 	TrackedStateRef,
 	type TrackingStatus,
 } from "@pokepulse/core";
@@ -112,7 +113,7 @@ export function PokedexEntry({
 					shiny: entry.species.sprites.shinyUrl,
 				},
 				theme: cardTheme,
-				types: entry.species.types.map((t) => t.toLowerCase() as PokemonType),
+				types: entry.species.types.map((t) => PokemonTypeRef.from(t)),
 			}}
 		/>
 	);

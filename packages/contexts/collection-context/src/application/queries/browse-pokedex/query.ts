@@ -1,12 +1,14 @@
 import type {
+	PokedexOption,
+	PokemonClassification,
+	TrackingStatus,
+} from "@context/game";
+import type {
 	InfinitePagination,
 	InfinitePaginationReturns,
 } from "@context/shared";
 
-import type { PokedexEntry } from "#collection:contracts/pokedex-entry.ts";
-import type { PokedexOption } from "#collection:contracts/pokedex-options.ts";
-import type { PokemonClassification } from "#collection:contracts/pokemon-classification.ts";
-import type { TrackingStatus } from "#collection:contracts/tracking-status.ts";
+import type { PokedexEntry } from "#collection:application/contracts/pokedex-entry.ts";
 
 export interface BrowsePokedexInput extends InfinitePagination {
 	filters?: Partial<{

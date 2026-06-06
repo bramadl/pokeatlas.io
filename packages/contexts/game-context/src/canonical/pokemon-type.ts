@@ -20,6 +20,14 @@ export const POKEMON_TYPES = [
 ] as const;
 
 export type PokemonType = (typeof POKEMON_TYPES)[number];
+export namespace PokemonTypeRef {
+	export function from(value: string): PokemonType {
+		if (!(POKEMON_TYPES as readonly string[]).includes(value.toLowerCase())) {
+			throw new Error(`Invalid PokemonType: ${value}`);
+		}
+		return value.toLowerCase() as PokemonType;
+	}
+}
 
 export const TYPES_ALIASES: Record<PokemonType, string> = {
 	bug: "bg",

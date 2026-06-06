@@ -6,7 +6,7 @@
       "**/.next/**",
       "**/.turbo/**",
       "**/dist/**",
-      "apps/app.pokeatlas.io/public/**",
+      "apps/app.pokepulse.io/public/**",
       "packages/database/src/prisma/migrations/**"
     ],
     "useDefaultPatterns": true,
@@ -16,8 +16,8 @@
   "include": [
     "apps/app.pokeatlas.io/**/*",
     "packages/contexts/**/*",
-    "packages/core**/*",
-    "packages/database**/*"
+    "packages/core/**/*",
+    "packages/database/**/*"
   ],
   "input": {
     "maxFileSize": 52428800

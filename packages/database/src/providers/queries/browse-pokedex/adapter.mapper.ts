@@ -1,13 +1,12 @@
+import type { PokedexEntry } from "@context/collection";
 import {
-	POKEDEX_REGIONAL_RANGES,
-	POKEMON_REGIONAL_ORIGIN_SUFFIX,
-	type PokedexEntry,
-	type PokemonForm,
-	type PokemonRegion,
+	PokemonFormRef,
+	PokemonRef,
+	PokemonRegionRef,
+	type PokemonType,
+	PokemonTypeRef,
 	TrackedStateRef,
-} from "@context/collection/types";
-import { PokemonRef, TypeRef } from "@context/shared";
-
+} from "@context/game";
 import type { PokemonModelGetPayload } from "#prisma-client/models.ts";
 
 export type BrowsePokedexQueryResult = PokemonModelGetPayload<{
@@ -25,6 +24,7 @@ export type BrowsePokedexQueryResult = PokemonModelGetPayload<{
 		pokemonClassification: true;
 		primaryType: { select: { name: true; templateId: true } };
 		ref: true;
+		region: true;
 		regularSprite: true;
 		secondaryType: { select: { name: true; templateId: true } };
 		shinySprite: true;
@@ -37,43 +37,23 @@ export type BrowsePokedexQueryResult = PokemonModelGetPayload<{
 	};
 }>;
 
-const REGION_LOOKUP = new Map<number, PokemonRegion>();
-Object.entries(POKEDEX_REGIONAL_RANGES).forEach(([region, range]) => {
-	if (!range) return;
-	const [min, max] = range;
-	for (let i = min; i <= max; i++) {
-		REGION_LOOKUP.set(i, region as PokemonRegion);
-	}
-});
-
-const getRegion = (dex: number): PokemonRegion | null => {
-	return REGION_LOOKUP.get(dex) ?? null;
-};
-
 const getTypes = (
 	primary: string,
 	secondary: string | null,
-): [TypeRef] | [TypeRef, TypeRef] => {
-	const types: [TypeRef] | [TypeRef, TypeRef] = [TypeRef.from(primary)];
-	if (secondary) types.push(TypeRef.from(secondary));
+): [PokemonType] | [PokemonType, PokemonType] => {
+	const types: [PokemonType] | [PokemonType, PokemonType] = [
+		PokemonTypeRef.from(primary),
+	];
+	if (secondary) types.push(PokemonTypeRef.from(secondary));
 	return types;
 };
 
 export function toPokedexEntry(row: BrowsePokedexQueryResult): PokedexEntry {
 	const pokedexNumber = row.pokedexNumber;
-	const tracked = (row.trackedPokemons || []).find(() => true) ?? null;
 
-	const getEntryRegion = (): PokemonRegion => {
-		if (row.formCategory === "REGIONAL_FORM") {
-			const ref = row.ref.toUpperCase();
-			for (const [region, suffix] of Object.entries(
-				POKEMON_REGIONAL_ORIGIN_SUFFIX,
-			)) {
-				if (ref.includes(suffix)) return region as PokemonRegion;
-			}
-		}
-		return getRegion(pokedexNumber) ?? "UNREGISTERED";
-	};
+	const tracked = (row.trackedPokemons || []).find(() => true) ?? null;
+	const trackedStates =
+		tracked?.trackedStates.map((state) => TrackedStateRef.from(state)) ?? [];
 
 	return {
 		lastModifiedAt:
@@ -83,10 +63,10 @@ export function toPokedexEntry(row: BrowsePokedexQueryResult): PokedexEntry {
 		sortGroup: row.formSortGroup,
 		species: {
 			dexNumber: pokedexNumber,
-			form: row.formCategory as PokemonForm,
+			form: PokemonFormRef.from(row.formCategory),
 			id: PokemonRef.from(row.ref),
 			name: row.formName,
-			region: getEntryRegion(),
+			region: PokemonRegionRef.from(row.region),
 			shadowEligible: row.isShadowAvailable,
 			sprites: { shinyUrl: row.shinySprite, url: row.regularSprite },
 			types: getTypes(row.primaryType.name, row.secondaryType?.name ?? null),
@@ -97,7 +77,6 @@ export function toPokedexEntry(row: BrowsePokedexQueryResult): PokedexEntry {
 				isTemporaryEvolution: row.isTemporaryEvolution,
 			},
 		},
-		trackedStates:
-			tracked?.trackedStates.map((state) => TrackedStateRef.from(state)) ?? [],
+		trackedStates,
 	};
 }

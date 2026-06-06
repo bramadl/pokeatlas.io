@@ -1,6 +1,5 @@
+import type { TrackedStateRef } from "@context/game";
 import { DomainError, ValueObject, validator as v } from "@pokepulse/toolkit";
-
-import type { TrackedStateRef } from "#collection:contracts/tracked-state-ref";
 
 import type { TrackingSignature } from "./tracking-signature";
 

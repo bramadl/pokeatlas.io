@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "@context/collection": "workspace:*",
+    "@context/game": "workspace:*",
     "@context/progress": "workspace:*",
     "@context/shared": "workspace:*",
     "@pokepulse/toolkit": "workspace:*",

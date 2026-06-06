@@ -1,5 +1,4 @@
-import type { IPokedex } from "@context/collection";
-import type { PokemonRef } from "@context/shared";
+import type { IPokedex, PokemonRef } from "@context/game";
 
 import { prisma } from "#prisma-client";
 

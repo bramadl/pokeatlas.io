@@ -3,7 +3,7 @@ import {
 	TrackedStates,
 	TrackingSignature,
 } from "@context/collection";
-import { PokemonRef } from "@context/shared";
+import { PokemonRef } from "@context/game";
 import { Id } from "@pokepulse/toolkit";
 
 import type { TrackedPokemonModel } from "#prisma-client/client";

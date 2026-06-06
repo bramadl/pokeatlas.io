@@ -1,6 +1,7 @@
 "use client";
 
 import { useIsFetching, useQueryClient } from "@tanstack/react-query";
+
 import { Container } from "@/components/ui/container";
 import { ScrollToTop } from "@/components/ui/scroll-to-top";
 

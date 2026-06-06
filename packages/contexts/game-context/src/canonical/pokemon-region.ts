@@ -13,6 +13,14 @@ export const POKEMON_REGIONS = [
 ] as const;
 
 export type PokemonRegion = (typeof POKEMON_REGIONS)[number];
+export namespace PokemonRegionRef {
+	export function from(value: string): PokemonRegion {
+		if (!(POKEMON_REGIONS as readonly string[]).includes(value)) {
+			throw new Error(`Invalid PokemonRegion: ${value}`);
+		}
+		return value as PokemonRegion;
+	}
+}
 
 export type PokemonRegional = Exclude<
 	PokemonRegion,

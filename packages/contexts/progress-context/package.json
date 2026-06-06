@@ -3,17 +3,18 @@
   "version": "0.1.0",
   "type": "module",
   "private": true,
+  "imports": {
+    "#progress:application/*": "./src/application/*",
+    "#progress:core/*": "./src/core/*"
+  },
   "exports": {
     ".": "./src/index.ts",
-    "./types": "./types/index.ts"
-  },
-  "imports": {
-    "#application": "./src/application/index.ts",
-    "#core": "./src/core/index.ts"
+    "./contracts": "./contracts/index.ts"
   },
   "dependencies": {
     "@pokepulse/toolkit": "workspace:*",
     "@context/collection": "workspace:*",
+    "@context/game": "workspace:*",
     "@context/shared": "workspace:*"
   }
 }

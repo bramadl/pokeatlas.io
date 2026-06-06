@@ -1,11 +1,25 @@
-import { BrowsePokedexHandler, TrackPokemonHandler } from "@context/collection";
-import { CollectionContext } from "@context/collection/context";
+import {
+	BrowsePokedexHandler,
+	CollectionContext,
+	PokemonTracked,
+	type PokemonTrackedPayload,
+	TrackingStatesChanged,
+	type TrackingStatesChangedPayload,
+	TrackPokemonHandler,
+} from "@context/collection";
+import {
+	PokemonTrackedHandler,
+	ProgressContext,
+	TrackingStatesChangedHandler,
+} from "@context/progress";
 import {
 	PrismaBrowsePokedexQueryAdapter,
 	PrismaPokedexAdapter,
+	PrismaPokedexMetadataProvider,
+	PrismaProgressProjectionStore,
 	PrismaTrainerDexAdapter,
 } from "@pokepulse/database";
-import { ContainerBuilder } from "@pokepulse/toolkit";
+import { ContainerBuilder, EventBus } from "@pokepulse/toolkit";
 
 import { PokePulse } from "./client";
 
@@ -23,7 +37,7 @@ import { PokePulse } from "./client";
 const container = ContainerBuilder.create()
 	// ----- Infrastructure ------------------------------------------------
 
-	// .add("EventBus", () => new EventBus())
+	.add("Infrastructure:EventBus", () => new EventBus())
 
 	// ----- Query Services ------------------------------------------------
 
@@ -37,6 +51,11 @@ const container = ContainerBuilder.create()
 	.add("Repository:Pokedex", () => new PrismaPokedexAdapter())
 	.add("Repository:TrainerDex", () => new PrismaTrainerDexAdapter())
 
+	// ----- Progress Adapters ---------------------------------------------
+
+	.add("Progress:PokedexMetadata", () => new PrismaPokedexMetadataProvider())
+	.add("Progress:ProjectionStore", () => new PrismaProgressProjectionStore())
+
 	// ----- Handlers ------------------------------------------------------
 
 	.add(
@@ -48,24 +67,60 @@ const container = ContainerBuilder.create()
 		"Handler:TrackPokemon",
 		(r) =>
 			new TrackPokemonHandler(
+				r["Infrastructure:EventBus"],
 				r["Repository:Pokedex"],
 				r["Repository:TrainerDex"],
 			),
 	)
 
+	.add(
+		"Handler:PokemonTracked",
+		(r) =>
+			new PokemonTrackedHandler(
+				r["Progress:PokedexMetadata"],
+				r["Progress:ProjectionStore"],
+			),
+	)
+
+	.add(
+		"Handler:TrackingStatesChanged",
+		(r) =>
+			new TrackingStatesChangedHandler(
+				r["Progress:PokedexMetadata"],
+				r["Progress:ProjectionStore"],
+			),
+	)
+
 	// ----- Contexts ------------------------------------------------------
 
-	.add("collection", (r) => {
-		return new CollectionContext({
-			browsePokedex: r["Handler:BrowsePokedex"],
-			trackPokemon: r["Handler:TrackPokemon"],
-		});
-	})
+	.add(
+		"collection",
+		(r) =>
+			new CollectionContext({
+				browsePokedex: r["Handler:BrowsePokedex"],
+				trackPokemon: r["Handler:TrackPokemon"],
+			}),
+	)
 
-	// ----- pulse ---------------------------------------------------------
+	.add("progress", () => new ProgressContext({}))
 
-	.add("pulse", (r) => new PokePulse({ collection: r.collection }))
+	// ----- Pulse ---------------------------------------------------------
+
+	.add(
+		"pulse",
+		(r) => new PokePulse({ collection: r.collection, progress: r.progress }),
+	)
+
 	.build();
+
+const bus = container["Infrastructure:EventBus"];
+bus.subscribe<PokemonTrackedPayload>(PokemonTracked.type, (event) =>
+	container["Handler:PokemonTracked"].handle(event),
+);
+bus.subscribe<TrackingStatesChangedPayload>(
+	TrackingStatesChanged.type,
+	(event) => container["Handler:TrackingStatesChanged"].handle(event),
+);
 
 /**
  * @description

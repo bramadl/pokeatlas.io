@@ -46,8 +46,9 @@ function buildSpeciesMap(sources: ExtractedSources): Map<
 	string,
 	{
 		familyId: string;
-		pokemonClassification: "LEGENDARY" | "MYTHIC" | "ULTRA_BEAST" | null;
 		isShadowAvailable: boolean;
+		isTradable: boolean;
+		pokemonClassification: "LEGENDARY" | "MYTHIC" | "ULTRA_BEAST" | null;
 	}
 > {
 	const map = new Map();
@@ -57,6 +58,7 @@ function buildSpeciesMap(sources: ExtractedSources): Map<
 		map.set(settings.pokemonId, {
 			familyId: settings.familyId,
 			isShadowAvailable: !!settings.shadow,
+			isTradable: settings.isTradable ?? false,
 			pokemonClassification: settings.pokemonClass
 				? (POKEMON_CLASS_MAP[settings.pokemonClass] ?? null)
 				: null,
@@ -149,6 +151,50 @@ function formSuffix(formSlug: string, pokemonId: string): string | null {
 }
 
 // ─── Classifiers ─────────────────────────────────────────────────────────────
+
+const REGIONAL_DEX_RANGES: Array<[string, number, number]> = [
+	["KANTO", 1, 151],
+	["JOHTO", 152, 251],
+	["HOENN", 252, 386],
+	["SINNOH", 387, 493],
+	["UNOVA", 494, 649],
+	["KALOS", 650, 721],
+	["ALOLA", 722, 807],
+	["GALAR", 810, 905],
+	["PALDEA", 906, 1025],
+] as const;
+
+const REGIONAL_ORIGIN_SUFFIX: Record<string, string> = {
+	ALOLA: "ALOLA",
+	ALOLAN: "ALOLA",
+	GALAR: "GALAR",
+	GALARIAN: "GALAR",
+	HISUI: "HISUI",
+	HISUIAN: "HISUI",
+	KANTO: "KANTO",
+	KANTONIAN: "KANTO",
+	PALDEA: "PALDEA",
+	PALDEAN: "PALDEA",
+} as const;
+
+function resolveRegion(
+	canonicalFormSlug: string,
+	formCategory: FormCategory,
+	pokedexNumber: number,
+): string {
+	if (formCategory === "REGIONAL_FORM") {
+		const ref = canonicalFormSlug.toUpperCase();
+		for (const [suffix, region] of Object.entries(REGIONAL_ORIGIN_SUFFIX)) {
+			if (ref.includes(suffix)) return region;
+		}
+	}
+
+	for (const [region, min, max] of REGIONAL_DEX_RANGES) {
+		if (pokedexNumber >= min && pokedexNumber <= max) return region;
+	}
+
+	return "UNREGISTERED";
+}
 
 function classifyFormCategory({
 	canonicalFormSlug,
@@ -537,10 +583,12 @@ export function transformPokemon(
 				isShadowAvailable: speciesMeta.isShadowAvailable,
 				isTemporaryEvolution: false,
 				isTrackable,
+				isTradable: speciesMeta.isTradable,
 				pokedexNumber: dex,
 				pokemonClassification: speciesMeta.pokemonClassification,
 				primaryTypeId: settings.type,
 				ref: canonicalSlug,
+				region: resolveRegion(canonicalSlug, formCategory, dex),
 				regularSprite: sprites.regularSprite,
 				secondaryTypeId: settings.type2 ?? null,
 				shinySprite: sprites.shinySprite,
@@ -648,10 +696,12 @@ export function transformPokemon(
 				isShadowAvailable: speciesMeta.isShadowAvailable,
 				isTemporaryEvolution: true,
 				isTrackable: true,
+				isTradable: speciesMeta.isTradable,
 				pokedexNumber: dex,
 				pokemonClassification: speciesMeta.pokemonClassification,
 				primaryTypeId: primaryType,
 				ref: evoRef,
+				region: resolveRegion(canonicalSlug, formCategory, dex),
 				regularSprite: evoSprites.regularSprite,
 				secondaryTypeId: evo.typeOverride2 ?? settings.type2 ?? null,
 				shinySprite: evoSprites.shinySprite,

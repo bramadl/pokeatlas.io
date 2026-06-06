@@ -1,5 +1,5 @@
 import type { ITrainerDex, TrackedPokemon } from "@context/collection";
-import type { PokemonRef } from "@context/shared";
+import type { PokemonRef } from "@context/game";
 import { Id, type UID } from "@pokepulse/toolkit";
 
 import { prisma } from "#prisma-client";

@@ -5,16 +5,15 @@
   "private": true,
   "imports": {
     "#collection:application/*": "./src/application/*",
-    "#collection:contracts/*": "./src/contracts/*",
     "#collection:core/*": "./src/core/*"
   },
   "exports": {
-    ".": "./index.ts",
-    "./context": "./src/index.ts",
-    "./types": "./src/contracts/index.ts"
+    ".": "./src/index.ts",
+    "./contracts": "./contracts/index.ts"
   },
   "dependencies": {
     "@pokepulse/toolkit": "workspace:*",
+    "@context/game": "workspace:*",
     "@context/shared": "workspace:*"
   }
 }

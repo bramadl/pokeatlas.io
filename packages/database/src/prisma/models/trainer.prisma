@@ -3,10 +3,15 @@ model TrainerModel {
 
   name String
 
-  trackedPokemons TrackedPokemonModel[]
+  trackedPokemons  TrackedPokemonModel[]
+  progress         TrainerProgress?
+  trackingProgress TrainerTrackingProgress[]
+  regionalProgress TrainerRegionalProgress[]
+  variantProgress  TrainerVariantProgress[]
 
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  createdAt                 DateTime                  @default(now()) @map("created_at")
+  updatedAt                 DateTime                  @updatedAt @map("updated_at")
+  trainerLatestAcquisitions TrainerLatestAcquisition?
 
   @@map("trainers")
   @@schema("trainer")

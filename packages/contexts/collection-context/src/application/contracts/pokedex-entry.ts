@@ -1,8 +1,10 @@
-import type { PokemonRef, TypeRef } from "@context/shared";
-
-import type { PokemonForm } from "./pokemon-form";
-import type { PokemonRegion } from "./pokemon-region";
-import type { TrackedStateRef } from "./tracked-state-ref";
+import type {
+	PokemonForm,
+	PokemonRef,
+	PokemonRegion,
+	PokemonType,
+	TrackedStateRef,
+} from "@context/game";
 
 export interface PokedexEntry {
 	lastModifiedAt: Date | null;
@@ -15,7 +17,7 @@ export interface PokedexEntry {
 		name: string;
 		region: PokemonRegion;
 		sprites: { shinyUrl: string | null; url: string };
-		types: [TypeRef] | [TypeRef, TypeRef];
+		types: [PokemonType] | [PokemonType, PokemonType];
 		variants: {
 			isCostume: boolean;
 			isDefaultForm: boolean;

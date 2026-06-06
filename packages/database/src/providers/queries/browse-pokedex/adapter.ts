@@ -1,9 +1,9 @@
-import type {
-	BrowsePokedexInput,
-	BrowsePokedexOutput,
-	IBrowsePokedexQueryService,
+import {
+	type BrowsePokedexInput,
+	type BrowsePokedexOutput,
+	type IBrowsePokedexQueryService,
+	isGuest,
 } from "@context/collection";
-import { isGuest } from "@context/shared";
 
 import { prisma } from "#prisma-client";
 import type { PokemonModelWhereInput } from "#prisma-client/models";
@@ -78,6 +78,7 @@ export class PrismaBrowsePokedexQueryAdapter
 					select: { name: true, templateId: true },
 				},
 				ref: true,
+				region: true,
 				regularSprite: true,
 				secondaryType: {
 					select: { name: true, templateId: true },

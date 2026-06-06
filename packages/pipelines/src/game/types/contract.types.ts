@@ -33,6 +33,8 @@ export interface GmPokemonSettings {
 		defaultForm?: string;
 	};
 
+	isTradable?: boolean;
+
 	pokedexHeightM?: number;
 	pokedexWeightKg?: number;
 	pokemonClass?: string;
@@ -85,10 +87,12 @@ export interface TransformedPokemon {
 	isShadowAvailable: boolean;
 	isTemporaryEvolution: boolean;
 	isTrackable: boolean;
+	isTradable: boolean;
 	pokedexNumber: number;
 	pokemonClassification: "LEGENDARY" | "MYTHIC" | "ULTRA_BEAST" | null;
 	primaryTypeId: string;
 	ref: string;
+	region: string;
 	regularSprite: string;
 	secondaryTypeId: string | null;
 	shinySprite: string | null;

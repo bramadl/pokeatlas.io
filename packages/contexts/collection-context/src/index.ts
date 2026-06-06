@@ -34,3 +34,5 @@ export class CollectionContext {
 		return this.handlers.trackPokemon.execute(new TrackPokemonCommand(input));
 	}
 }
+
+export * from "../contracts";
