@@ -1,20 +1,14 @@
-import type {
-	GetProgressSummaryInput,
-	GetProgressSummaryOutput,
-} from "@pokepulse/core/server";
+import type { GetProgressSummaryOutput } from "@pokepulse/core/server";
 import { queryOptions } from "@tanstack/react-query";
+
+import {
+	type GetProgressSummaryQueryOptions,
+	progressQueryKeys,
+} from "@/app/(shared)/query-keys.registry";
 
 import { getProgressSummary } from "./progress.api";
 
-export type GetProgressSummaryQueryOptions = GetProgressSummaryInput;
-
-export const progressQueryKeys = {
-	all: () => ["progress"] as const,
-	getSummary: (input: GetProgressSummaryQueryOptions) => {
-		return [...progressQueryKeys.all(), "summary", input] as const;
-	},
-};
-
+export { type GetProgressSummaryQueryOptions, progressQueryKeys };
 export const progressQueries = {
 	getSummary: ({ trainerId }: GetProgressSummaryQueryOptions) => {
 		return queryOptions<

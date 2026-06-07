@@ -35,6 +35,7 @@ export function usePokedex({
 		select: (data) => {
 			return pokedexQuerySelector(data, trackingSignature, filters.status);
 		},
+		staleTime: () => 60 * 1000 * 15,
 	});
 
 	const entries =

@@ -2,7 +2,7 @@
 
 import { ArrowRightIcon } from "@phosphor-icons/react";
 import { useSuspenseQuery } from "@tanstack/react-query";
-
+import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -158,10 +158,14 @@ export function TrainerCard({ trainerId }: { trainerId: string }) {
 				<CardDescription>{greeting}</CardDescription>
 			</CardHeader>
 			<CardContent className="space-x-2">
-				<Button>Open Pokédex</Button>
-				<Button className="hover:bg-primary/5" variant="ghost">
-					Read User Guides
-					<ArrowRightIcon />
+				<Button asChild>
+					<Link href="/pokedex">Open Pokédex</Link>
+				</Button>
+				<Button asChild className="hover:bg-primary/5" variant="ghost">
+					<Link href="/guides">
+						Read User Guides
+						<ArrowRightIcon />
+					</Link>
 				</Button>
 			</CardContent>
 		</Card>

@@ -11,6 +11,7 @@ import {
 	getSnapshot,
 	injectEntryIntoCache,
 	invalidateNonAllStatusCaches,
+	reconcileAfterTrack,
 	updateEntryTrackedStates,
 } from "./pokedex.mutation-helper";
 
@@ -36,16 +37,14 @@ export function usePokedexMutation({
 			});
 
 			if (context?.previous) {
-				updateEntryTrackedStates(queryClient, pokemonRef, context.previous);
-				invalidateNonAllStatusCaches(queryClient);
+				reconcileAfterTrack(queryClient, pokemonRef, context.previous);
 			}
 		},
 		onMutate: ({ snapshot }) => {
 			return { previous: snapshot };
 		},
 		onSuccess: ({ pokemonRef, trackedStates }) => {
-			updateEntryTrackedStates(queryClient, pokemonRef, trackedStates);
-			invalidateNonAllStatusCaches(queryClient);
+			reconcileAfterTrack(queryClient, pokemonRef, trackedStates);
 		},
 		scope: { id: `tracked-pokemon:${scope}` },
 	});

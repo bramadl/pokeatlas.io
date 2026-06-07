@@ -6,6 +6,8 @@ import {
 } from "@pokepulse/core";
 import type { InfiniteData, QueryClient } from "@tanstack/react-query";
 import { produce } from "immer";
+import { progressQueryKeys } from "@/app/(shared)/query-keys.registry";
+
 import { pokedexQueryKeys } from "./pokedex.query";
 
 export const getCachedPokedexQueries = (queryClient: QueryClient) => {
@@ -84,8 +86,7 @@ export const injectEntryIntoCache = (
 };
 
 export const invalidateNonAllStatusCaches = (queryClient: QueryClient) => {
-	const pendingMutations = getPendingMutations(queryClient);
-	if (pendingMutations === 0) {
+	if (getPendingMutations(queryClient) === 0) {
 		for (const q of getCachedPokedexQueries(queryClient)) {
 			const input = q.queryKey[2] as ReturnType<
 				typeof pokedexQueryKeys.browse
@@ -97,6 +98,14 @@ export const invalidateNonAllStatusCaches = (queryClient: QueryClient) => {
 				refetchType: "none",
 			});
 		}
+	}
+};
+
+export const invalidateProgressSummary = (queryClient: QueryClient) => {
+	if (getPendingMutations(queryClient) === 0) {
+		queryClient.invalidateQueries({
+			queryKey: progressQueryKeys.all(),
+		});
 	}
 };
 
@@ -119,4 +128,14 @@ export const updateEntryTrackedStates = (
 			}),
 		);
 	}
+};
+
+export const reconcileAfterTrack = (
+	queryClient: QueryClient,
+	pokemonRef: string,
+	trackedStates: TrackedStateRef[],
+) => {
+	updateEntryTrackedStates(queryClient, pokemonRef, trackedStates);
+	invalidateNonAllStatusCaches(queryClient);
+	invalidateProgressSummary(queryClient);
 };
