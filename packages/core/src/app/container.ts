@@ -8,15 +8,17 @@ import {
 	TrackPokemonHandler,
 } from "@context/collection";
 import {
+	GetProgressSummaryHandler,
 	PokemonTrackedHandler,
 	ProgressContext,
 	TrackingStatesChangedHandler,
 } from "@context/progress";
 import {
 	PrismaBrowsePokedexQueryAdapter,
+	PrismaGetProgressSummaryQueryAdapter,
 	PrismaPokedexAdapter,
-	PrismaPokedexMetadataProvider,
-	PrismaProgressProjectionStore,
+	PrismaPokedexMetadataAdapter,
+	PrismaProgressProjectionAdapter,
 	PrismaTrainerDexAdapter,
 } from "@pokepulse/database";
 import { ContainerBuilder, EventBus } from "@pokepulse/toolkit";
@@ -46,6 +48,11 @@ const container = ContainerBuilder.create()
 		() => new PrismaBrowsePokedexQueryAdapter(),
 	)
 
+	.add(
+		"QueryService:GetProgressSummaryQuery",
+		() => new PrismaGetProgressSummaryQueryAdapter(),
+	)
+
 	// ----- Repositories --------------------------------------------------
 
 	.add("Repository:Pokedex", () => new PrismaPokedexAdapter())
@@ -53,8 +60,8 @@ const container = ContainerBuilder.create()
 
 	// ----- Progress Adapters ---------------------------------------------
 
-	.add("Progress:PokedexMetadata", () => new PrismaPokedexMetadataProvider())
-	.add("Progress:ProjectionStore", () => new PrismaProgressProjectionStore())
+	.add("Progress:PokedexMetadata", () => new PrismaPokedexMetadataAdapter())
+	.add("Progress:ProjectionStore", () => new PrismaProgressProjectionAdapter())
 
 	// ----- Handlers ------------------------------------------------------
 
@@ -91,6 +98,12 @@ const container = ContainerBuilder.create()
 			),
 	)
 
+	.add(
+		"Handler:GetProgressSummary",
+		(r) =>
+			new GetProgressSummaryHandler(r["QueryService:GetProgressSummaryQuery"]),
+	)
+
 	// ----- Contexts ------------------------------------------------------
 
 	.add(
@@ -102,7 +115,13 @@ const container = ContainerBuilder.create()
 			}),
 	)
 
-	.add("progress", () => new ProgressContext({}))
+	.add(
+		"progress",
+		(r) =>
+			new ProgressContext({
+				getProgressSummary: r["Handler:GetProgressSummary"],
+			}),
+	)
 
 	// ----- Pulse ---------------------------------------------------------
 

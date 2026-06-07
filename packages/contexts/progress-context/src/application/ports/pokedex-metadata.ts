@@ -31,7 +31,7 @@ export interface PokemonTraits {
 	region: PokemonRegion;
 }
 
-export interface IPokedexMetadataProvider {
+export interface IPokedexMetadata {
 	getMetadata(pokemonRef: PokemonRef): Promise<PokemonMetadata | null>;
 	getTraits(pokemonRef: PokemonRef): Promise<PokemonTraits | null>;
 }

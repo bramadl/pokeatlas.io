@@ -1,5 +1,5 @@
 import type { PokemonRegion, TrackableState, VariantKey } from "@context/game";
-import type { PokemonMetadata } from "./pokedex-metadata-provider";
+import type { PokemonMetadata } from "./pokedex-metadata";
 
 export type ProgressDimension =
 	| { type: "GLOBAL_SPECIES" }
@@ -12,7 +12,7 @@ export interface DimensionDelta {
 	dimension: ProgressDimension;
 }
 
-export interface IProgressProjectionStore {
+export interface IProgressProjection {
 	applyDeltas(trainerId: string, deltas: DimensionDelta[]): Promise<void>;
 	updateLatestAcquisition(
 		trainerId: string,

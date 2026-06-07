@@ -7,17 +7,17 @@
       "**/.turbo/**",
       "**/dist/**",
       "apps/app.pokepulse.io/public/**",
-      "packages/database/src/prisma/migrations/**"
+      "packages/database/src/prisma/migrations/**",
+      "packages/contexts/**/*",
+      "packages/core/**/*",
+      "packages/database/**/*"
     ],
     "useDefaultPatterns": true,
     "useDotIgnore": true,
     "useGitignore": true
   },
   "include": [
-    "apps/app.pokeatlas.io/**/*",
-    "packages/contexts/**/*",
-    "packages/core/**/*",
-    "packages/database/**/*"
+    "apps/app.pokepulse.io/**/*"
   ],
   "input": {
     "maxFileSize": 52428800

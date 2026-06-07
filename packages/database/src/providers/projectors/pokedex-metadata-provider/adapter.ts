@@ -1,13 +1,13 @@
 import type { PokemonRef } from "@context/game";
 import type {
-	IPokedexMetadataProvider,
+	IPokedexMetadata,
 	PokemonMetadata,
 	PokemonTraits,
 } from "@context/progress/contracts";
 
 import { prisma } from "#prisma-client";
 
-export class PrismaPokedexMetadataProvider implements IPokedexMetadataProvider {
+export class PrismaPokedexMetadataAdapter implements IPokedexMetadata {
 	public async getMetadata(
 		pokemonRef: PokemonRef,
 	): Promise<PokemonMetadata | null> {

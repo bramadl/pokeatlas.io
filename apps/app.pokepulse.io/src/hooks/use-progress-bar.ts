@@ -2,13 +2,13 @@ import { useProgress } from "@bprogress/next";
 import { useEffect } from "react";
 import { useIsClient, useIsMounted } from "usehooks-ts";
 
-interface UsePokedexProgressBarOptions {
+interface UseProgressBarOptions {
 	show: { when: boolean };
 }
 
-export function usePokedexProgressBar({
+export function useProgressBar({
 	show: { when: satisfied },
-}: UsePokedexProgressBarOptions) {
+}: UseProgressBarOptions) {
 	const progress = useProgress();
 
 	const isClient = useIsClient();

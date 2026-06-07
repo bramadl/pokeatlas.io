@@ -1,4 +1,4 @@
-import type { PokemonTraits } from "#progress:application/ports/pokedex-metadata-provider.ts";
+import type { PokemonTraits } from "#progress:application/ports/pokedex-metadata.ts";
 
 // Hardcoded by game design — not derivable from model flags
 const NUNDO_TRIO_LAKE_DEX = [480, 481, 482]; // Mesprit, Azelf, Uxie

@@ -1,5 +1,5 @@
-import type { PokemonTraits } from "#progress:application/ports/pokedex-metadata-provider.ts";
-import type { DimensionDelta } from "#progress:application/ports/progress-projection-store.ts";
+import type { PokemonTraits } from "#progress:application/ports/pokedex-metadata.ts";
+import type { DimensionDelta } from "#progress:application/ports/progress-projection.ts";
 
 import { resolveSignatureDimensions } from "../rules/signature-engine";
 

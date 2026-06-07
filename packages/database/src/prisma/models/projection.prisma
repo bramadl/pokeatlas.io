@@ -1,4 +1,4 @@
-model TrainerProgress {
+model ProgressProjection {
   trainerId String @id @map("trainer_id") @db.Uuid
 
   speciesTracked       Int   @default(0) @map("species_tracked")
@@ -8,16 +8,17 @@ model TrainerProgress {
   completedAt DateTime? @map("completed_at")
   updatedAt   DateTime  @updatedAt @map("updated_at")
 
-  trainer          TrainerModel              @relation(fields: [trainerId], references: [id], onDelete: Cascade)
-  trackingProgress TrainerTrackingProgress[]
-  regionalProgress TrainerRegionalProgress[]
-  variantProgress  TrainerVariantProgress[]
+  trainer           TrainerModel                 @relation(fields: [trainerId], references: [id], onDelete: Cascade)
+  trackingProgress  TrackingProgressProjection[]
+  regionalProgress  RegionalProgressProjection[]
+  variantProgress   VariantProgressProjection[]
+  latestAcquisition LatestAcquisitionProjection?
 
   @@map("trainer_progress")
   @@schema("projection")
 }
 
-model TrainerTrackingProgress {
+model TrackingProgressProjection {
   trainerId     String @map("trainer_id") @db.Uuid
   trackingState String @map("tracking_state")
 
@@ -28,15 +29,15 @@ model TrainerTrackingProgress {
   completedAt DateTime? @map("completed_at")
   updatedAt   DateTime  @updatedAt @map("updated_at")
 
-  trainer  TrainerModel    @relation(fields: [trainerId], references: [id], onDelete: Cascade, map: "fk_tracking_progress_trainer")
-  progress TrainerProgress @relation(fields: [trainerId], references: [trainerId], onDelete: Cascade, map: "fk_tracking_progress_parent")
+  trainer  TrainerModel       @relation(fields: [trainerId], references: [id], onDelete: Cascade, map: "fk_tracking_progress_trainer")
+  progress ProgressProjection @relation(fields: [trainerId], references: [trainerId], onDelete: Cascade, map: "fk_tracking_progress_parent")
 
   @@id([trainerId, trackingState])
   @@map("trainer_tracking_progress")
   @@schema("projection")
 }
 
-model TrainerRegionalProgress {
+model RegionalProgressProjection {
   trainerId String @map("trainer_id") @db.Uuid
   region    String
 
@@ -47,34 +48,34 @@ model TrainerRegionalProgress {
   completedAt DateTime? @map("completed_at")
   updatedAt   DateTime  @updatedAt @map("updated_at")
 
-  trainer  TrainerModel    @relation(fields: [trainerId], references: [id], onDelete: Cascade, map: "fk_regional_progress_trainer")
-  progress TrainerProgress @relation(fields: [trainerId], references: [trainerId], onDelete: Cascade, map: "fk_regional_progress_parent")
+  trainer  TrainerModel       @relation(fields: [trainerId], references: [id], onDelete: Cascade, map: "fk_regional_progress_trainer")
+  progress ProgressProjection @relation(fields: [trainerId], references: [trainerId], onDelete: Cascade, map: "fk_regional_progress_parent")
 
   @@id([trainerId, region])
   @@map("trainer_regional_progress")
   @@schema("projection")
 }
 
-model TrainerVariantProgress {
+model VariantProgressProjection {
   trainerId  String @map("trainer_id") @db.Uuid
   variantKey String @map("variant_key")
 
-  tracked Int   @default(0)
-  total   Int   @default(0)
-  percent Float @default(0)
+  speciesTracked       Int   @default(0) @map("species_tracked")
+  speciesTotal         Int   @default(0) @map("species_total")
+  completionPercentage Float @default(0) @map("completion_percentage")
 
   completedAt DateTime? @map("completed_at")
   updatedAt   DateTime  @updatedAt @map("updated_at")
 
-  trainer  TrainerModel    @relation(fields: [trainerId], references: [id], onDelete: Cascade, map: "fk_variant_progress_trainer")
-  progress TrainerProgress @relation(fields: [trainerId], references: [trainerId], onDelete: Cascade, map: "fk_variant_progress_parent")
+  trainer  TrainerModel       @relation(fields: [trainerId], references: [id], onDelete: Cascade, map: "fk_variant_progress_trainer")
+  progress ProgressProjection @relation(fields: [trainerId], references: [trainerId], onDelete: Cascade, map: "fk_variant_progress_parent")
 
   @@id([trainerId, variantKey])
   @@map("trainer_variant_progress")
   @@schema("projection")
 }
 
-model TrainerLatestAcquisition {
+model LatestAcquisitionProjection {
   trainerId String @id @map("trainer_id") @db.Uuid
 
   pokemonRef    String   @map("pokemon_ref")
@@ -89,7 +90,8 @@ model TrainerLatestAcquisition {
 
   occurredAt DateTime @map("occurred_at")
 
-  trainer TrainerModel @relation(fields: [trainerId], references: [id], onDelete: Cascade)
+  trainer  TrainerModel       @relation(fields: [trainerId], references: [id], onDelete: Cascade, map: "fk_latest_acquisition_trainer")
+  progress ProgressProjection @relation(fields: [trainerId], references: [trainerId], onDelete: Cascade, map: "fk_variant_progress_parent")
 
   @@map("trainer_latest_acquisition")
   @@schema("projection")

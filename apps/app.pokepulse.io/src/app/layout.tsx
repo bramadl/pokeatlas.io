@@ -3,7 +3,7 @@ import { IBM_Plex_Mono, Lora, Plus_Jakarta_Sans } from "next/font/google";
 
 import { GlobalFooter } from "@/components/global/footer";
 import { GlobalNavigation } from "@/components/global/navigation";
-import { ThemeProvider } from "@/components/global/theme-provider";
+// import { ThemeProvider } from "@/components/global/theme-provider";
 import { GlobalProgressBar } from "@/components/ui/progress-bar";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -45,19 +45,17 @@ export default function RootLayout({
 			suppressHydrationWarning
 		>
 			<body>
-				<ThemeProvider forcedTheme="light">
-					<GlobalProgressBar>
-						<NuqsProvider>
-							<QueryProvider>
-								<TooltipProvider>
-									<GlobalNavigation />
-									<main>{children}</main>
-									<GlobalFooter />
-								</TooltipProvider>
-							</QueryProvider>
-						</NuqsProvider>
-					</GlobalProgressBar>
-				</ThemeProvider>
+				<GlobalProgressBar>
+					<NuqsProvider>
+						<QueryProvider>
+							<TooltipProvider>
+								<GlobalNavigation />
+								<main>{children}</main>
+								<GlobalFooter />
+							</TooltipProvider>
+						</QueryProvider>
+					</NuqsProvider>
+				</GlobalProgressBar>
 				<Toaster />
 			</body>
 		</html>

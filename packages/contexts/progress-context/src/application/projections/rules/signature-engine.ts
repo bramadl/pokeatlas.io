@@ -1,7 +1,7 @@
 import type { TrackableState, VariantKey } from "@context/game";
 
-import type { PokemonTraits } from "#progress:application/ports/pokedex-metadata-provider.ts";
-import type { ProgressDimension } from "#progress:application/ports/progress-projection-store.ts";
+import type { PokemonTraits } from "#progress:application/ports/pokedex-metadata.ts";
+import type { ProgressDimension } from "#progress:application/ports/progress-projection.ts";
 
 import { TraitRules } from "./trait-rules";
 

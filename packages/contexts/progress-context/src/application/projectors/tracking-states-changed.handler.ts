@@ -1,14 +1,14 @@
 import type { TrackingStatesChangedPayload } from "@context/collection";
 import type { DomainEvent } from "@pokepulse/toolkit";
 
-import type { IPokedexMetadataProvider } from "#progress:application/ports/pokedex-metadata-provider.ts";
-import type { IProgressProjectionStore } from "#progress:application/ports/progress-projection-store.ts";
+import type { IPokedexMetadata } from "#progress:application/ports/pokedex-metadata.ts";
+import type { IProgressProjection } from "#progress:application/ports/progress-projection.ts";
 import { computeProgressDelta } from "#progress:application/projections/policies/compute-progress-delta.ts";
 
 export class TrackingStatesChangedHandler {
 	public constructor(
-		private readonly provider: IPokedexMetadataProvider,
-		private readonly store: IProgressProjectionStore,
+		private readonly provider: IPokedexMetadata,
+		private readonly store: IProgressProjection,
 	) {}
 
 	public async handle(

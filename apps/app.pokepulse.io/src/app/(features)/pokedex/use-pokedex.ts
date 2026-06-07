@@ -3,9 +3,10 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { useDeferredValue, useEffect } from "react";
 import { toast } from "sonner";
 
+import { useProgressBar } from "@/hooks/use-progress-bar";
+
 import { pokedexQueries } from "./pokedex.query";
 import { pokedexQuerySelector } from "./pokedex.query-selector";
-import { usePokedexProgressBar } from "./use-pokedex-progress-bar";
 import { usePokedexSentinel } from "./use-pokedex-sentinel";
 
 interface UsePokedexOptions {
@@ -49,7 +50,7 @@ export function usePokedex({
 		when: query.hasNextPage && !query.isFetchingNextPage,
 	});
 
-	usePokedexProgressBar({
+	useProgressBar({
 		show: { when: query.isFetching || query.isFetchingNextPage },
 	});
 

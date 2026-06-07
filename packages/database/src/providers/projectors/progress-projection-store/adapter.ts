@@ -1,12 +1,12 @@
 import type {
 	DimensionDelta,
-	IProgressProjectionStore,
+	IProgressProjection,
 	PokemonMetadata,
 } from "@context/progress/contracts";
 
 import { prisma } from "#prisma-client";
 
-export class PrismaProgressProjectionStore implements IProgressProjectionStore {
+export class PrismaProgressProjectionAdapter implements IProgressProjection {
 	public async applyDeltas(
 		trainerId: string,
 		deltas: DimensionDelta[],
@@ -15,16 +15,16 @@ export class PrismaProgressProjectionStore implements IProgressProjectionStore {
 			for (const { dimension, delta } of deltas) {
 				switch (dimension.type) {
 					case "GLOBAL_SPECIES": {
-						await tx.trainerProgress.update({
+						await tx.progressProjection.update({
 							data: { speciesTracked: { increment: delta } },
 							where: { trainerId },
 						});
-						const row = await tx.trainerProgress.findUnique({
+						const row = await tx.progressProjection.findUnique({
 							select: { speciesTotal: true, speciesTracked: true },
 							where: { trainerId },
 						});
 						if (row && row.speciesTotal > 0) {
-							await tx.trainerProgress.update({
+							await tx.progressProjection.update({
 								data: {
 									completionPercentage:
 										(row.speciesTracked / row.speciesTotal) * 100,
@@ -36,20 +36,20 @@ export class PrismaProgressProjectionStore implements IProgressProjectionStore {
 					}
 
 					case "REGIONAL": {
-						await tx.trainerRegionalProgress.update({
+						await tx.regionalProgressProjection.update({
 							data: { speciesTracked: { increment: delta } },
 							where: {
 								trainerId_region: { region: dimension.region, trainerId },
 							},
 						});
-						const row = await tx.trainerRegionalProgress.findUnique({
+						const row = await tx.regionalProgressProjection.findUnique({
 							select: { speciesTotal: true, speciesTracked: true },
 							where: {
 								trainerId_region: { region: dimension.region, trainerId },
 							},
 						});
 						if (row && row.speciesTotal > 0) {
-							await tx.trainerRegionalProgress.update({
+							await tx.regionalProgressProjection.update({
 								data: {
 									completionPercentage:
 										(row.speciesTracked / row.speciesTotal) * 100,
@@ -63,7 +63,7 @@ export class PrismaProgressProjectionStore implements IProgressProjectionStore {
 					}
 
 					case "TRACKING": {
-						await tx.trainerTrackingProgress.update({
+						await tx.trackingProgressProjection.update({
 							data: { speciesTracked: { increment: delta } },
 							where: {
 								trainerId_trackingState: {
@@ -72,7 +72,7 @@ export class PrismaProgressProjectionStore implements IProgressProjectionStore {
 								},
 							},
 						});
-						const row = await tx.trainerTrackingProgress.findUnique({
+						const row = await tx.trackingProgressProjection.findUnique({
 							select: { speciesTotal: true, speciesTracked: true },
 							where: {
 								trainerId_trackingState: {
@@ -82,7 +82,7 @@ export class PrismaProgressProjectionStore implements IProgressProjectionStore {
 							},
 						});
 						if (row && row.speciesTotal > 0) {
-							await tx.trainerTrackingProgress.update({
+							await tx.trackingProgressProjection.update({
 								data: {
 									completionPercentage:
 										(row.speciesTracked / row.speciesTotal) * 100,
@@ -99,21 +99,24 @@ export class PrismaProgressProjectionStore implements IProgressProjectionStore {
 					}
 
 					case "VARIANT": {
-						await tx.trainerVariantProgress.update({
-							data: { tracked: { increment: delta } },
+						await tx.variantProgressProjection.update({
+							data: { speciesTracked: { increment: delta } },
 							where: {
 								trainerId_variantKey: { trainerId, variantKey: dimension.key },
 							},
 						});
-						const row = await tx.trainerVariantProgress.findUnique({
-							select: { total: true, tracked: true },
+						const row = await tx.variantProgressProjection.findUnique({
+							select: { speciesTotal: true, speciesTracked: true },
 							where: {
 								trainerId_variantKey: { trainerId, variantKey: dimension.key },
 							},
 						});
-						if (row && row.total > 0) {
-							await tx.trainerVariantProgress.update({
-								data: { percent: (row.tracked / row.total) * 100 },
+						if (row && row.speciesTotal > 0) {
+							await tx.variantProgressProjection.update({
+								data: {
+									completionPercentage:
+										(row.speciesTracked / row.speciesTotal) * 100,
+								},
 								where: {
 									trainerId_variantKey: {
 										trainerId,
@@ -142,7 +145,7 @@ export class PrismaProgressProjectionStore implements IProgressProjectionStore {
 				? metadata.sprite.shiny
 				: metadata.sprite.url;
 
-		await prisma.trainerLatestAcquisition.upsert({
+		await prisma.latestAcquisitionProjection.upsert({
 			create: {
 				activityType,
 				dexNumber: metadata.dexNumber,
