@@ -28,7 +28,7 @@ export function SpeciesCompletion({ trainerId }: { trainerId: string }) {
 		maximumFractionDigits: 2,
 		minimumFractionDigits: 2,
 		style: "percent",
-	}).format(data.completionPercentage);
+	}).format(data.completionPercentage / 100);
 
 	return (
 		<Card>
