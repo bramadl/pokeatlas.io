@@ -1,7 +1,7 @@
 import {
 	type BrowsePokedexOutput,
 	type PokedexEntry,
-	TrackedStateRef,
+	TrackingSignatureRef,
 	type TrackingStatus,
 } from "@pokepulse/core";
 import type { InfiniteData, QueryClient } from "@tanstack/react-query";
@@ -26,7 +26,7 @@ export const getPendingMutations = (queryClient: QueryClient) => {
 export const getSnapshot = (
 	queryClient: QueryClient,
 	pokemonRef: string,
-): TrackedStateRef[] => {
+): TrackingSignatureRef[] => {
 	return (
 		getCachedPokedexQueries(queryClient)
 			.flatMap((q) => {
@@ -101,12 +101,18 @@ export const invalidateNonAllStatusCaches = (queryClient: QueryClient) => {
 	}
 };
 
+// export const invalidateProgressSummary = (queryClient: QueryClient) => {
+// 	if (getPendingMutations(queryClient) === 0) {
+// 		queryClient.invalidateQueries({
+// 			queryKey: progressQueryKeys.all(),
+// 		});
+// 	}
+// };
 export const invalidateProgressSummary = (queryClient: QueryClient) => {
-	if (getPendingMutations(queryClient) === 0) {
-		queryClient.invalidateQueries({
-			queryKey: progressQueryKeys.all(),
-		});
-	}
+	queryClient.invalidateQueries({
+		queryKey: progressQueryKeys.all(),
+		refetchType: "none",
+	});
 };
 
 export const updateEntryTrackedStates = (
@@ -122,7 +128,7 @@ export const updateEntryTrackedStates = (
 				for (const page of draft.pages) {
 					for (const entry of page.entries) {
 						if (entry.species.id !== pokemonRef) continue;
-						entry.trackedStates = trackedStates.map(TrackedStateRef.from);
+						entry.trackedStates = trackedStates.map(TrackingSignatureRef.from);
 					}
 				}
 			}),
@@ -133,7 +139,7 @@ export const updateEntryTrackedStates = (
 export const reconcileAfterTrack = (
 	queryClient: QueryClient,
 	pokemonRef: string,
-	trackedStates: TrackedStateRef[],
+	trackedStates: TrackingSignatureRef[],
 ) => {
 	updateEntryTrackedStates(queryClient, pokemonRef, trackedStates);
 	invalidateNonAllStatusCaches(queryClient);

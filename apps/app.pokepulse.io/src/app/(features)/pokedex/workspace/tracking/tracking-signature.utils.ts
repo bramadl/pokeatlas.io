@@ -4,7 +4,7 @@ import {
 	TRACKING_SIGNATURE_CANONICAL_ORDER,
 	TRACKING_SIGNATURE_MUTUAL_EXCLUSIONS,
 	type TrackableState,
-	type TrackedStateRef,
+	type TrackingSignatureRef,
 } from "@pokepulse/core";
 
 const isValidCombination = (states: TrackableState[]): boolean => {
@@ -54,6 +54,6 @@ export const getAllValidSignatures = (): string[] => {
 	});
 };
 
-export const parseSignature = (signature: TrackedStateRef | string) => {
+export const parseSignature = (signature: TrackingSignatureRef | string) => {
 	return signature.replaceAll("+", " ").toLowerCase();
 };

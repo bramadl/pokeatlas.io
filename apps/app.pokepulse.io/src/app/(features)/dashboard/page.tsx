@@ -1,5 +1,6 @@
 import { trainerId } from "@pokepulse/core/server";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+import { format } from "date-fns";
 import { redirect } from "next/navigation";
 
 import { Container } from "@/components/ui/container";
@@ -28,6 +29,11 @@ export default async function Dashboard() {
 		...progressQueries.getSummary({ trainerId: TRAINER_ID }),
 	}));
 
+	const today = format(new Date(), "yyyy-MM-dd");
+	void (await queryClient.prefetchQuery({
+		...progressQueries.catchOfTheDay({ date: today, trainerId: TRAINER_ID }),
+	}));
+
 	return (
 		<HydrationBoundary state={dehydrate(queryClient)}>
 			<Container
@@ -38,7 +44,7 @@ export default async function Dashboard() {
 					<TrainerCard trainerId={TRAINER_ID} />
 					<SpeciesCompletion trainerId={TRAINER_ID} />
 				</div>
-				<CatchOfTheDay />
+				<CatchOfTheDay date={today} trainerId={TRAINER_ID} />
 				<div className="grid lg:grid-cols-[1fr_360px] gap-4">
 					<div className="flex flex-col gap-4">
 						<TrackingCollections trainerId={TRAINER_ID} />

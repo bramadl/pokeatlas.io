@@ -1,7 +1,11 @@
 "use client";
 
 import { MagnifyingGlassIcon } from "@phosphor-icons/react";
-import { POKEDEX_ALIASES, type PokemonType } from "@pokepulse/core";
+import {
+	POKEDEX_ALIASES,
+	type PokemonType,
+	type TrackingSignatureRef,
+} from "@pokepulse/core";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import Link from "next/link";
 
@@ -79,7 +83,7 @@ export function LatestAcquisition({ trainerId }: { trainerId: string }) {
 		: POKEMON_THEME_MAP.normal;
 
 	const displayStates = DISPLAY_STATE_ORDER.filter((s) =>
-		data.trackedStates.includes(s),
+		data.trackedStates.includes(s as TrackingSignatureRef),
 	);
 
 	const timestamp = new Intl.DateTimeFormat("en-US", {
@@ -90,7 +94,7 @@ export function LatestAcquisition({ trainerId }: { trainerId: string }) {
 	return (
 		<Card
 			className={cn(
-				"transition-all duration-300",
+				"relative transition-all duration-300",
 				data.status === "UNTRACKED" && "grayscale-50",
 			)}
 		>
@@ -102,6 +106,11 @@ export function LatestAcquisition({ trainerId }: { trainerId: string }) {
 			</CardHeader>
 			<CardContent>
 				<Card className="relative rounded-sm">
+					<Link
+						aria-label="View in pokedex"
+						className="absolute inset-0 z-2"
+						href={`/pokedex?q=${data.dexNumber}&${pokedexFilterKeys.pokedex}=${POKEDEX_ALIASES[data.region as keyof typeof POKEDEX_ALIASES]}`}
+					/>
 					<div
 						className={cn(
 							"absolute inset-0 bg-linear-30 from-25% via-background via-75% opacity-50",
@@ -110,11 +119,6 @@ export function LatestAcquisition({ trainerId }: { trainerId: string }) {
 						)}
 					/>
 					<CardContent className="relative z-1 flex items-start justify-between">
-						<Link
-							aria-label="View in pokedex"
-							className="absolute inset-0"
-							href={`/pokedex?q=${data.dexNumber}&${pokedexFilterKeys.pokedex}=${POKEDEX_ALIASES[data.region as keyof typeof POKEDEX_ALIASES]}`}
-						/>
 						<div className="flex items-center gap-4">
 							<Avatar className="bg-slate-50" size="lg">
 								<AvatarImage src={data.sprite ?? undefined} />
@@ -135,11 +139,9 @@ export function LatestAcquisition({ trainerId }: { trainerId: string }) {
 								<p className="font-semibold">{data.name}</p>
 							</div>
 						</div>
-						<Badge
-							variant={data.status === "TRACKED" ? "default" : "secondary"}
-						>
-							{data.status}
-						</Badge>
+						{data.status !== "TRACKED" && (
+							<Badge variant="secondary">{data.status}</Badge>
+						)}
 					</CardContent>
 					{displayStates.length > 0 && (
 						<>

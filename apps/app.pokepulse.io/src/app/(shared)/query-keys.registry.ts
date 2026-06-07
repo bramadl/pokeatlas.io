@@ -1,9 +1,11 @@
 import type {
 	BrowsePokedexInput,
+	GetCatchOfTheDayInput,
 	GetProgressSummaryInput,
 } from "@pokepulse/core/server";
 
 export type GetProgressSummaryQueryOptions = GetProgressSummaryInput;
+export type GetCatchOfTheDayQueryOptions = GetCatchOfTheDayInput;
 
 export type BrowsePokedexQueryOptions = Omit<
 	BrowsePokedexInput,
@@ -12,6 +14,9 @@ export type BrowsePokedexQueryOptions = Omit<
 
 export const progressQueryKeys = {
 	all: () => ["progress"] as const,
+	getCatchOfTheDay: (input: GetCatchOfTheDayQueryOptions) => {
+		return [...progressQueryKeys.all(), "catch-of-the-day", input] as const;
+	},
 	getSummary: (input: GetProgressSummaryQueryOptions) => {
 		return [...progressQueryKeys.all(), "summary", input] as const;
 	},

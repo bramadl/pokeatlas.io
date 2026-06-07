@@ -3,8 +3,9 @@ import type {
 	PokemonRef,
 	PokemonRegion,
 	PokemonType,
-	TrackedStateRef,
 } from "@context/game";
+
+import type { TrackingSignatureRef } from "#collection:core/tracking-signature-ref.ts";
 
 export interface PokedexEntry {
 	lastModifiedAt: Date | null;
@@ -25,5 +26,5 @@ export interface PokedexEntry {
 			isTemporaryEvolution: boolean;
 		};
 	};
-	trackedStates: TrackedStateRef[];
+	trackedStates: TrackingSignatureRef[];
 }

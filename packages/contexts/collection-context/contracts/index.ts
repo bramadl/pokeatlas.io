@@ -12,6 +12,6 @@ export * from "../src/core/pokemon-tracked";
 export * from "../src/core/tracked-pokemon";
 export * from "../src/core/tracked-states";
 export * from "../src/core/tracking-signature";
-export * from "../src/core/tracking-states-changed";
+export * from "../src/core/tracking-signature-changed";
+export * from "../src/core/tracking-signature-ref";
 export * from "../src/core/trainer-dex";
-export * from "../src/core/trainer-ref";

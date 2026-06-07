@@ -1,6 +1,9 @@
 "use client";
 
+import { ArrowRightIcon } from "@phosphor-icons/react";
+import { POKEDEX_ALIASES, POKEMON_REGIONS } from "@pokepulse/core";
 import { useSuspenseQuery } from "@tanstack/react-query";
+import Link from "next/link";
 
 import {
 	Card,
@@ -12,21 +15,8 @@ import {
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Progress } from "@/components/ui/progress";
 
+import { pokedexFilterKeys } from "../../pokedex/toolbar";
 import { progressQueries } from "../progress.query";
-
-// Display order — excludes UNREGISTERED intentionally
-const REGION_ORDER = [
-	"KANTO",
-	"JOHTO",
-	"HOENN",
-	"SINNOH",
-	"UNOVA",
-	"KALOS",
-	"ALOLA",
-	"GALAR",
-	"HISUI",
-	"PALDEA",
-] as const;
 
 export function RegionalBreakdown({ trainerId }: { trainerId: string }) {
 	const { data } = useSuspenseQuery({
@@ -41,15 +31,20 @@ export function RegionalBreakdown({ trainerId }: { trainerId: string }) {
 				<CardDescription>Species completion by region.</CardDescription>
 			</CardHeader>
 			<CardContent className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-				{REGION_ORDER.map((region) => {
+				{POKEMON_REGIONS.filter((r) => r !== "UNREGISTERED").map((region) => {
 					const stat = data[region];
 					if (!stat) return null;
+
+					const href = `/pokedex?${pokedexFilterKeys.pokedex}=${POKEDEX_ALIASES[region]}`;
 					return (
 						<Card className="rounded-sm" key={region}>
-							<CardHeader>
+							<CardHeader className="flex items-center justify-between">
 								<CardTitle className="text-muted-foreground uppercase text-xs font-semibold tracking-wider">
 									{region.charAt(0) + region.slice(1).toLowerCase()}
 								</CardTitle>
+								<Link aria-label="Go to dex" href={href}>
+									<ArrowRightIcon size={12} />
+								</Link>
 							</CardHeader>
 							<CardContent>
 								<Field>

@@ -1,13 +1,13 @@
-import type { PokemonRef, TrackedStateRef } from "@context/game";
+import type { PokemonRef, TrainerRef } from "@context/game";
 import { BaseDomainEvent } from "@pokepulse/toolkit";
 
 import { TrackedPokemon } from "./tracked-pokemon";
-import type { TrainerRef } from "./trainer-ref";
+import type { TrackingSignatureRef } from "./tracking-signature-ref";
 
 export interface PokemonTrackedPayload {
 	pokemonRef: PokemonRef;
 	trackedBy: TrainerRef;
-	trackedStates: TrackedStateRef[];
+	trackedStates: TrackingSignatureRef[];
 }
 
 export class PokemonTracked extends BaseDomainEvent<PokemonTrackedPayload> {

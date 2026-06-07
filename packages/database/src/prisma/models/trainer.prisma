@@ -5,6 +5,7 @@ model TrainerModel {
 
   trackedPokemons   TrackedPokemonModel[]
   progress          ProgressProjection?
+  catchOfTheDay     CatchOfTheDayProjection?
   trackingProgress  TrackingProgressProjection[]
   regionalProgress  RegionalProgressProjection[]
   variantProgress   VariantProgressProjection[]

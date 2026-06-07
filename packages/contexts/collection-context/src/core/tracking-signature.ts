@@ -3,9 +3,10 @@ import {
 	TRACKABLE_STATE,
 	TRACKING_SIGNATURE_MUTUAL_EXCLUSIONS,
 	type TrackableState,
-	TrackedStateRef,
 } from "@context/game";
 import { DomainError, ValueObject, validator as v } from "@pokepulse/toolkit";
+
+import { TrackingSignatureRef } from "./tracking-signature-ref";
 
 export class TrackingSignature extends ValueObject<string> {
 	private static readonly DELIMITTER = "+";
@@ -76,7 +77,7 @@ export class TrackingSignature extends ValueObject<string> {
 		return new TrackingSignature(this.sortedValue);
 	}
 
-	public toRef(): TrackedStateRef {
-		return TrackedStateRef.from(this.sortedValue);
+	public toRef(): TrackingSignatureRef {
+		return TrackingSignatureRef.from(this.sortedValue);
 	}
 }

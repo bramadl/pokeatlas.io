@@ -1,6 +1,6 @@
 import type {
 	PokedexEntry,
-	TrackedStateRef,
+	TrackingSignatureRef,
 	TrackingStatus,
 	TrackPokemonInput,
 	TrackPokemonOutput,
@@ -12,7 +12,7 @@ import { trackPokemon } from "./pokedex.api";
 export type TrackPokemonMutationInput = TrackPokemonInput & {
 	currentStatus: TrackingStatus;
 	entry: PokedexEntry;
-	snapshot: TrackedStateRef[];
+	snapshot: TrackingSignatureRef[];
 };
 
 export const pokedexMutations = {

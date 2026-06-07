@@ -5,7 +5,7 @@ import {
 	isGuest,
 	type PokemonType,
 	PokemonTypeRef,
-	TrackedStateRef,
+	TrackingSignatureRef,
 	type TrackingStatus,
 } from "@pokepulse/core";
 import { useDebounceCallback } from "usehooks-ts";
@@ -48,10 +48,10 @@ export function PokedexEntry({
 	const cardTheme =
 		POKEMON_THEME_MAP[entry.species.types[0]?.toLowerCase() as PokemonType];
 
-	const trackedStateRef = TrackedStateRef.from(trackingSignature);
+	const trackedStateRef = TrackingSignatureRef.from(trackingSignature);
 	const isEntryTracked = guest
 		? true
-		: entry.trackedStates.includes(trackedStateRef as TrackedStateRef);
+		: entry.trackedStates.includes(trackedStateRef as TrackingSignatureRef);
 
 	const trackedStates = isEntryTracked
 		? entry.trackedStates.filter((s) => s !== trackedStateRef)

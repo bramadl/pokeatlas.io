@@ -1,7 +1,7 @@
-import type { TrackedStateRef } from "@context/game";
 import { DomainError, ValueObject, validator as v } from "@pokepulse/toolkit";
 
 import type { TrackingSignature } from "./tracking-signature";
+import type { TrackingSignatureRef } from "./tracking-signature-ref";
 
 interface TrackedStatesProps {
 	signatures: TrackingSignature[];
@@ -38,7 +38,7 @@ export class TrackedStates extends ValueObject<TrackedStatesProps> {
 		}
 	}
 
-	public toRef(): TrackedStateRef[] {
+	public toRef(): TrackingSignatureRef[] {
 		return this.get("signatures").map((sig) => sig.toRef());
 	}
 }

@@ -3,6 +3,7 @@
 import { ArrowRightIcon } from "@phosphor-icons/react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import Link from "next/link";
+import { useMemo } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -108,9 +109,14 @@ function pickGreeting(ctx: GreetingContext): string {
 		GREETING_TIERS.find((t) => ctx.percentage < t.max) ?? GREETING_TIERS.at(-1);
 
 	if (!tier) throw new Error("No greeting tier found");
-	const pick = tier.pool[Math.floor(Math.random() * tier.pool.length)];
 
+	const today = new Date().toISOString().split("T")[0] as string;
+	const seed =
+		ctx.tracked + today.split("-").reduce((a, b) => a + Number(b), 0);
+
+	const pick = tier.pool[seed % tier.pool.length];
 	if (!pick) throw new Error("No greeting pick found");
+
 	return pick(ctx);
 }
 
@@ -120,13 +126,16 @@ export function TrainerCard({ trainerId }: { trainerId: string }) {
 		select: (data) => data.summary.speciesCompletion,
 	});
 
-	const ctx: GreetingContext = {
-		missing: data.total - data.tracked,
-		percentage: data.completionPercentage,
-		tracked: data.tracked,
-	};
+	const ctx = useMemo<GreetingContext>(
+		() => ({
+			missing: data.total - data.tracked,
+			percentage: data.completionPercentage,
+			tracked: data.tracked,
+		}),
+		[data],
+	);
 
-	const greeting = pickGreeting(ctx);
+	const greeting = useMemo(() => pickGreeting(ctx), [ctx]);
 	useProgressBar({ show: { when: isFetching } });
 
 	return (

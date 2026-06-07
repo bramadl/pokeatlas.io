@@ -96,3 +96,16 @@ model LatestAcquisitionProjection {
   @@map("trainer_latest_acquisition")
   @@schema("projection")
 }
+
+model CatchOfTheDayProjection {
+  trainerId String @id @map("trainer_id") @db.Uuid
+  date      String
+
+  slots       Json
+  generatedAt DateTime @map("generated_at")
+
+  trainer TrainerModel @relation(fields: [trainerId], references: [id], onDelete: Cascade)
+
+  @@map("trainer_catch_of_the_day")
+  @@schema("projection")
+}

@@ -1,20 +1,22 @@
 import {
 	type BrowsePokedexOutput,
-	TrackedStateRef,
+	TrackingSignatureRef,
 	type TrackingStatus,
 } from "@pokepulse/core";
 import type { InfiniteData } from "@tanstack/react-query";
 
 const deriveVisibility = (
-	trackedStates: TrackedStateRef[],
+	trackedStates: TrackingSignatureRef[],
 	trackingSignature: string,
 	trackingStatus: TrackingStatus,
 ): boolean => {
 	if (trackingStatus === "ALL") return true;
 	else if (trackingStatus === "TRACKED") {
-		return trackedStates.includes(TrackedStateRef.from(trackingSignature));
+		return trackedStates.includes(TrackingSignatureRef.from(trackingSignature));
 	} else if (trackingStatus === "MISSING") {
-		return !trackedStates.includes(TrackedStateRef.from(trackingSignature));
+		return !trackedStates.includes(
+			TrackingSignatureRef.from(trackingSignature),
+		);
 	}
 	return true;
 };

@@ -3,6 +3,6 @@ import type {
 	GetProgressSummaryOutput,
 } from "./query";
 
-export interface IProgressSummaryQueryService {
+export interface IGetProgressSummaryQueryService {
 	get(input: GetProgressSummaryInput): Promise<GetProgressSummaryOutput>;
 }

@@ -1,18 +1,16 @@
 import type { IResult } from "@pokepulse/toolkit";
 
 import {
-	TrackPokemonCommand,
-	type TrackPokemonErrors,
-	type TrackPokemonInput,
-	type TrackPokemonOutput,
-} from "#collection:application/commands/track-pokemon/command";
-import type { TrackPokemonHandler } from "#collection:application/commands/track-pokemon/command.handler";
-import {
+	type BrowsePokedexHandler,
 	type BrowsePokedexInput,
 	type BrowsePokedexOutput,
 	BrowsePokedexQuery,
-} from "#collection:application/queries/browse-pokedex/query";
-import type { BrowsePokedexHandler } from "#collection:application/queries/browse-pokedex/query.handler";
+	TrackPokemonCommand,
+	type TrackPokemonErrors,
+	type TrackPokemonHandler,
+	type TrackPokemonInput,
+	type TrackPokemonOutput,
+} from "../contracts";
 
 export class CollectionContext {
 	public constructor(

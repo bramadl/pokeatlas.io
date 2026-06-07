@@ -1,10 +1,13 @@
+import type { TrackingSignatureRef } from "@context/collection";
+import type { PokemonRegion, PokemonType } from "@context/game";
+
 export interface LatestAcquisition {
 	dexNumber: number;
 	name: string;
-	region: string;
+	region: PokemonRegion;
 	sprite: string | null;
 	status: "TRACKED" | "UNTRACKED";
 	timestamp: Date;
-	trackedStates: string[];
-	types: string[];
+	trackedStates: TrackingSignatureRef[];
+	types: PokemonType[];
 }

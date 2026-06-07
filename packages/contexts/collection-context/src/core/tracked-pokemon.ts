@@ -1,10 +1,9 @@
-import type { PokemonRef } from "@context/game";
+import type { PokemonRef, TrainerRef } from "@context/game";
 import { Aggregate, DomainError, validator as v } from "@pokepulse/toolkit";
 
 import { PokemonTracked } from "./pokemon-tracked";
 import type { TrackedStates } from "./tracked-states";
-import { TrackingStatesChanged } from "./tracking-states-changed";
-import type { TrainerRef } from "./trainer-ref";
+import { TrackingSignatureChanged } from "./tracking-signature-changed";
 
 export interface TrackedPokemonProps {
 	pokemonRef: PokemonRef;
@@ -63,7 +62,7 @@ export class TrackedPokemon extends Aggregate<TrackedPokemonProps> {
 
 		this.change("trackedStates", newTrackedStates);
 		this.emit(
-			new TrackingStatesChanged(this.id.value(), {
+			new TrackingSignatureChanged(this.id.value(), {
 				by: this.get("trackedBy"),
 				from: previous.toRef(),
 				on: this.get("pokemonRef"),

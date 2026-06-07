@@ -1,15 +1,22 @@
-import type { GetProgressSummaryOutput } from "@pokepulse/core/server";
 import { queryOptions } from "@tanstack/react-query";
 
 import {
+	type GetCatchOfTheDayQueryOptions,
 	type GetProgressSummaryQueryOptions,
 	progressQueryKeys,
 } from "@/app/(shared)/query-keys.registry";
 
-import { getProgressSummary } from "./progress.api";
+import { getCatchOfTheDay, getProgressSummary } from "./progress.api";
+import type { GetProgressSummaryOutput } from "./progress.contract";
 
 export { type GetProgressSummaryQueryOptions, progressQueryKeys };
 export const progressQueries = {
+	catchOfTheDay: (input: GetCatchOfTheDayQueryOptions) => ({
+		queryFn: () => getCatchOfTheDay(input),
+		queryKey: progressQueryKeys.getCatchOfTheDay(input),
+		staleTime: Infinity,
+	}),
+
 	getSummary: ({ trainerId }: GetProgressSummaryQueryOptions) => {
 		return queryOptions<
 			GetProgressSummaryOutput,
@@ -19,6 +26,7 @@ export const progressQueries = {
 		>({
 			queryFn: async () => getProgressSummary({ trainerId }),
 			queryKey: progressQueryKeys.getSummary({ trainerId }),
+			staleTime: 60 * 1000 * 60,
 		});
 	},
 };

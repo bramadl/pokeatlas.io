@@ -1,4 +1,4 @@
-import type { TrackedStateRef, TrackPokemonOutput } from "@pokepulse/core";
+import type { TrackingSignatureRef, TrackPokemonOutput } from "@pokepulse/core";
 import type { QueryClient } from "@tanstack/react-query";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -28,7 +28,7 @@ export function usePokedexMutation({
 		TrackPokemonOutput,
 		Error,
 		TrackPokemonMutationInput,
-		{ previous: TrackedStateRef[] }
+		{ previous: TrackingSignatureRef[] }
 	>({
 		...pokedexMutations.track(),
 		onError: (error, { pokemonRef }, context) => {

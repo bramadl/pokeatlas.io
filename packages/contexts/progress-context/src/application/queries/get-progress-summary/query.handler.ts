@@ -4,13 +4,13 @@ import type {
 	GetProgressSummaryOutput,
 	GetProgressSummaryQuery,
 } from "./query";
-import type { IProgressSummaryQueryService } from "./query.service";
+import type { IGetProgressSummaryQueryService } from "./query.service";
 
 export class GetProgressSummaryHandler
 	implements IQuery<GetProgressSummaryQuery, GetProgressSummaryOutput>
 {
 	public constructor(
-		private readonly queryService: IProgressSummaryQueryService,
+		private readonly queryService: IGetProgressSummaryQueryService,
 	) {}
 
 	public async execute({
