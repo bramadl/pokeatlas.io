@@ -1,7 +1,13 @@
 "use client";
 
+import { useRouter } from "@bprogress/next";
+import { ArrowRightIcon } from "@phosphor-icons/react";
+import {
+	TRACKABLE_STATE_BRUSHES,
+	TRACKING_SIGNATURE_CANONICAL_ORDER,
+	type TrackableState,
+} from "@pokepulse/core";
 import { useSuspenseQuery } from "@tanstack/react-query";
-
 import {
 	Card,
 	CardContent,
@@ -11,28 +17,7 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-
 import { progressQueries } from "../progress.query";
-
-const TRACKING_STATE_META: Record<string, { icon: string; label: string }> = {
-	BASE: { icon: "⭐", label: "Base Dex" },
-	HUNDO: { icon: "💯", label: "Hundo Dex" },
-	LUCKY: { icon: "🍀", label: "Lucky Dex" },
-	NUNDO: { icon: "🔴", label: "Nundo Dex" },
-	PURIFIED: { icon: "💫", label: "Purified Dex" },
-	SHADOW: { icon: "🌑", label: "Shadow Dex" },
-	SHINY: { icon: "✨", label: "Shiny Dex" },
-};
-
-// Display order
-const TRACKING_STATE_ORDER = [
-	"SHINY",
-	"SHADOW",
-	"PURIFIED",
-	"LUCKY",
-	"HUNDO",
-	"NUNDO",
-];
 
 export function TrackingCollections({ trainerId }: { trainerId: string }) {
 	const { data } = useSuspenseQuery({
@@ -40,12 +25,24 @@ export function TrackingCollections({ trainerId }: { trainerId: string }) {
 		select: (data) => data.summary.trackingCollections,
 	});
 
-	const collections = TRACKING_STATE_ORDER.flatMap((state) => {
-		const stat = data[state as keyof typeof data];
-		const meta = TRACKING_STATE_META[state];
-		if (!stat || !meta) return [];
-		return [{ ...meta, ...stat, state }];
-	});
+	const collections = Object.entries(TRACKABLE_STATE_BRUSHES)
+		.filter(([key]) => key !== "BASE" && key !== "ERASER")
+		.sort(
+			([a], [b]) =>
+				TRACKING_SIGNATURE_CANONICAL_ORDER[a as TrackableState] -
+				TRACKING_SIGNATURE_CANONICAL_ORDER[b as TrackableState],
+		)
+		.flatMap(([state, { emoji }]) => {
+			const stat = data[state as keyof typeof data];
+			if (!stat) return [];
+			return [{ emoji, state, ...stat }];
+		});
+
+	const router = useRouter();
+	const handleClick = (state: string) => {
+		sessionStorage.setItem("pokedex:signature", state);
+		router.push("/pokedex");
+	};
 
 	return (
 		<Card>
@@ -57,11 +54,25 @@ export function TrackingCollections({ trainerId }: { trainerId: string }) {
 			</CardHeader>
 			<CardContent className="grid sm:grid-cols-2 xl:grid-cols-3 gap-4">
 				{collections.map((collection) => (
-					<Card key={collection.state}>
-						<CardHeader>
-							<CardTitle className="text-sm">
-								{collection.icon} {collection.label}
+					<Card
+						className="group relative transition-transform hover:scale-105 duration-300"
+						key={collection.state}
+					>
+						<button
+							aria-label="Open dex"
+							className="absolute inset-0 z-2"
+							onClick={() => handleClick(collection.state)}
+							type="button"
+						/>
+						<CardHeader className="flex items-center justify-between">
+							<CardTitle className="text-sm capitalize">
+								<span className="mr-1">{collection.emoji}</span>{" "}
+								<span>{collection.state.toLowerCase()} Dex</span>
 							</CardTitle>
+							<ArrowRightIcon
+								className="opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all delay-100"
+								size={12}
+							/>
 						</CardHeader>
 						<CardContent>
 							<div className="flex justify-between">

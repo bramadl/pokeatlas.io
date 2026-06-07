@@ -37,14 +37,23 @@ export function RegionalBreakdown({ trainerId }: { trainerId: string }) {
 
 					const href = `/pokedex?${pokedexFilterKeys.pokedex}=${POKEDEX_ALIASES[region]}`;
 					return (
-						<Card className="rounded-sm" key={region}>
+						<Card
+							className="group relative transition-transform hover:scale-105 duration-300"
+							key={region}
+						>
+							<Link
+								aria-label="Go to dex"
+								className="absolute inset-0"
+								href={href}
+							/>
 							<CardHeader className="flex items-center justify-between">
 								<CardTitle className="text-muted-foreground uppercase text-xs font-semibold tracking-wider">
 									{region.charAt(0) + region.slice(1).toLowerCase()}
 								</CardTitle>
-								<Link aria-label="Go to dex" href={href}>
-									<ArrowRightIcon size={12} />
-								</Link>
+								<ArrowRightIcon
+									className="opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all delay-100"
+									size={14}
+								/>
 							</CardHeader>
 							<CardContent>
 								<Field>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useIsFetching, useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
 
 import { Container } from "@/components/ui/container";
 import { ScrollToTop } from "@/components/ui/scroll-to-top";
@@ -35,6 +36,13 @@ export function Workspace({ children, hideToolbar }: WorkspaceProps) {
 			refetchType: "active",
 		});
 	};
+
+	useEffect(() => {
+		const pending = sessionStorage.getItem("pokedex:signature");
+		if (!pending) return;
+		sessionStorage.removeItem("pokedex:signature");
+		setTrackingSignature(pending);
+	}, [setTrackingSignature]);
 
 	return (
 		<Container className="relative min-h-[75svh] bg-slate-50 sm:my-8">
