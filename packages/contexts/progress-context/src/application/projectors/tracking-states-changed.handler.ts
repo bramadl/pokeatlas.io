@@ -35,19 +35,19 @@ export class TrackingStatesChangedHandler {
 		const removed = from.filter((s) => !to.includes(s));
 
 		if (added.length === 0 && removed.length === 0) return;
-		if (added.length > 0) {
-			await this.store.updateLatestAcquisition(
+
+		const deltas = computeProgressDelta(added, removed, traits);
+		if (deltas.length === 0) return;
+
+		await Promise.all([
+			this.store.applyDeltas(by.value(), deltas),
+			this.store.updateLatestAcquisition(
 				by.value(),
 				on,
 				metadata,
 				to,
 				"UPDATED",
-			);
-		}
-
-		const deltas = computeProgressDelta(added, removed, traits);
-		if (deltas.length === 0) return;
-
-		await this.store.applyDeltas(by.value(), deltas);
+			),
+		]);
 	}
 }

@@ -1,5 +1,5 @@
 import type { PokemonRegion, TrackableState, VariantKey } from "@context/game";
-import type { ProgressSummary } from "@context/progress";
+import type { LatestAcquisition, ProgressSummary } from "@context/progress";
 
 import type { ProgressProjectionGetPayload } from "#prisma-client/models.ts";
 
@@ -19,6 +19,7 @@ export type GetProgressSummaryQueryResult = ProgressProjectionGetPayload<{
 				secondaryType: true;
 				sprite: true;
 				trackedStates: true;
+				activityType: true;
 			};
 		};
 		regionalProgress: {
@@ -117,12 +118,16 @@ export function toProgressSummary(
 	) as ProgressSummary["variantCollections"];
 
 	// ── Latest Acquisition ──────────────────────────────────────────────────────
-	const latestAcquisition = summary.latestAcquisition
+	const latestAcquisition: LatestAcquisition | null = summary.latestAcquisition
 		? {
-				dexNumber: `#${summary.latestAcquisition.dexNumber.toString().padStart(3, "0")}`,
+				dexNumber: summary.latestAcquisition.dexNumber,
 				name: summary.latestAcquisition.pokemonName,
 				region: summary.latestAcquisition.region,
 				sprite: summary.latestAcquisition.sprite,
+				status:
+					summary.latestAcquisition.trackedStates.length === 0
+						? "UNTRACKED"
+						: "TRACKED",
 				timestamp: summary.latestAcquisition.occurredAt,
 				trackedStates: summary.latestAcquisition.trackedStates,
 				types: [

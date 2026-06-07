@@ -20,6 +20,7 @@ export class PrismaGetProgressSummaryQueryAdapter
 				completionPercentage: true,
 				latestAcquisition: {
 					select: {
+						activityType: true,
 						dexNumber: true,
 						occurredAt: true,
 						pokemonName: true,

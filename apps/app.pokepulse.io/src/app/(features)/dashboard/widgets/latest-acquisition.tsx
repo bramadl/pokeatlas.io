@@ -1,11 +1,12 @@
 "use client";
 
 import { MagnifyingGlassIcon } from "@phosphor-icons/react";
-import type { PokemonType } from "@pokepulse/core";
+import { POKEDEX_ALIASES, type PokemonType } from "@pokepulse/core";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import Link from "next/link";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -18,6 +19,7 @@ import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 
 import { POKEMON_THEME_MAP } from "../../pokedex/pokemon/card/pokemon-card.theme";
+import { pokedexFilterKeys } from "../../pokedex/toolbar";
 import { progressQueries } from "../progress.query";
 
 const STATE_EMOJI: Record<string, string> = {
@@ -86,7 +88,12 @@ export function LatestAcquisition({ trainerId }: { trainerId: string }) {
 	}).format(new Date(data.timestamp));
 
 	return (
-		<Card>
+		<Card
+			className={cn(
+				"transition-all duration-300",
+				data.status === "UNTRACKED" && "grayscale-50",
+			)}
+		>
 			<CardHeader className="flex items-center justify-between gap-4">
 				<CardTitle>Latest Acquisition</CardTitle>
 				<small className="text-xs ml-auto text-muted-foreground">
@@ -102,7 +109,12 @@ export function LatestAcquisition({ trainerId }: { trainerId: string }) {
 							theme.cardBgOffset,
 						)}
 					/>
-					<CardContent className="relative z-1">
+					<CardContent className="relative z-1 flex items-start justify-between">
+						<Link
+							aria-label="View in pokedex"
+							className="absolute inset-0"
+							href={`/pokedex?q=${data.dexNumber}&${pokedexFilterKeys.pokedex}=${POKEDEX_ALIASES[data.region as keyof typeof POKEDEX_ALIASES]}`}
+						/>
 						<div className="flex items-center gap-4">
 							<Avatar className="bg-slate-50" size="lg">
 								<AvatarImage src={data.sprite ?? undefined} />
@@ -110,7 +122,9 @@ export function LatestAcquisition({ trainerId }: { trainerId: string }) {
 							</Avatar>
 							<div className="flex flex-col gap-1">
 								<div className="flex items-center gap-2">
-									<div className="text-xs font-mono">{data.dexNumber}</div>
+									<div className="text-xs font-mono">
+										#{data.dexNumber.toString().padStart(3, "0")}
+									</div>
 									<div className="text-muted-foreground text-[8px] opacity-50">
 										•
 									</div>
@@ -121,6 +135,11 @@ export function LatestAcquisition({ trainerId }: { trainerId: string }) {
 								<p className="font-semibold">{data.name}</p>
 							</div>
 						</div>
+						<Badge
+							variant={data.status === "TRACKED" ? "default" : "secondary"}
+						>
+							{data.status}
+						</Badge>
 					</CardContent>
 					{displayStates.length > 0 && (
 						<>
