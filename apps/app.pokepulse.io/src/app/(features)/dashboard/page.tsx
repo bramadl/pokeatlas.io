@@ -52,8 +52,8 @@ export default async function Dashboard() {
 						<RegionalBreakdown trainerId={TRAINER_ID} />
 					</div>
 					<div className="flex flex-col gap-4">
-						<CompletionAchievements />
-						<CollectionInsights />
+						<CompletionAchievements trainerId={TRAINER_ID} />
+						<CollectionInsights trainerId={TRAINER_ID} />
 						<LatestAcquisition trainerId={TRAINER_ID} />
 					</div>
 				</div>

@@ -4,11 +4,13 @@
       "@/*": ["./src/*"],
 
       "#collection:application/*": ["../../packages/contexts/collection-context/src/application/*"],
-      "#collection:contracts/*": ["../../packages/contexts/collection-context/src/contracts/*"],
       "#collection:core/*": ["../../packages/contexts/collection-context/src/core/*"],
       
       "#prisma-client": ["../../packages/database/src/prisma/client.ts"],
       "#prisma-client/*": ["../../packages/database/src/prisma/generated/*"],
+
+      "#progress:application/*": ["../../packages/contexts/progress-context/src/application/*"],
+      "#progress:core/*": ["../../packages/contexts/progress-context/src/core/*"],
     },
   },
   "exclude": ["node_modules"],

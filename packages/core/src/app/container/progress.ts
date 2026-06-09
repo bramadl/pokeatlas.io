@@ -18,6 +18,7 @@ import {
 	PrismaGetProgressSummaryQueryServiceAdapter,
 	PrismaPokemonMetadataSourceAdapter,
 	PrismaPokemonSourceAdapter,
+	PrismaTrainerAchievementProjectionAdapter,
 	PrismaTrainerProgressProjectionAdapter,
 } from "@pokepulse/database";
 import type { ContainerBuilder, EventBus } from "@pokepulse/toolkit";
@@ -27,8 +28,16 @@ export function buildProgressSlice<
 >(base: ContainerBuilder<Base>) {
 	return base
 		.add(
+			"Adapter:Projection:TrainerAchievementProjection",
+			() => new PrismaTrainerAchievementProjectionAdapter(),
+		)
+
+		.add(
 			"Adapter:Projection:TrainerProgressProjection",
-			() => new PrismaTrainerProgressProjectionAdapter(),
+			(r) =>
+				new PrismaTrainerProgressProjectionAdapter(
+					r["Adapter:Projection:TrainerAchievementProjection"],
+				),
 		)
 
 		.add(
@@ -60,6 +69,7 @@ export function buildProgressSlice<
 			return new PokemonTrackedHandler(
 				r["Adapter:Projection:Source:PokemonMetadata"],
 				r["Adapter:Projection:TrainerProgressProjection"],
+				r["Adapter:Projection:TrainerAchievementProjection"],
 			);
 		})
 
@@ -67,6 +77,7 @@ export function buildProgressSlice<
 			return new TrackingStatesChangedHandler(
 				r["Adapter:Projection:Source:PokemonMetadata"],
 				r["Adapter:Projection:TrainerProgressProjection"],
+				r["Adapter:Projection:TrainerAchievementProjection"],
 			);
 		})
 

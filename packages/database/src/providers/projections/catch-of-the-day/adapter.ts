@@ -5,7 +5,7 @@ import type {
 } from "@context/progress";
 
 import { prisma } from "#prisma-client";
-import type { InputJsonValue } from "#prisma-client/internal/prismaNamespace.ts";
+import type { InputJsonValue } from "#prisma-client/internal/prismaNamespace";
 
 export class PrismaCatchOfTheDayProjectionAdapter
 	implements ICatchOfTheDayProjection

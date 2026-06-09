@@ -4,7 +4,7 @@ import type { TrackableState, VariantKey } from "@context/game";
 import {
 	type PokemonTraits,
 	TraitRules,
-} from "#progress:application/contracts/pokemon-traits.ts";
+} from "#progress:application/contracts/pokemon-traits";
 
 import type { ProgressDimension } from "../ports/projection";
 

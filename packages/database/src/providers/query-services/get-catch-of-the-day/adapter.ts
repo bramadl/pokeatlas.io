@@ -5,7 +5,7 @@ import type {
 } from "@context/progress";
 
 import { prisma } from "#prisma-client";
-import { DataCorruptionError } from "#providers/errors/data-corruption.error.ts";
+import { DataCorruptionError } from "#providers/errors/data-corruption.error";
 
 import { toCatchOfTheDay } from "./adapter.mapper";
 

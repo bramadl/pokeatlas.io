@@ -1,7 +1,7 @@
 import type { TrackingSignatureRef } from "@context/collection";
 import type { PokemonRef, PokemonType } from "@context/game";
 
-import type { PokemonTraits } from "#progress:application/contracts/pokemon-traits.ts";
+import type { PokemonTraits } from "#progress:application/contracts/pokemon-traits";
 
 export interface CatchOfTheDayCandidate {
 	dexNumber: number;

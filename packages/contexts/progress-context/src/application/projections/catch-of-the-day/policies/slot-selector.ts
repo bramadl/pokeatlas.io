@@ -6,10 +6,12 @@ import {
 	type PokemonType,
 	PokemonTypeRef,
 } from "@context/game";
+
 import type {
 	CatchOfTheDayEntry,
 	CatchOfTheDaySlot,
-} from "#progress:application/contracts/catch-of-the-day.ts";
+} from "#progress:application/contracts/catch-of-the-day";
+
 import type { CatchOfTheDayScoredCandidate } from "../rules/scoring-engine";
 
 const SLOT_PLAN: CatchOfTheDaySlot[] = [

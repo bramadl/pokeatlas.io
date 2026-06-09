@@ -7,9 +7,12 @@ import {
 	type VariantKey,
 } from "@context/game";
 import type {
+	AchievementMetadata,
+	AchievementType,
 	GetProgressSummaryOutput,
 	LatestAcquisition,
 	ProgressSummary,
+	TrainerAchievement,
 } from "@context/progress";
 
 import type { ProgressProjectionGetPayload } from "#prisma-client/models.ts";
@@ -63,10 +66,22 @@ export type GetProgressSummaryQueryResult = ProgressProjectionGetPayload<{
 	};
 }>;
 
+export type AchievementQueryResult = {
+	type: string;
+	achievedAt: Date;
+	metadata: unknown;
+}[];
+
 export function toProgressSummary(
 	summary: GetProgressSummaryQueryResult,
+	achievementRows: AchievementQueryResult,
 ): GetProgressSummaryOutput {
-	// ── Species Completion ──────────────────────────────────────────────────────
+	const achievements: TrainerAchievement[] = achievementRows.map((row) => ({
+		achievedAt: row.achievedAt,
+		metadata: row.metadata as AchievementMetadata | undefined,
+		type: row.type as AchievementType,
+	}));
+
 	const mostCompleteRegion = summary.regionalProgress.reduce<{
 		region: PokemonRegion;
 		completionPercentage: number;
@@ -92,7 +107,6 @@ export function toProgressSummary(
 		tracked: summary.speciesTracked,
 	};
 
-	// ── Regional Collections ────────────────────────────────────────────────────
 	const regionalCollections = Object.fromEntries(
 		summary.regionalProgress.map((row) => [
 			row.region as PokemonRegion,
@@ -104,7 +118,6 @@ export function toProgressSummary(
 		]),
 	) as ProgressSummary["regionalCollections"];
 
-	// ── Tracking Collections ────────────────────────────────────────────────────
 	const trackingCollections = Object.fromEntries(
 		summary.trackingProgress.map((row) => [
 			row.trackingState as TrackableState,
@@ -116,7 +129,6 @@ export function toProgressSummary(
 		]),
 	) as ProgressSummary["trackingCollections"];
 
-	// ── Variant Collections ─────────────────────────────────────────────────────
 	const variantCollections = Object.fromEntries(
 		summary.variantProgress.map((row) => [
 			row.variantKey as VariantKey,
@@ -128,7 +140,6 @@ export function toProgressSummary(
 		]),
 	) as ProgressSummary["variantCollections"];
 
-	// ── Latest Acquisition ──────────────────────────────────────────────────────
 	const latestAcquisition: LatestAcquisition | null = summary.latestAcquisition
 		? {
 				dexNumber: summary.latestAcquisition.dexNumber,
@@ -154,6 +165,7 @@ export function toProgressSummary(
 
 	return {
 		summary: {
+			achievements,
 			latestAcquisition,
 			regionalCollections,
 			speciesCompletion,

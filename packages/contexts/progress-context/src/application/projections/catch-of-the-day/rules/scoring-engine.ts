@@ -5,11 +5,11 @@ import {
 	type TrainerID,
 } from "@context/game";
 
-import type { CatchOfTheDaySlot } from "#progress:application/contracts/catch-of-the-day.ts";
+import type { CatchOfTheDaySlot } from "#progress:application/contracts/catch-of-the-day";
 import {
 	type PokemonTraits,
 	TraitRules,
-} from "#progress:application/contracts/pokemon-traits.ts";
+} from "#progress:application/contracts/pokemon-traits";
 
 import type { CatchOfTheDayCandidate } from "../ports/sources/pokemon-source";
 

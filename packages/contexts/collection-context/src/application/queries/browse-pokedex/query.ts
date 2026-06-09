@@ -8,7 +8,7 @@ import type {
 	InfinitePaginationReturns,
 } from "@context/shared";
 
-import type { PokedexEntry } from "#collection:application/contracts/pokedex-entry.ts";
+import type { PokedexEntry } from "#collection:application/contracts/pokedex-entry";
 
 export interface BrowsePokedexInput extends InfinitePagination {
 	filters?: Partial<{

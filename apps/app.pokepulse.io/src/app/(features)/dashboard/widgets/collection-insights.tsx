@@ -1,25 +1,38 @@
 "use client";
 
 import { ChartBarIcon } from "@phosphor-icons/react";
-import { Fragment } from "react/jsx-runtime";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { useMemo } from "react";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 
-// TODO: Connect to real data — derive from ProgressSummary
-// const INSIGHTS = [
-//   { label: "Kanto is your most complete region", sub: "98% completed" },
-//   { label: "Only 4 Temporary Evolutions remain", sub: "Closest collection to completion" },
-//   { label: "Lucky Dex is your largest collection", sub: "522 entries tracked" },
-//   { label: "Shadow Dex grew by 12 entries this month", sub: "Fastest growing collection" },
-//   { label: "Female Variants are 10 away from completion", sub: "Closest variant category" },
-// ];
-const INSIGHTS: { label: string; sub: string }[] = [];
+import { deriveInsights } from "../libs/derive-insights";
+import { progressQueries } from "../progress.query";
 
-export function CollectionInsights() {
-	return (
-		<Card>
-			{INSIGHTS.length === 0 ? (
+interface CollectionInsightsProps {
+	trainerId: string;
+}
+
+export function CollectionInsights({ trainerId }: CollectionInsightsProps) {
+	const { data } = useSuspenseQuery({
+		...progressQueries.getSummary({ trainerId }),
+		select: (data) => data.summary,
+	});
+
+	const insights = useMemo(
+		() => deriveInsights(data, trainerId),
+		[data, trainerId],
+	);
+
+	if (insights.length === 0) {
+		return (
+			<Card>
 				<CardContent>
 					<div className="flex flex-col items-center gap-4 py-4 px-8 text-center text-muted-foreground">
 						<div className="flex items-center justify-center size-16 rounded-full border bg-slate-50">
@@ -33,28 +46,32 @@ export function CollectionInsights() {
 						</div>
 					</div>
 				</CardContent>
-			) : (
-				<Fragment>
-					<CardHeader>
-						<CardTitle>Collection Insights</CardTitle>
-					</CardHeader>
-					<CardContent>
-						<div className="space-y-4">
-							{INSIGHTS.map((insight, index) => (
-								<div key={insight.label}>
-									{index !== 0 && <Separator />}
-									<div>
-										<p>{insight.label}</p>
-										<p className="text-muted-foreground text-xs">
-											{insight.sub}
-										</p>
-									</div>
-								</div>
-							))}
-						</div>
-					</CardContent>
-				</Fragment>
-			)}
+			</Card>
+		);
+	}
+
+	return (
+		<Card>
+			<CardHeader>
+				<CardTitle>Today's Insights</CardTitle>
+				<CardDescription>
+					A fresh look at your collection, updated daily.
+				</CardDescription>
+			</CardHeader>
+			<CardContent>
+				<div className="space-y-4">
+					{insights.map((insight) => (
+						<Card key={insight.key}>
+							<CardContent className="flex flex-col gap-0.5">
+								<p className="text-sm font-medium leading-snug">
+									{insight.label}
+								</p>
+								<p className="text-xs text-muted-foreground">{insight.sub}</p>
+							</CardContent>
+						</Card>
+					))}
+				</div>
+			</CardContent>
 		</Card>
 	);
 }

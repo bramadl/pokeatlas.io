@@ -1,6 +1,6 @@
 import type { TrackingSignatureRef } from "@context/collection";
 
-import type { PokemonTraits } from "#progress:application/contracts/pokemon-traits.ts";
+import type { PokemonTraits } from "#progress:application/contracts/pokemon-traits";
 
 import type { DimensionDelta } from "../ports/projection";
 import { resolveSignatureDimensions } from "../rules/signature-engine";

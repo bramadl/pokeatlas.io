@@ -34,3 +34,19 @@ export const POKEMON_REGIONAL_ORIGIN_SUFFIX: Record<PokemonRegional, string> = {
 	KANTO: "KANTONIAN",
 	PALDEA: "PALDEAN",
 } as const;
+
+export const REGION_LABEL: Record<
+	Exclude<PokemonRegion, "UNREGISTERED">,
+	string
+> = {
+	ALOLA: "Alola",
+	GALAR: "Galar",
+	HISUI: "Hisui",
+	HOENN: "Hoenn",
+	JOHTO: "Johto",
+	KALOS: "Kalos",
+	KANTO: "Kanto",
+	PALDEA: "Paldea",
+	SINNOH: "Sinnoh",
+	UNOVA: "Unova",
+};

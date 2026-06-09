@@ -3,7 +3,7 @@ import type {
 	GetCatchOfTheDayOutput,
 } from "@context/progress";
 
-import type { CatchOfTheDayProjectionGetPayload } from "#prisma-client/models.ts";
+import type { CatchOfTheDayProjectionGetPayload } from "#prisma-client/models";
 
 export type GetCatchOfTheDayQueryResult = CatchOfTheDayProjectionGetPayload<{
 	select: {

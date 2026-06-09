@@ -47,3 +47,13 @@ export const TRACKABLE_STATE_BRUSHES: Record<
 		hotkey: "S",
 	},
 };
+
+export const TRACKABLE_STATE_LABEL: Record<TrackableState, string> = {
+	BASE: "Base",
+	HUNDO: "Hundo",
+	LUCKY: "Lucky",
+	NUNDO: "Nundo",
+	PURIFIED: "Purified",
+	SHADOW: "Shadow",
+	SHINY: "Shiny",
+};

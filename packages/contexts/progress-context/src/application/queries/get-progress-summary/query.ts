@@ -1,4 +1,4 @@
-import type { ProgressSummary } from "#progress:application/contracts/progress-summary.ts";
+import type { ProgressSummary } from "#progress:application/contracts/progress-summary";
 
 export interface GetProgressSummaryInput {
 	trainerId: string;

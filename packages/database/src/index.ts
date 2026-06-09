@@ -3,6 +3,7 @@ export * from "./prisma/client";
 export * from "./providers/projections/catch-of-the-day/adapter";
 export * from "./providers/projections/catch-of-the-day/source/pokemon-source/adapter";
 
+export * from "./providers/projections/trainer-achievement/adapter";
 export * from "./providers/projections/trainer-progress/adapter";
 export * from "./providers/projections/trainer-progress/sources/pokemon-metadata/adapter";
 

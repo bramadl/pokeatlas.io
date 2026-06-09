@@ -1,6 +1,7 @@
 import type { PokemonTrackedPayload } from "@context/collection";
 import type { DomainEvent } from "@pokepulse/toolkit";
-
+import { checkFirstCatchByState } from "../achievements/policies/achievement-checker";
+import type { ITrainerAchievementProjection } from "../achievements/ports/projection";
 import { computeProgressDelta } from "./policies/compute-progress-delta";
 import type { ITrainerProgressProjection } from "./ports/projection";
 import type { IPokemonMetadataSource } from "./ports/sources/pokemon-metadata-source";
@@ -9,6 +10,7 @@ export class PokemonTrackedHandler {
 	public constructor(
 		private readonly provider: IPokemonMetadataSource,
 		private readonly projection: ITrainerProgressProjection,
+		private readonly achievements: ITrainerAchievementProjection,
 	) {}
 
 	public async handle(
@@ -33,15 +35,31 @@ export class PokemonTrackedHandler {
 		const deltas = computeProgressDelta(trackedStates, [], traits);
 		if (deltas.length === 0) return;
 
+		const trainerId = trackedBy.value();
+
 		await Promise.all([
-			this.projection.applyDeltas(trackedBy.value(), deltas),
+			this.projection.applyDeltas(trainerId, deltas, {
+				pokemonName: metadata.name,
+				pokemonRef,
+			}),
 			this.projection.updateLatestAcquisition(
-				trackedBy.value(),
+				trainerId,
 				pokemonRef,
 				metadata,
 				trackedStates,
 				"TRACKED",
 			),
 		]);
+
+		const nonBaseStates = trackedStates.filter((s) => s !== "BASE");
+		if (nonBaseStates.length > 0) {
+			await checkFirstCatchByState(
+				trainerId,
+				nonBaseStates,
+				this.achievements,
+				metadata.name,
+				pokemonRef,
+			);
+		}
 	}
 }

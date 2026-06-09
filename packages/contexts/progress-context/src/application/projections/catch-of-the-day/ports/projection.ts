@@ -1,4 +1,4 @@
-import type { CatchOfTheDayEntry } from "#progress:application/contracts/catch-of-the-day.ts";
+import type { CatchOfTheDayEntry } from "#progress:application/contracts/catch-of-the-day";
 
 export interface CatchOfTheDayPokemonSnapshot {
 	date: string;

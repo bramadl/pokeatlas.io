@@ -1,7 +1,7 @@
 import type { BrowsePokedexInput } from "@context/collection";
 import { isGuest, TRACKABLE_STATE } from "@context/game";
 
-import type { PokemonModelWhereInput } from "#prisma-client/models.ts";
+import type { PokemonModelWhereInput } from "#prisma-client/models";
 
 export function statusFilter(
 	status: NonNullable<BrowsePokedexInput["filters"]>["status"],

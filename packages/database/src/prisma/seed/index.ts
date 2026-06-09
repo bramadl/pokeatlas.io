@@ -1,6 +1,6 @@
 import { prisma } from "#prisma-client";
-import { FormCategory } from "#prisma-client/enums.ts";
-import type { PokemonModelWhereInput } from "#prisma-client/models.ts";
+import { FormCategory } from "#prisma-client/enums";
+import type { PokemonModelWhereInput } from "#prisma-client/models";
 
 const TRAINER_ID = "00000000-0000-0000-0000-000000000001";
 

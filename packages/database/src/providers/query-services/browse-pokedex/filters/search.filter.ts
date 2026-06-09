@@ -1,7 +1,7 @@
 import type { BrowsePokedexInput } from "@context/collection";
 
 import { prisma } from "#prisma-client";
-import type { PokemonModelWhereInput } from "#prisma-client/models.ts";
+import type { PokemonModelWhereInput } from "#prisma-client/models";
 
 export type SearchToken =
 	| { type: "name"; value: string }

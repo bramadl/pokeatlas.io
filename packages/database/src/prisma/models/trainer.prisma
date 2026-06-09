@@ -10,6 +10,7 @@ model TrainerModel {
   regionalProgress  RegionalProgressProjection[]
   variantProgress   VariantProgressProjection[]
   latestAcquisition LatestAcquisitionProjection?
+  achievements      TrainerAchievementProjection[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")

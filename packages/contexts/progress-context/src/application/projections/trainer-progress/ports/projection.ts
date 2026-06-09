@@ -14,7 +14,14 @@ export interface DimensionDelta {
 }
 
 export interface ITrainerProgressProjection {
-	applyDeltas(trainerId: string, deltas: DimensionDelta[]): Promise<void>;
+	applyDeltas(
+		trainerId: string,
+		deltas: DimensionDelta[],
+		context: {
+			pokemonRef: string;
+			pokemonName: string;
+		},
+	): Promise<void>;
 	updateLatestAcquisition(
 		trainerId: string,
 		pokemonRef: string,

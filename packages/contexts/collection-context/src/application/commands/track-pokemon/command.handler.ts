@@ -7,11 +7,11 @@ import {
 	Result,
 } from "@pokepulse/toolkit";
 
-import { PokemonNotFoundError } from "#collection:core/pokemon-not-found.ts";
-import { TrackedPokemon } from "#collection:core/tracked-pokemon.ts";
-import { TrackedStates } from "#collection:core/tracked-states.ts";
-import { TrackingSignature } from "#collection:core/tracking-signature.ts";
-import type { ITrainerDex } from "#collection:core/trainer-dex.ts";
+import { PokemonNotFoundError } from "#collection:core/pokemon-not-found";
+import { TrackedPokemon } from "#collection:core/tracked-pokemon";
+import { TrackedStates } from "#collection:core/tracked-states";
+import { TrackingSignature } from "#collection:core/tracking-signature";
+import type { ITrainerDex } from "#collection:core/trainer-dex";
 
 import type {
 	TrackPokemonCommand,

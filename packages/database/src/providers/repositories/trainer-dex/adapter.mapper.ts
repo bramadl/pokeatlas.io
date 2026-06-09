@@ -7,7 +7,7 @@ import { PokemonRef } from "@context/game";
 import { Id } from "@pokepulse/toolkit";
 
 import type { TrackedPokemonModel } from "#prisma-client/client";
-import { DataCorruptionError } from "#providers/errors/data-corruption.error.ts";
+import { DataCorruptionError } from "#providers/errors/data-corruption.error";
 
 export function toTrackedPokemon(from: TrackedPokemonModel): TrackedPokemon {
 	const signatures: TrackingSignature[] = [];

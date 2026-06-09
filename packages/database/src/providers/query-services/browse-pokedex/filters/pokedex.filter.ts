@@ -5,7 +5,7 @@ import {
 	type PokemonRegional,
 } from "@context/game";
 
-import type { PokemonModelWhereInput } from "#prisma-client/models.ts";
+import type { PokemonModelWhereInput } from "#prisma-client/models";
 
 export function pokedexFilter(
 	pokedex: NonNullable<BrowsePokedexInput["filters"]>["pokedex"],

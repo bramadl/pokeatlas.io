@@ -109,3 +109,16 @@ model CatchOfTheDayProjection {
   @@map("trainer_catch_of_the_day")
   @@schema("projection")
 }
+
+model TrainerAchievementProjection {
+  trainerId  String   @map("trainer_id") @db.Uuid
+  type       String
+  achievedAt DateTime @map("achieved_at")
+  metadata   Json?
+
+  trainer TrainerModel @relation(fields: [trainerId], references: [id], onDelete: Cascade)
+
+  @@id([trainerId, type])
+  @@map("trainer_achievements")
+  @@schema("projection")
+}

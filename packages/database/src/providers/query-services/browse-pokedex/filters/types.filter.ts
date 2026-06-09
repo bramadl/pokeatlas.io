@@ -1,6 +1,6 @@
 import type { BrowsePokedexInput } from "@context/collection";
 
-import type { PokemonModelWhereInput } from "#prisma-client/models.ts";
+import type { PokemonModelWhereInput } from "#prisma-client/models";
 
 export function typesFilter(
 	types: NonNullable<BrowsePokedexInput["filters"]>["types"],

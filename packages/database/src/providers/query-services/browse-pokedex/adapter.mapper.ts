@@ -6,7 +6,8 @@ import {
 	type PokemonType,
 	PokemonTypeRef,
 } from "@context/game";
-import type { PokemonModelGetPayload } from "#prisma-client/models.ts";
+
+import type { PokemonModelGetPayload } from "#prisma-client/models";
 
 export type BrowsePokedexQueryResult = PokemonModelGetPayload<{
 	select: {

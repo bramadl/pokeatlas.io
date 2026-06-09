@@ -5,7 +5,7 @@ import type {
 	PokemonType,
 } from "@context/game";
 
-import type { TrackingSignatureRef } from "#collection:core/tracking-signature-ref.ts";
+import type { TrackingSignatureRef } from "#collection:core/tracking-signature-ref";
 
 export interface PokedexEntry {
 	lastModifiedAt: Date | null;

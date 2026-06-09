@@ -1,3 +1,4 @@
+export * from "../src/application/contracts/achievement";
 export * from "../src/application/contracts/catch-of-the-day";
 export * from "../src/application/contracts/latest-acquisition";
 export * from "../src/application/contracts/pokemon-metadata";
@@ -8,6 +9,9 @@ export * from "../src/application/contracts/species-completion";
 export * from "../src/application/contracts/summary-stat";
 export * from "../src/application/contracts/tracking-collections";
 export * from "../src/application/contracts/variant-collections";
+
+export * from "../src/application/projections/achievements/policies/achievement-checker";
+export * from "../src/application/projections/achievements/ports/projection";
 
 export * from "../src/application/projections/catch-of-the-day/catch-of-the-day-reset.handler";
 export * from "../src/application/projections/catch-of-the-day/policies/slot-selector";
