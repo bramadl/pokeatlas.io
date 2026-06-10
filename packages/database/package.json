@@ -21,6 +21,7 @@
     "db:seed": "bunx --bun prisma db seed"
   },
   "dependencies": {
+    "@context/auth": "workspace:*",
     "@context/collection": "workspace:*",
     "@context/game": "workspace:*",
     "@context/progress": "workspace:*",

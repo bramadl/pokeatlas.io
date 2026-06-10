@@ -101,7 +101,7 @@ export function CatchOfTheDay({
 								<p>
 									{entry.targetSignature !== "BASE" && (
 										<span className="capitalize">
-											({entry.targetSignature.toLowerCase()}) •{" "}
+											({entry.targetSignature.toLowerCase()}){" "}
 										</span>
 									)}
 									{entry.name}

@@ -24,6 +24,7 @@ export * from "../src/application/projections/trainer-progress/ports/projection"
 export * from "../src/application/projections/trainer-progress/ports/sources/pokemon-metadata-source";
 export * from "../src/application/projections/trainer-progress/rules/signature-engine";
 export * from "../src/application/projections/trainer-progress/tracking-states-changed.handler";
+export * from "../src/application/projections/trainer-progress/trainer-registered.handler";
 
 export * from "../src/application/queries/get-catch-of-the-day/query";
 export * from "../src/application/queries/get-catch-of-the-day/query.handler";
@@ -32,3 +33,7 @@ export * from "../src/application/queries/get-catch-of-the-day/query.service";
 export * from "../src/application/queries/get-progress-summary/query";
 export * from "../src/application/queries/get-progress-summary/query.handler";
 export * from "../src/application/queries/get-progress-summary/query.service";
+
+export * from "../src/application/queries/get-projection-readiness/query";
+export * from "../src/application/queries/get-projection-readiness/query.handler";
+export * from "../src/application/queries/get-projection-readiness/query.service";

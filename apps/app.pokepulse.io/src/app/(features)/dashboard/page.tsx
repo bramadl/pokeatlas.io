@@ -1,11 +1,12 @@
-import { trainerId } from "@pokepulse/core/server";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { redirect } from "next/navigation";
 
+import { GlobalNavigation } from "@/components/global/navigation";
 import { Container } from "@/components/ui/container";
 import { getQueryClient } from "@/lib/tanstack/query/query-client";
 
+import { getTrainer } from "../(auth)/api/auth/auth.api";
 import { progressQueries } from "./progress.query";
 import { CatchOfTheDay } from "./widgets/catch-of-the-day";
 import { CollectionInsights } from "./widgets/collection-insights";
@@ -17,44 +18,52 @@ import { TrackingCollections } from "./widgets/tracking-collections";
 import { TrainerCard } from "./widgets/trainer-card";
 import { VariantCollections } from "./widgets/variant-collections";
 
-const GUEST_MODE = false;
-
-const TRAINER_ID = trainerId();
-
 export default async function Dashboard() {
-	if (GUEST_MODE) redirect("/");
+	const trainer = await getTrainer();
+	if (!trainer) redirect("/");
+
+	const {
+		trainerId,
+		user: { name, email, image },
+	} = trainer;
 
 	const queryClient = getQueryClient();
-	void (await queryClient.prefetchQuery({
-		...progressQueries.getSummary({ trainerId: TRAINER_ID }),
-	}));
-
 	const today = format(new Date(), "yyyy-MM-dd");
-	void (await queryClient.prefetchQuery({
-		...progressQueries.catchOfTheDay({ date: today, trainerId: TRAINER_ID }),
-	}));
+
+	await Promise.all([
+		queryClient.prefetchQuery(progressQueries.getSummary({ trainerId })),
+		queryClient.prefetchQuery(
+			progressQueries.catchOfTheDay({ date: today, trainerId }),
+		),
+	]);
 
 	return (
 		<HydrationBoundary state={dehydrate(queryClient)}>
+			<GlobalNavigation trainer={trainer.user} />
 			<Container
 				className="relative min-h-160 sm:my-8 flex flex-col gap-4 py-4 sm:py-0 md:px-4"
 				padded
 			>
 				<div className="grid lg:grid-cols-[400px_1fr] gap-4">
-					<TrainerCard trainerId={TRAINER_ID} />
-					<SpeciesCompletion trainerId={TRAINER_ID} />
+					<TrainerCard
+						trainerEmail={email}
+						trainerId={trainerId}
+						trainerImage={image}
+						trainerName={name}
+					/>
+					<SpeciesCompletion trainerId={trainerId} />
 				</div>
-				<CatchOfTheDay date={today} trainerId={TRAINER_ID} />
+				<CatchOfTheDay date={today} trainerId={trainerId} />
 				<div className="grid lg:grid-cols-[1fr_360px] gap-4">
 					<div className="flex flex-col gap-4">
-						<TrackingCollections trainerId={TRAINER_ID} />
-						<VariantCollections trainerId={TRAINER_ID} />
-						<RegionalBreakdown trainerId={TRAINER_ID} />
+						<TrackingCollections trainerId={trainerId} />
+						<VariantCollections trainerId={trainerId} />
+						<RegionalBreakdown trainerId={trainerId} />
 					</div>
 					<div className="flex flex-col gap-4">
-						<CompletionAchievements trainerId={TRAINER_ID} />
-						<CollectionInsights trainerId={TRAINER_ID} />
-						<LatestAcquisition trainerId={TRAINER_ID} />
+						<CompletionAchievements trainerId={trainerId} />
+						<CollectionInsights trainerId={trainerId} />
+						<LatestAcquisition trainerId={trainerId} />
 					</div>
 				</div>
 			</Container>

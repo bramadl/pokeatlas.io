@@ -1,8 +1,11 @@
 "use client";
 
+import { useProgress, useRouter } from "@bprogress/next";
 import { GearIcon, GlobeIcon, SignOutIcon } from "@phosphor-icons/react";
 
-import { Avatar, AvatarImage } from "../ui/avatar";
+import { signOut } from "@/app/(features)/(auth)/api/auth/auth.api";
+
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Button } from "../ui/button";
 import {
 	DropdownMenu,
@@ -107,14 +110,42 @@ function SupportMenu() {
 	);
 }
 
-export function TrainerDropdown() {
+function Logout() {
+	const router = useRouter();
+	const progress = useProgress();
+
+	const signOutHandler = async () => {
+		progress.start();
+		await signOut().then(() => {
+			router.replace("/");
+		});
+	};
+
+	return (
+		<DropdownMenuItem onClick={signOutHandler} variant="destructive">
+			<SignOutIcon />
+			Sign Out
+		</DropdownMenuItem>
+	);
+}
+
+interface TrainerDropdownProps {
+	email: string;
+	image?: string | null;
+	name: string;
+}
+
+export function TrainerDropdown({ image, name }: TrainerDropdownProps) {
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>
 				<Button className="flex items-center gap-2 hover:bg-foreground/25 hover:[&>svg]:rotate-180 focus-visible:bg-foreground/25">
-					<span className="text-sm">Ash Ketchum</span>
+					<span className="text-sm">{name}</span>
 					<Avatar className="ring ring-primary-foreground" size="sm">
-						<AvatarImage alt="Ash Ketchum" src="/pp.jpeg" />
+						<AvatarImage alt={name} src={image ?? undefined} />
+						<AvatarFallback>
+							{name.split(" ").map((w) => (w[0] as string).toUpperCase())}
+						</AvatarFallback>
 					</Avatar>
 				</Button>
 			</DropdownMenuTrigger>
@@ -125,11 +156,7 @@ export function TrainerDropdown() {
 				<DropdownMenuSeparator />
 				<SupportMenu />
 				<DropdownMenuSeparator />
-				<DropdownMenuItem variant="destructive">
-					<SignOutIcon />
-					Sign Out
-					<DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
-				</DropdownMenuItem>
+				<Logout />
 			</DropdownMenuContent>
 		</DropdownMenu>
 	);

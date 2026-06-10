@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "paths": {
+      "#auth:application/*": ["./src/application/*"],
+      "#auth:core/*": ["./src/core/*"],
+    }
+  },
+  "extends": ["../../config/typescript/tsconfig.base.json"]
+}

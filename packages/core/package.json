@@ -8,6 +8,7 @@
     ".": "./client/index.ts"
   },
   "dependencies": {
+    "@context/auth": "workspace:*",
     "@context/collection": "workspace:*",
     "@context/game": "workspace:*",
     "@context/progress": "workspace:*",

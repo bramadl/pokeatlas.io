@@ -1,4 +1,8 @@
 import {
+	TrainerRegistered,
+	type TrainerRegisteredPayload,
+} from "@context/auth";
+import {
 	PokemonTracked,
 	type PokemonTrackedPayload,
 	TrackingSignatureChanged,
@@ -8,14 +12,17 @@ import {
 	CatchOfTheDayResetHandler,
 	GetCatchOfTheDayHandler,
 	GetProgressSummaryHandler,
+	GetProjectionReadinessHandler,
 	PokemonTrackedHandler,
 	ProgressContext,
 	TrackingStatesChangedHandler,
+	TrainerRegisteredHandler,
 } from "@context/progress";
 import {
 	PrismaCatchOfTheDayProjectionAdapter,
 	PrismaGetCatchOfTheDayQueryServiceAdapter,
 	PrismaGetProgressSummaryQueryServiceAdapter,
+	PrismaGetProjectionReadinessQueryServiceAdapter,
 	PrismaPokemonMetadataSourceAdapter,
 	PrismaPokemonSourceAdapter,
 	PrismaTrainerAchievementProjectionAdapter,
@@ -65,6 +72,19 @@ export function buildProgressSlice<
 			() => new PrismaGetCatchOfTheDayQueryServiceAdapter(),
 		)
 
+		.add(
+			"QueryService:GetProjectionReadiness",
+			() => new PrismaGetProjectionReadinessQueryServiceAdapter(),
+		)
+
+		.add(
+			"Handler:Event:TrainerRegisteredHandler",
+			(r) =>
+				new TrainerRegisteredHandler(
+					r["Adapter:Projection:TrainerProgressProjection"],
+				),
+		)
+
 		.add("Handler:Event:PokemonTrackedHandler", (r) => {
 			return new PokemonTrackedHandler(
 				r["Adapter:Projection:Source:PokemonMetadata"],
@@ -101,8 +121,23 @@ export function buildProgressSlice<
 			);
 		})
 
+		.add(
+			"Handler:Query:GetProjectionReadiness",
+			(r) =>
+				new GetProjectionReadinessHandler(
+					r["QueryService:GetProjectionReadiness"],
+				),
+		)
+
 		.registerEvent((r) => {
 			const bus = r["Infrastructure:EventBus"];
+
+			bus.subscribe<TrainerRegisteredPayload>(
+				TrainerRegistered.type,
+				(event) => {
+					r["Handler:Event:TrainerRegisteredHandler"].handle(event);
+				},
+			);
 
 			bus.subscribe<PokemonTrackedPayload>(PokemonTracked.type, (event) =>
 				r["Handler:Event:PokemonTrackedHandler"].handle(event),
@@ -116,16 +151,13 @@ export function buildProgressSlice<
 					);
 				},
 			);
-
-			// bus.subscribe<TrainerRegisteredPayload>(TrainerRegistered.type, (event) =>
-			// 	r["Handler:Event:CatchOfTheDayResetHandler"].handle(event),
-			// );
 		})
 
 		.add("Context:Progress", (r) => {
 			return new ProgressContext({
 				catchOfTheDay: r["Handler:Query:GetCatchOfTheDay"],
 				progressSummary: r["Handler:Query:GetProgressSummary"],
+				projectionReadiness: r["Handler:Query:GetProjectionReadiness"],
 			});
 		});
 }

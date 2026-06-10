@@ -22,6 +22,7 @@ export interface ITrainerProgressProjection {
 			pokemonName: string;
 		},
 	): Promise<void>;
+	initializeForTrainer(trainerId: string): Promise<void>;
 	updateLatestAcquisition(
 		trainerId: string,
 		pokemonRef: string,

@@ -9,6 +9,10 @@ import {
 	type GetProgressSummaryInput,
 	type GetProgressSummaryOutput,
 	GetProgressSummaryQuery,
+	type GetProjectionReadinessHandler,
+	type GetProjectionReadinessInput,
+	type GetProjectionReadinessOutput,
+	GetProjectionReadinessQuery,
 } from "../contracts";
 
 export class ProgressContext {
@@ -16,6 +20,7 @@ export class ProgressContext {
 		private readonly handlers: {
 			catchOfTheDay: GetCatchOfTheDayHandler;
 			progressSummary: GetProgressSummaryHandler;
+			projectionReadiness: GetProjectionReadinessHandler;
 		},
 	) {}
 
@@ -32,6 +37,14 @@ export class ProgressContext {
 	): Promise<IResult<GetProgressSummaryOutput>> {
 		return this.handlers.progressSummary.execute(
 			new GetProgressSummaryQuery(input),
+		);
+	}
+
+	public readiness(
+		input: GetProjectionReadinessInput,
+	): Promise<IResult<GetProjectionReadinessOutput>> {
+		return this.handlers.projectionReadiness.execute(
+			new GetProjectionReadinessQuery(input),
 		);
 	}
 }

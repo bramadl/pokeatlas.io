@@ -3,6 +3,9 @@
     "paths": {
       "@/*": ["./src/*"],
 
+      "#auth:application/*": ["../../packages/contexts/auth-context/src/application/*"],
+      "#auth:core/*": ["../../packages/contexts/auth-context/src/core/*"],
+
       "#collection:application/*": ["../../packages/contexts/collection-context/src/application/*"],
       "#collection:core/*": ["../../packages/contexts/collection-context/src/core/*"],
       

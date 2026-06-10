@@ -1,8 +1,9 @@
 model TrainerModel {
   id String @id @default(uuid()) @db.Uuid
 
-  name String
+  authId String? @unique @map("auth_id") @db.Uuid
 
+  auth              UserModel?                     @relation(fields: [authId], references: [id], onDelete: Cascade)
   trackedPokemons   TrackedPokemonModel[]
   progress          ProgressProjection?
   catchOfTheDay     CatchOfTheDayProjection?

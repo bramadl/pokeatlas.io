@@ -1,3 +1,4 @@
+export * from "@context/auth";
 export * from "@context/collection";
 export * from "@context/game";
 export * from "@context/progress";

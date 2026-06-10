@@ -18,7 +18,7 @@ export function GlobalFooter() {
 						&copy; {currentYear === 2026 ? currentYear : `2026–${currentYear}`}{" "}
 						PokéPulse – All Rights Reserved
 					</small>
-					<strong className="font-normal text-xs text-muted text-center italic opacity-75">
+					<strong className="font-normal text-xs text-muted text-center md:text-left italic opacity-75">
 						PokéPulse is a companion app made for tracker purposes only and is
 						not affiliated with the Pokemon brand, Niantic, Pokemon GO, or
 						Nintendo.

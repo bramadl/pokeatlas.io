@@ -10,6 +10,9 @@ export * from "./providers/projections/trainer-progress/sources/pokemon-metadata
 export * from "./providers/query-services/browse-pokedex/adapter";
 export * from "./providers/query-services/get-catch-of-the-day/adapter";
 export * from "./providers/query-services/get-progress-summary/adapter";
+export * from "./providers/query-services/get-projection-readiness/adapter";
+export * from "./providers/query-services/get-trainer/adapter";
 
 export * from "./providers/repositories/pokedex/adapter";
+export * from "./providers/repositories/trainer/adapter";
 export * from "./providers/repositories/trainer-dex/adapter";

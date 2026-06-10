@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { IBM_Plex_Mono, Lora, Plus_Jakarta_Sans } from "next/font/google";
 
 import { GlobalFooter } from "@/components/global/footer";
-import { GlobalNavigation } from "@/components/global/navigation";
 import { GlobalProgressBar } from "@/components/ui/progress-bar";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -10,6 +9,7 @@ import { NuqsProvider } from "@/lib/nuqs/nuqs-provider";
 import { QueryProvider } from "@/lib/tanstack/query/query-provider";
 
 import "./globals.css";
+import { AuthPopupProvider } from "./(features)/(auth)/popup";
 
 const fontSans = Plus_Jakarta_Sans({
 	subsets: ["latin"],
@@ -48,9 +48,10 @@ export default function RootLayout({
 					<NuqsProvider>
 						<QueryProvider>
 							<TooltipProvider>
-								<GlobalNavigation />
-								<main>{children}</main>
-								<GlobalFooter />
+								<AuthPopupProvider>
+									<main>{children}</main>
+									<GlobalFooter />
+								</AuthPopupProvider>
 							</TooltipProvider>
 						</QueryProvider>
 					</NuqsProvider>

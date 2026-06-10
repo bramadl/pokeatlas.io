@@ -30,7 +30,7 @@ export function MobileNavigation() {
 		<Sheet onOpenChange={setIsOpen} open={isOpen}>
 			<SheetTrigger asChild>
 				<Button
-					className="hover:bg-foreground/25 focus-visible:bg-foreground/25"
+					className="md:hidden hover:bg-foreground/25 focus-visible:bg-foreground/25"
 					size="icon"
 				>
 					<ListIcon />

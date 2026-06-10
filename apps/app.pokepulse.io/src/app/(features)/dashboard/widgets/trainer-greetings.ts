@@ -1,4 +1,5 @@
 export type GreetingContext = {
+	trainerName: string;
 	tracked: number;
 	missing: number;
 	percentage: number;
@@ -17,8 +18,8 @@ const GREETING_TIERS: GreetingTier[] = [
 				"Your journey begins! Every legend starts with a single Pokémon. Go catch 'em all!",
 			() =>
 				"A new adventure awaits! The world is full of Pokémon waiting to be discovered.",
-			() =>
-				"Welcome, Trainer! Your Pokédex is empty — for now. Let the hunt begin.",
+			({ trainerName }) =>
+				`Hey, ${trainerName}! Your Pokédex is empty — for now. Let the hunt begin.`,
 			() =>
 				"The path to becoming a Pokémon Master starts with your very first catch. Ready?",
 		],
@@ -26,8 +27,8 @@ const GREETING_TIERS: GreetingTier[] = [
 	{
 		max: 26,
 		pool: [
-			({ tracked }) =>
-				`${tracked} species and counting! You're just warming up, Trainer.`,
+			({ tracked, trainerName }) =>
+				`${tracked} species and counting! You're just warming up, ${trainerName}.`,
 			({ missing }) =>
 				`Still ${missing} species out there. The wild is calling!`,
 			({ tracked }) =>
@@ -38,8 +39,8 @@ const GREETING_TIERS: GreetingTier[] = [
 	{
 		max: 51,
 		pool: [
-			({ percentage }) =>
-				`${percentage.toFixed(0)}% done — you're finding your rhythm, Trainer!`,
+			({ percentage, trainerName }) =>
+				`${percentage.toFixed(0)}% done — you're finding your rhythm, ${trainerName}!`,
 			({ tracked }) => `${tracked} species! The Pokédex is filling up nicely.`,
 			({ missing }) => `${missing} species left to hunt. You've got this.`,
 			() =>
@@ -62,8 +63,8 @@ const GREETING_TIERS: GreetingTier[] = [
 	{
 		max: 100,
 		pool: [
-			({ missing }) =>
-				`Only ${missing} species left! You can smell the finish line, Trainer.`,
+			({ missing, trainerName }) =>
+				`Only ${missing} species left! You can smell the finish line, ${trainerName}.`,
 			({ percentage }) =>
 				`${percentage.toFixed(0)}% — you're in the endgame now. No turning back!`,
 			({ tracked }) =>
@@ -78,7 +79,8 @@ const GREETING_TIERS: GreetingTier[] = [
 			() => "National Dex complete. You are a true Pokémon Master. 🏆",
 			() =>
 				"Every species caught. Every region conquered. You're a living legend.",
-			() => "Gotta catch 'em all? Done. What's next, Trainer?",
+			({ trainerName }) =>
+				`Gotta catch 'em all? Done. What's next, ${trainerName}?`,
 			() => "The Pokédex is complete. Professor Oak is in tears. You did it.",
 		],
 	},
@@ -98,4 +100,15 @@ export function pickGreeting(ctx: GreetingContext): string {
 	if (!pick) throw new Error("No greeting pick found");
 
 	return pick(ctx);
+}
+
+export function dayGreeting(ctx: GreetingContext): string {
+	const time = new Date().getHours();
+	if (time >= 5 && time < 12) {
+		return `Good Morning, ${ctx.trainerName}!`;
+	} else if (time >= 12 && time < 18) {
+		return `Good Afternoon, ${ctx.trainerName}!`;
+	} else {
+		return `Good Evening, ${ctx.trainerName}!`;
+	}
 }
