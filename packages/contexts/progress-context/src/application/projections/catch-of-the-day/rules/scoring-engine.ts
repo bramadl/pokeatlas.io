@@ -2,6 +2,7 @@ import { TrackingSignatureRef } from "@context/collection";
 import {
 	type PokemonRef,
 	TRACKABLE_STATE,
+	type TrackableState,
 	type TrainerID,
 } from "@context/game";
 
@@ -13,37 +14,55 @@ import {
 
 import type { CatchOfTheDayCandidate } from "../ports/sources/pokemon-source";
 
+export type StateCategory = "ENCOUNTER" | "GRIND";
+
 export interface CatchOfTheDayScoredCandidate extends CatchOfTheDayCandidate {
 	eligibleSlots: CatchOfTheDaySlot[];
 	missingSignatures: TrackingSignatureRef[];
 	score: number;
 }
 
+export interface ExpandedCandidate extends CatchOfTheDayScoredCandidate {
+	expandedScore: number;
+	stateCategory: StateCategory;
+	targetState: TrackableState;
+}
+
 const ALL_NON_BASE_STATES = Object.values(TRACKABLE_STATE).filter(
 	(s) => s !== "BASE",
-);
+) as Exclude<TrackableState, "BASE">[];
 
-export function getEligibleSlots(
-	candidate: CatchOfTheDayCandidate,
-): CatchOfTheDaySlot[] {
-	const { traits, ownedSignatures } = candidate;
-	const signatures = getRelevantSignatures(traits);
-	const owned =
-		signatures.length -
-		signatures.filter((s) => !ownedSignatures.has(s)).length;
+const ENCOUNTER_STATES = new Set<TrackableState>([
+	"BASE",
+	"PURIFIED",
+	"SHADOW",
+	"SHINY",
+]);
 
-	const completionRatio = owned / signatures.length;
-	const slots: CatchOfTheDaySlot[] = [];
+const GRIND_STATES = new Set<TrackableState>(["HUNDO", "LUCKY", "NUNDO"]);
 
-	const partiallyCompleted = completionRatio > 0 && completionRatio < 1;
-	if (partiallyCompleted) slots.push("COMPLETION_URGENCY");
-	if (traits.pokemonClassification !== null) slots.push("RARITY_SPOTLIGHT");
+const STATE_SCORE_BONUS: Record<TrackableState, number> = {
+	BASE: 0,
+	HUNDO: 10,
+	LUCKY: 6,
+	NUNDO: 12,
+	PURIFIED: 3,
+	SHADOW: 5,
+	SHINY: 8,
+};
 
-	slots.push("REGIONAL_FOCUS");
-	slots.push("TYPE_DIVERSITY");
-	slots.push("WILDCARD");
+const RARITY_SCORE: Partial<
+	Record<NonNullable<PokemonTraits["pokemonClassification"]>, number>
+> = {
+	LEGENDARY: 25,
+	MYTHIC: 20,
+	ULTRA_BEAST: 15,
+};
 
-	return slots;
+export function getStateCategory(state: TrackableState): StateCategory {
+	if (ENCOUNTER_STATES.has(state)) return "ENCOUNTER";
+	if (GRIND_STATES.has(state)) return "GRIND";
+	throw new Error(`Unknown state category: ${state}`);
 }
 
 export function getRelevantSignatures(
@@ -72,34 +91,57 @@ function dailyOffset(
 	return h % 20;
 }
 
+function getEligibleSlots(
+	candidate: CatchOfTheDayCandidate,
+): CatchOfTheDaySlot[] {
+	const { traits, ownedSignatures } = candidate;
+	const signatures = getRelevantSignatures(traits);
+	const owned = signatures.filter((s) => ownedSignatures.has(s)).length;
+	const completionRatio = owned / signatures.length;
+	const isRare = traits.pokemonClassification !== null;
+
+	const slots: CatchOfTheDaySlot[] = [];
+
+	if (isRare) {
+		slots.push("RARITY_SPOTLIGHT");
+	} else {
+		if (completionRatio < 1) slots.push("COMPLETION_URGENCY");
+		slots.push("REGIONAL_FOCUS", "TYPE_DIVERSITY");
+	}
+
+	slots.push("WILDCARD");
+	return slots;
+}
+
 export function scoreCandidate(
 	candidate: CatchOfTheDayCandidate,
 	trainerId: TrainerID,
 	date: string,
-): { score: number; missingSignatures: TrackingSignatureRef[] } {
+): { missingSignatures: TrackingSignatureRef[]; score: number } {
 	const { traits, ownedSignatures } = candidate;
 	const signatures = getRelevantSignatures(traits);
 	const missing = signatures.filter((sig) => !ownedSignatures.has(sig));
+
 	if (missing.length === 0) return { missingSignatures: [], score: -1 };
 
-	let rarity = 0;
-	if (traits.pokemonClassification === "LEGENDARY") rarity = 25;
-	else if (traits.pokemonClassification === "MYTHIC") rarity = 20;
-	else if (traits.pokemonClassification === "ULTRA_BEAST") rarity = 15;
-	else if (traits.formCategory === "REGIONAL_FORM") rarity = 10;
-	else if (traits.formCategory === "ALTERNATE_FORM") rarity = 5;
-
-	if (!traits.isTradable) rarity += 8;
-	if (traits.isShadowAvailable) rarity += 4;
+	const rarity =
+		(traits.pokemonClassification
+			? (RARITY_SCORE[traits.pokemonClassification] ?? 0)
+			: 0) +
+		(traits.formCategory === "REGIONAL_FORM" && !traits.pokemonClassification
+			? 10
+			: 0) +
+		(traits.formCategory === "ALTERNATE_FORM" && !traits.pokemonClassification
+			? 5
+			: 0) +
+		(!traits.isTradable ? 8 : 0) +
+		(traits.isShadowAvailable ? 4 : 0);
 
 	const owned = signatures.length - missing.length;
-	const urgency =
-		signatures.length > 0 ? Math.round((owned / signatures.length) * 30) : 0;
-
+	const urgency = Math.round((owned / signatures.length) * 30);
 	const offset = dailyOffset(candidate.pokemonRef, trainerId, date);
-	const score = rarity + urgency + offset;
 
-	return { missingSignatures: missing, score };
+	return { missingSignatures: missing, score: rarity + urgency + offset };
 }
 
 export function scoreCandidates(
@@ -110,9 +152,33 @@ export function scoreCandidates(
 	return candidates
 		.map((c) => {
 			const { score, missingSignatures } = scoreCandidate(c, trainerId, date);
-			const eligibleSlots = score >= 0 ? getEligibleSlots(c) : [];
-			return { ...c, eligibleSlots, missingSignatures, score };
+			return {
+				...c,
+				eligibleSlots: score >= 0 ? getEligibleSlots(c) : [],
+				missingSignatures,
+				score,
+			};
 		})
 		.filter((c) => c.score >= 0)
 		.sort((a, b) => b.score - a.score);
+}
+
+export function expandByState(
+	scored: CatchOfTheDayScoredCandidate[],
+): ExpandedCandidate[] {
+	const expanded: ExpandedCandidate[] = [];
+
+	for (const candidate of scored) {
+		for (const sig of candidate.missingSignatures) {
+			const state = sig as TrackableState;
+			expanded.push({
+				...candidate,
+				expandedScore: candidate.score + (STATE_SCORE_BONUS[state] ?? 0),
+				stateCategory: getStateCategory(state),
+				targetState: state,
+			});
+		}
+	}
+
+	return expanded.sort((a, b) => b.expandedScore - a.expandedScore);
 }
