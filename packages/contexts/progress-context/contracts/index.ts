@@ -10,15 +10,14 @@ export * from "../src/application/contracts/summary-stat";
 export * from "../src/application/contracts/tracking-collections";
 export * from "../src/application/contracts/variant-collections";
 
-export * from "../src/application/projections/achievements/policies/achievement-checker";
-export * from "../src/application/projections/achievements/ports/projection";
-
 export * from "../src/application/projections/catch-of-the-day/catch-of-the-day-reset.handler";
 export * from "../src/application/projections/catch-of-the-day/policies/slot-selector";
 export * from "../src/application/projections/catch-of-the-day/ports/projection";
 export * from "../src/application/projections/catch-of-the-day/ports/sources/pokemon-source";
 export * from "../src/application/projections/catch-of-the-day/rules/scoring-engine";
 
+export * from "../src/application/projections/trainer-progress/achievements/policies/achievement-checker";
+export * from "../src/application/projections/trainer-progress/achievements/ports/projection";
 export * from "../src/application/projections/trainer-progress/pokemon-tracked.handler";
 export * from "../src/application/projections/trainer-progress/policies/compute-progress-delta";
 export * from "../src/application/projections/trainer-progress/ports/projection";
