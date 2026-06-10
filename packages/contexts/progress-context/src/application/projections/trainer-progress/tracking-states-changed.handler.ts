@@ -1,7 +1,8 @@
 import type { TrackingStatesChangedPayload } from "@context/collection";
 import type { DomainEvent } from "@pokepulse/toolkit";
-import { checkFirstCatchByState } from "../achievements/policies/achievement-checker";
-import type { ITrainerAchievementProjection } from "../achievements/ports/projection";
+
+import { checkFirstCatchByState } from "./achievements/policies/achievement-checker";
+import type { ITrainerAchievementProjection } from "./achievements/ports/projection";
 import { computeProgressDelta } from "./policies/compute-progress-delta";
 import type { ITrainerProgressProjection } from "./ports/projection";
 import type { IPokemonMetadataSource } from "./ports/sources/pokemon-metadata-source";
@@ -17,7 +18,6 @@ export class TrackingStatesChangedHandler {
 		event: DomainEvent<TrackingStatesChangedPayload>,
 	): Promise<void> {
 		if (!event.payload) return;
-
 		const { by, from, on, to } = event.payload;
 
 		const [traits, metadata] = await Promise.all([
@@ -35,14 +35,12 @@ export class TrackingStatesChangedHandler {
 
 		const added = to.filter((s) => !from.includes(s));
 		const removed = from.filter((s) => !to.includes(s));
-
 		if (added.length === 0 && removed.length === 0) return;
 
 		const deltas = computeProgressDelta(added, removed, traits);
 		if (deltas.length === 0) return;
 
 		const trainerId = by.value();
-
 		await Promise.all([
 			this.projection.applyDeltas(trainerId, deltas, {
 				pokemonName: metadata.name,
@@ -57,8 +55,6 @@ export class TrackingStatesChangedHandler {
 			),
 		]);
 
-		// ── Achievement checks ──────────────────────────────────────────────────
-		// Only check newly added non-BASE states for first-catch achievements
 		const newNonBaseStates = added.filter((s) => s !== "BASE");
 		if (newNonBaseStates.length > 0) {
 			await checkFirstCatchByState(
