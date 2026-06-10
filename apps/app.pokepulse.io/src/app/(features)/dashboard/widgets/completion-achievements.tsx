@@ -6,9 +6,8 @@ import { Fragment } from "react/jsx-runtime";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-
-import { ACHIEVEMENT_META } from "../libs/achievement-meta";
 import { progressQueries } from "../progress.query";
+import { ACHIEVEMENT_META } from "./achievement-meta";
 
 const COLOR_MAP: Record<
 	string,

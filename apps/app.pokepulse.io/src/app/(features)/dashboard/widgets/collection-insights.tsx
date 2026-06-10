@@ -12,8 +12,8 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 
-import { deriveInsights } from "../libs/derive-insights";
 import { progressQueries } from "../progress.query";
+import { deriveInsights } from "./derive-insights";
 
 interface CollectionInsightsProps {
 	trainerId: string;
