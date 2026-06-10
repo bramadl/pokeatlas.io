@@ -2,12 +2,10 @@ import type {
 	BrowsePokedexInput,
 	GetCatchOfTheDayInput,
 	GetProgressSummaryInput,
-	// GetTrainerInput,
 } from "@pokepulse/core/server";
 
 export type GetProgressSummaryQueryOptions = GetProgressSummaryInput;
 export type GetCatchOfTheDayQueryOptions = GetCatchOfTheDayInput;
-// export type GetTrainerQueryOptions = GetTrainerInput;
 
 export type BrowsePokedexQueryOptions = Omit<
 	BrowsePokedexInput,
@@ -30,10 +28,3 @@ export const pokedexQueryKeys = {
 		return [...pokedexQueryKeys.all(), "browse", input] as const;
 	},
 };
-
-// export const authQueryKeys = {
-// 	all: () => ["auth"] as const,
-// 	getTrainer: (input: GetTrainerQueryOptions) => {
-// 		return ["auth", "trainer", input.authId] as const;
-// 	},
-// };
