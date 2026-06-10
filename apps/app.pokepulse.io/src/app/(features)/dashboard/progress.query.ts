@@ -4,7 +4,7 @@ import {
 	type GetCatchOfTheDayQueryOptions,
 	type GetProgressSummaryQueryOptions,
 	progressQueryKeys,
-} from "@/app/(shared)/query-keys.registry";
+} from "@/lib/tanstack/query/query-keys.registry";
 
 import { getCatchOfTheDay, getProgressSummary } from "./progress.api";
 import type { GetProgressSummaryOutput } from "./progress.contract";

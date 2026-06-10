@@ -4,7 +4,7 @@ import { type InfiniteData, infiniteQueryOptions } from "@tanstack/react-query";
 import {
 	type BrowsePokedexQueryOptions,
 	pokedexQueryKeys,
-} from "@/app/(shared)/query-keys.registry";
+} from "@/lib/tanstack/query/query-keys.registry";
 
 import { browsePokedex } from "./pokedex.api";
 

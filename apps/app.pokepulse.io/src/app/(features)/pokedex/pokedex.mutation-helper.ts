@@ -6,7 +6,8 @@ import {
 } from "@pokepulse/core";
 import type { InfiniteData, QueryClient } from "@tanstack/react-query";
 import { produce } from "immer";
-import { progressQueryKeys } from "@/app/(shared)/query-keys.registry";
+
+import { progressQueryKeys } from "@/lib/tanstack/query/query-keys.registry";
 
 import { pokedexQueryKeys } from "./pokedex.query";
 
