@@ -2,6 +2,7 @@
 
 import { useProgress, useRouter } from "@bprogress/next";
 import { GearIcon, GlobeIcon, SignOutIcon } from "@phosphor-icons/react";
+import Link from "next/link";
 
 import { signOut } from "@/app/(features)/(auth)/api/auth/auth.api";
 
@@ -33,10 +34,12 @@ function AccountMenu() {
 	return (
 		<DropdownMenuGroup>
 			<DropdownMenuLabel>Account</DropdownMenuLabel>
-			{ACCOUNT_ITEMS.map(({ icon: Icon, label }) => (
-				<DropdownMenuItem key={label}>
-					<Icon />
-					{label}
+			{ACCOUNT_ITEMS.map(({ icon: Icon, label, href }) => (
+				<DropdownMenuItem asChild key={label}>
+					<Link href={href}>
+						<Icon />
+						{label}
+					</Link>
 				</DropdownMenuItem>
 			))}
 			<DropdownMenuSub>
