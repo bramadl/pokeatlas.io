@@ -38,14 +38,14 @@ export function CatchOfTheDay({
 				<CardTitle>Catch of the Day</CardTitle>
 				<CardDescription>Missing entries worth chasing today.</CardDescription>
 			</CardHeader>
-			<CardContent className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-4">
+			<CardContent className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 place-items-center gap-4">
 				{data.entries.map((entry) => {
 					return (
 						<Tooltip key={entry.pokemonRef}>
 							<TooltipTrigger asChild>
 								<button
 									className={cn(
-										"relative flex items-center justify-center p-4 aspect-square rounded-full border shadow",
+										"relative flex items-center justify-center p-4 max-w-24 size-full aspect-square rounded-full border shadow",
 										"bg-linear-60 from-1% via-background via-50% grayscale-75 opacity-50 hover:opacity-100 transition-all",
 										POKEMON_THEME_MAP[
 											entry.primaryType.toLowerCase() as PokemonType
@@ -58,7 +58,7 @@ export function CatchOfTheDay({
 								>
 									<span
 										className={cn(
-											"relative p-4 sm:p-6 lg:p-4 rounded-full border shadow bg-slate-100",
+											"relative p-4 rounded-full border shadow bg-slate-100",
 											"bg-linear-30 from-1% via-background via-50%",
 											POKEMON_THEME_MAP[
 												entry.primaryType.toLowerCase() as PokemonType

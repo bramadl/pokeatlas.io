@@ -16,7 +16,6 @@ import {
 	DropdownMenuLabel,
 	DropdownMenuPortal,
 	DropdownMenuSeparator,
-	DropdownMenuShortcut,
 	DropdownMenuSub,
 	DropdownMenuSubContent,
 	DropdownMenuSubTrigger,
@@ -34,11 +33,10 @@ function AccountMenu() {
 	return (
 		<DropdownMenuGroup>
 			<DropdownMenuLabel>Account</DropdownMenuLabel>
-			{ACCOUNT_ITEMS.map(({ icon: Icon, label, shortcut }) => (
+			{ACCOUNT_ITEMS.map(({ icon: Icon, label }) => (
 				<DropdownMenuItem key={label}>
 					<Icon />
 					{label}
-					{shortcut && <DropdownMenuShortcut>{shortcut}</DropdownMenuShortcut>}
 				</DropdownMenuItem>
 			))}
 			<DropdownMenuSub>

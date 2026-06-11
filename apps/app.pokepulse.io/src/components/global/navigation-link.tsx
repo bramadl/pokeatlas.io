@@ -8,17 +8,17 @@ import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
 
 interface NavigationLinkProps {
+	href: string;
 	label: string;
 	mobile?: boolean;
 	onLinkClicked?: () => void;
-	url: string;
 }
 
 export function NavigationLink({
 	label,
 	mobile,
 	onLinkClicked,
-	url,
+	href,
 }: NavigationLinkProps) {
 	const pathname = usePathname();
 
@@ -30,15 +30,15 @@ export function NavigationLink({
 					? "w-full justify-start"
 					: cn(
 							"hover:bg-foreground/25 focus-visible:bg-foreground/25",
-							url === pathname &&
+							href === pathname &&
 								"bg-foreground/25 hover:bg-foreground/25 focus-visible:bg-foreground/25",
 						),
 			)}
 			key={label}
 			onClick={onLinkClicked}
-			variant={mobile ? (url === pathname ? "default" : "ghost") : "default"}
+			variant={mobile ? (href === pathname ? "default" : "ghost") : "default"}
 		>
-			<Link className="text-sm" href={url}>
+			<Link className="text-sm" href={href}>
 				{label}
 			</Link>
 		</Button>

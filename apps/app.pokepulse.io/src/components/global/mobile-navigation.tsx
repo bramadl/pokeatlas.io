@@ -1,8 +1,13 @@
 "use client";
 
+import { useProgress } from "@bprogress/next";
 import { ListIcon, SignOutIcon } from "@phosphor-icons/react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Avatar, AvatarImage } from "../ui/avatar";
+
+import { signOut } from "@/app/(features)/(auth)/api/auth/auth.api";
+
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Button } from "../ui/button";
 import { Label } from "../ui/label";
 import { Separator } from "../ui/separator";
@@ -23,8 +28,193 @@ import {
 } from "./menu";
 import { NavigationLinks } from "./navigation-links";
 
-export function MobileNavigation() {
+interface Menu {
+	closeMenu: () => void;
+}
+
+function AppMenu({ closeMenu }: Menu) {
+	return (
+		<div>
+			<Label className="text-xs text-muted-foreground mb-3">Menu</Label>
+			<NavigationLinks mobile onLinkClicked={closeMenu} />
+		</div>
+	);
+}
+
+function AccountMenu({ closeMenu }: Menu) {
+	return (
+		<div>
+			<Label className="text-xs text-muted-foreground mb-3">Account</Label>
+			<div className="flex flex-col gap-1">
+				{ACCOUNT_ITEMS.map(({ icon: Icon, label }) => (
+					<Button
+						className="justify-start"
+						key={label}
+						onClick={closeMenu}
+						variant="ghost"
+					>
+						<Icon />
+						{label}
+					</Button>
+				))}
+			</div>
+		</div>
+	);
+}
+
+function LanguageMenu({ closeMenu }: Menu) {
+	return (
+		<div>
+			<Label className="text-xs text-muted-foreground mb-3">Language</Label>
+			<div className="flex flex-col gap-1">
+				{LANGUAGES.map(({ emoji, label }) => (
+					<Button
+						className="justify-start"
+						key={label}
+						onClick={closeMenu}
+						variant="ghost"
+					>
+						<span className="mr-1">{emoji}</span>
+						{label}
+					</Button>
+				))}
+			</div>
+		</div>
+	);
+}
+
+function LogoutButton({ onLoggedOut }: { onLoggedOut: () => void }) {
+	const router = useRouter();
+	const progress = useProgress();
+
+	const signOutHandler = async () => {
+		progress.start();
+		await signOut().then(() => {
+			onLoggedOut();
+			router.replace("/");
+		});
+	};
+
+	return (
+		<Button onClick={signOutHandler} variant="destructive">
+			<SignOutIcon />
+			Sign Out
+		</Button>
+	);
+}
+
+function MenuHeader() {
+	return (
+		<div className="py-2">
+			<SheetTitle>
+				<AppLogo />
+			</SheetTitle>
+			<SheetDescription className="sr-only">
+				Track your Pokémon GO collection progress in one place.
+			</SheetDescription>
+		</div>
+	);
+}
+
+function ResourcesMenu({ closeMenu }: Menu) {
+	return (
+		<div>
+			<Label className="text-xs text-muted-foreground mb-3">Resources</Label>
+			<div className="flex flex-col gap-1">
+				{RESOURCE_ITEMS.map(({ icon: Icon, label }) => (
+					<Button
+						className="justify-start"
+						key={label}
+						onClick={closeMenu}
+						variant="ghost"
+					>
+						<Icon />
+						{label}
+					</Button>
+				))}
+			</div>
+		</div>
+	);
+}
+
+function SettingsMenu({ closeMenu }: Menu) {
+	return (
+		<div>
+			<Label className="text-xs text-muted-foreground mb-3">Settings</Label>
+			<div className="flex flex-col gap-1">
+				{SETTINGS_ITEMS.map(({ icon: Icon, label }) => (
+					<Button
+						className="justify-start"
+						key={label}
+						onClick={closeMenu}
+						variant="ghost"
+					>
+						<Icon />
+						{label}
+					</Button>
+				))}
+			</div>
+		</div>
+	);
+}
+
+function SupportMenu({ closeMenu }: Menu) {
+	return (
+		<div>
+			<Label className="text-xs text-muted-foreground mb-3">Support</Label>
+			<div className="flex flex-col gap-1">
+				{SUPPORT_ITEMS.map(({ icon: Icon, label }) => (
+					<Button
+						className="justify-start"
+						key={label}
+						onClick={closeMenu}
+						variant="ghost"
+					>
+						<Icon />
+						{label}
+					</Button>
+				))}
+			</div>
+		</div>
+	);
+}
+
+interface Trainer {
+	email: string;
+	image?: string | null;
+	name: string;
+}
+
+function TrainerCard({ closeMenu, email, image, name }: Trainer & Menu) {
+	return (
+		<div className="flex flex-col gap-4 p-4 bg-slate-100 rounded">
+			<div className="flex items-center gap-2">
+				<Avatar className="ring ring-primary-foreground">
+					<AvatarImage alt={name} src={image ?? undefined} />
+					<AvatarFallback>
+						{name.split(" ").map((w) => (w[0] as string).toUpperCase())}
+					</AvatarFallback>
+				</Avatar>
+				<div className="flex flex-col gap-0">
+					<span className="font-bold text-sm">{name}</span>
+					<span className="text-xs text-muted-foreground">{email}</span>
+				</div>
+			</div>
+			<Separator />
+			<LogoutButton onLoggedOut={closeMenu} />
+		</div>
+	);
+}
+
+interface MobileNavigationProps extends Trainer {}
+
+export function MobileNavigation({
+	email,
+	image,
+	name,
+}: MobileNavigationProps) {
 	const [isOpen, setIsOpen] = useState<boolean>(false);
+	const closeMenu = () => setIsOpen(false);
 
 	return (
 		<Sheet onOpenChange={setIsOpen} open={isOpen}>
@@ -37,99 +227,25 @@ export function MobileNavigation() {
 				</Button>
 			</SheetTrigger>
 			<SheetContent className="flex flex-col gap-4 p-4 overflow-y-auto overscroll-none">
-				<div className="py-2">
-					<SheetTitle>
-						<AppLogo />
-					</SheetTitle>
-					<SheetDescription className="sr-only">
-						Track your Pokémon GO collection progress in one place.
-					</SheetDescription>
-				</div>
-				<div className="flex flex-col gap-4 p-4 bg-slate-100 rounded">
-					<div className="flex items-center gap-2">
-						<Avatar className="ring ring-primary-foreground" size="default">
-							<AvatarImage alt="Ash Ketchum" src="/pp.jpeg" />
-						</Avatar>
-						<div className="flex flex-col gap-0">
-							<span className="font-bold text-sm">Ash Ketchum</span>
-							<span className="text-xs text-muted-foreground">
-								ash@pokemon.com
-							</span>
-						</div>
-					</div>
-					<Separator />
-					<Button variant="destructive">
-						<SignOutIcon />
-						Sign Out
-					</Button>
-				</div>
+				<MenuHeader />
+				<TrainerCard
+					closeMenu={closeMenu}
+					email={email}
+					image={image}
+					name={name}
+				/>
 				<Separator />
-				<div>
-					<Label className="text-xs text-muted-foreground mb-3">Menu</Label>
-					<NavigationLinks mobile onLinkClicked={() => setIsOpen(false)} />
-				</div>
+				<AppMenu closeMenu={closeMenu} />
 				<Separator />
-				<div>
-					<Label className="text-xs text-muted-foreground mb-3">Account</Label>
-					<div className="flex flex-col gap-1">
-						{ACCOUNT_ITEMS.map(({ icon: Icon, label }) => (
-							<Button className="justify-start" key={label} variant="ghost">
-								<Icon />
-								{label}
-							</Button>
-						))}
-					</div>
-				</div>
+				<AccountMenu closeMenu={closeMenu} />
 				<Separator />
-				<div>
-					<Label className="text-xs text-muted-foreground mb-3">Settings</Label>
-					<div className="flex flex-col gap-1">
-						{SETTINGS_ITEMS.map(({ icon: Icon, label }) => (
-							<Button className="justify-start" key={label} variant="ghost">
-								<Icon />
-								{label}
-							</Button>
-						))}
-					</div>
-				</div>
+				<SettingsMenu closeMenu={closeMenu} />
 				<Separator />
-				<div>
-					<Label className="text-xs text-muted-foreground mb-3">Language</Label>
-					<div className="flex flex-col gap-1">
-						{LANGUAGES.map(({ emoji, label }) => (
-							<Button className="justify-start" key={label} variant="ghost">
-								<span className="mr-1">{emoji}</span>
-								{label}
-							</Button>
-						))}
-					</div>
-				</div>
+				<LanguageMenu closeMenu={closeMenu} />
 				<Separator />
-				<div>
-					<Label className="text-xs text-muted-foreground mb-3">
-						Resources
-					</Label>
-					<div className="flex flex-col gap-1">
-						{RESOURCE_ITEMS.map(({ icon: Icon, label }) => (
-							<Button className="justify-start" key={label} variant="ghost">
-								<Icon />
-								{label}
-							</Button>
-						))}
-					</div>
-				</div>
+				<ResourcesMenu closeMenu={closeMenu} />
 				<Separator />
-				<div>
-					<Label className="text-xs text-muted-foreground mb-3">Support</Label>
-					<div className="flex flex-col gap-1">
-						{SUPPORT_ITEMS.map(({ icon: Icon, label }) => (
-							<Button className="justify-start" key={label} variant="ghost">
-								<Icon />
-								{label}
-							</Button>
-						))}
-					</div>
-				</div>
+				<SupportMenu closeMenu={closeMenu} />
 			</SheetContent>
 		</Sheet>
 	);

@@ -1,11 +1,9 @@
-import { cn } from "@/lib/utils";
-import { NavigationLink } from "./navigation-link";
+"use client";
 
-const LINKS = [
-	{ label: "Dashboard", url: "/dashboard" },
-	{ label: "Pokédex", url: "/pokedex" },
-	{ label: "Guides", url: "/guides" },
-] as const;
+import { cn } from "@/lib/utils";
+
+import { NAV_LINKS } from "./menu";
+import { NavigationLink } from "./navigation-link";
 
 interface NavigationLinksProps {
 	mobile?: boolean;
@@ -18,7 +16,7 @@ export function NavigationLinks({
 }: NavigationLinksProps) {
 	return (
 		<div className={cn("flex items-center gap-3", mobile && "flex-col gap-1")}>
-			{LINKS.map((link) => (
+			{NAV_LINKS.map((link) => (
 				<NavigationLink
 					key={link.label}
 					mobile={mobile}

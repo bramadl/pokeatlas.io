@@ -24,7 +24,7 @@ export async function GlobalNavigation({ trainer }: GlobalNavigationProps) {
 				<AppLogo />
 				{trainer !== null ? (
 					<Fragment>
-						<div className="hidden md:flex items-center gap-4">
+						<div className="hidden md:flex items-center gap-2 lg:gap-4">
 							<NavigationLinks />
 							<Separator className="my-2 opacity-30" orientation="vertical" />
 							<TrainerDropdown
@@ -33,7 +33,11 @@ export async function GlobalNavigation({ trainer }: GlobalNavigationProps) {
 								name={trainer.name}
 							/>
 						</div>
-						<MobileNavigation />
+						<MobileNavigation
+							email={trainer.email}
+							image={trainer.image}
+							name={trainer.name}
+						/>
 					</Fragment>
 				) : (
 					<AuthPopupButton />
