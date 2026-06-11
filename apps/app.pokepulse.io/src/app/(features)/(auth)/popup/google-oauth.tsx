@@ -5,6 +5,7 @@ import { useTransition } from "react";
 
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth/client";
+import { grantAuthAccess } from "../api/auth/auth.api";
 
 interface GoogleOAuthProps {
 	disabled?: boolean;
@@ -15,9 +16,10 @@ export function GoogleOAuth({ disabled }: GoogleOAuthProps) {
 
 	function handleGoogleSignIn() {
 		startTransition(async () => {
+			await grantAuthAccess();
 			await authClient.signIn.social({
 				callbackURL: "/auth/redirect",
-				newUserCallbackURL: "/auth/redirect",
+				newUserCallbackURL: "/auth/provision",
 				provider: "google",
 			});
 		});

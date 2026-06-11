@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth/client";
+import { grantAuthAccess } from "../api/auth/auth.api";
 
 interface MagicLinkProps {
 	disabled?: boolean;
@@ -28,9 +29,12 @@ export function MagicLink({ disabled }: MagicLinkProps) {
 
 		startTransition(async () => {
 			setError("");
-			const { error: err } = await authClient.signIn.magicLink({
+
+			await grantAuthAccess();
+			const { data, error: err } = await authClient.signIn.magicLink({
 				callbackURL: "/auth/redirect",
 				email: trimmed,
+				newUserCallbackURL: "/auth/provision",
 			});
 
 			if (err) {
@@ -38,7 +42,7 @@ export function MagicLink({ disabled }: MagicLinkProps) {
 				return;
 			}
 
-			setSent(true);
+			if (data.status === true) setSent(true);
 		});
 	}
 
