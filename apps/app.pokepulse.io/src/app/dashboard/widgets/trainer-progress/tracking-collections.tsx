@@ -92,6 +92,23 @@ export function TrackingCollections({ trainerId }: { trainerId: string }) {
 							<CardTitle className="text-sm capitalize">
 								<span className="mr-1">{collection.emoji}</span>{" "}
 								<span>{collection.state.toLowerCase()} Dex</span>
+								<Tooltip>
+									<TooltipTrigger
+										aria-label="Info"
+										className="align-middle ml-1 relative z-3"
+									>
+										<InfoIcon />
+									</TooltipTrigger>
+									<TooltipContent>
+										<div className="py-2 flex flex-col gap-2">
+											<p>
+												Try to search for{" "}
+												<code>`{collection.state.toLowerCase()}`</code> in your
+												Pokémon storage.
+											</p>
+										</div>
+									</TooltipContent>
+								</Tooltip>
 							</CardTitle>
 							<ArrowRightIcon
 								className="opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all delay-100"

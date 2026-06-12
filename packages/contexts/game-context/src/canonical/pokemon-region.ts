@@ -32,7 +32,7 @@ export const POKEMON_REGIONAL_ORIGIN_SUFFIX: Record<PokemonRegional, string> = {
 	GALAR: "GALARIAN",
 	HISUI: "HISUIAN",
 	KANTO: "KANTONIAN",
-	PALDEA: "PALDEAN",
+	PALDEA: "PALDEA",
 } as const;
 
 export const REGION_LABEL: Record<

@@ -66,7 +66,7 @@ export function RegionalBreakdown({ trainerId }: { trainerId: string }) {
 						>
 							<Link
 								aria-label="Go to dex"
-								className="absolute inset-0"
+								className="absolute inset-0 z-1"
 								href={href}
 							/>
 							<CardHeader className="flex items-center justify-between">
@@ -81,8 +81,8 @@ export function RegionalBreakdown({ trainerId }: { trainerId: string }) {
 							<CardContent>
 								<Field>
 									<Progress className="h-1" value={stat.completionPercentage} />
-									<div className="flex items-end justify-between gap-4 uppercase text-muted-foreground text-xs tracking-widest">
-										<FieldLabel className="text-xs">
+									<div className="flex items-end justify-between gap-2 uppercase text-muted-foreground text-[10px] tracking-widest">
+										<FieldLabel className="text-[10px]">
 											{stat.tracked}/{stat.total}
 										</FieldLabel>
 										<span>{stat.completionPercentage.toFixed(0)}%</span>

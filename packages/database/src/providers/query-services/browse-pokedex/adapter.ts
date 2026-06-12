@@ -57,8 +57,8 @@ export class PrismaBrowsePokedexQueryServiceAdapter
 				input.filters?.pokedex === "NATIONAL"
 					? [{ pokedexNumber: "asc" }, { formPriority: "asc" }, { ref: "asc" }]
 					: [
-							{ formSortGroup: "asc" },
 							{ pokedexNumber: "asc" },
+							{ formSortGroup: "asc" },
 							{ formPriority: "asc" },
 							{ ref: "asc" },
 						],

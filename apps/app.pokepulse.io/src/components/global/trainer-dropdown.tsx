@@ -1,7 +1,11 @@
 "use client";
 
 import { useProgress, useRouter } from "@bprogress/next";
-import { GearIcon, GlobeIcon, SignOutIcon } from "@phosphor-icons/react";
+import {
+	// GearIcon,
+	// GlobeIcon,
+	SignOutIcon,
+} from "@phosphor-icons/react";
 import Link from "next/link";
 
 import { signOut } from "@/app/(auth)/api/auth/auth.api";
@@ -10,23 +14,23 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Button } from "../ui/button";
 import {
 	DropdownMenu,
-	DropdownMenuCheckboxItem,
+	// DropdownMenuCheckboxItem,
 	DropdownMenuContent,
 	DropdownMenuGroup,
 	DropdownMenuItem,
 	DropdownMenuLabel,
-	DropdownMenuPortal,
+	// DropdownMenuPortal,
 	DropdownMenuSeparator,
-	DropdownMenuSub,
-	DropdownMenuSubContent,
-	DropdownMenuSubTrigger,
+	// DropdownMenuSub,
+	// DropdownMenuSubContent,
+	// DropdownMenuSubTrigger,
 	DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import {
 	ACCOUNT_ITEMS,
-	LANGUAGES,
+	// LANGUAGES,
 	RESOURCE_ITEMS,
-	SETTINGS_ITEMS,
+	// SETTINGS_ITEMS,
 	SUPPORT_ITEMS,
 } from "./menu";
 
@@ -42,7 +46,7 @@ function AccountMenu() {
 					</Link>
 				</DropdownMenuItem>
 			))}
-			<DropdownMenuSub>
+			{/* <DropdownMenuSub>
 				<DropdownMenuSubTrigger>
 					<GearIcon />
 					Settings
@@ -78,12 +82,12 @@ function AccountMenu() {
 						</DropdownMenuGroup>
 					</DropdownMenuSubContent>
 				</DropdownMenuPortal>
-			</DropdownMenuSub>
+			</DropdownMenuSub> */}
 		</DropdownMenuGroup>
 	);
 }
 
-function ResourcesMenu() {
+function _ResourcesMenu() {
 	return (
 		<DropdownMenuGroup>
 			<DropdownMenuLabel>Resources</DropdownMenuLabel>
@@ -97,7 +101,7 @@ function ResourcesMenu() {
 	);
 }
 
-function SupportMenu() {
+function _SupportMenu() {
 	return (
 		<DropdownMenuGroup>
 			<DropdownMenuLabel>Support</DropdownMenuLabel>
@@ -152,10 +156,10 @@ export function TrainerDropdown({ image, name }: TrainerDropdownProps) {
 			</DropdownMenuTrigger>
 			<DropdownMenuContent align="end">
 				<AccountMenu />
-				<DropdownMenuSeparator />
+				{/* <DropdownMenuSeparator />
 				<ResourcesMenu />
 				<DropdownMenuSeparator />
-				<SupportMenu />
+				<SupportMenu /> */}
 				<DropdownMenuSeparator />
 				<Logout />
 			</DropdownMenuContent>

@@ -62,7 +62,7 @@ function AccountMenu({ closeMenu }: Menu) {
 	);
 }
 
-function LanguageMenu({ closeMenu }: Menu) {
+function _LanguageMenu({ closeMenu }: Menu) {
 	return (
 		<div>
 			<Label className="text-xs text-muted-foreground mb-3">Language</Label>
@@ -116,7 +116,7 @@ function MenuHeader() {
 	);
 }
 
-function ResourcesMenu({ closeMenu }: Menu) {
+function _ResourcesMenu({ closeMenu }: Menu) {
 	return (
 		<div>
 			<Label className="text-xs text-muted-foreground mb-3">Resources</Label>
@@ -137,7 +137,7 @@ function ResourcesMenu({ closeMenu }: Menu) {
 	);
 }
 
-function SettingsMenu({ closeMenu }: Menu) {
+function _SettingsMenu({ closeMenu }: Menu) {
 	return (
 		<div>
 			<Label className="text-xs text-muted-foreground mb-3">Settings</Label>
@@ -158,7 +158,7 @@ function SettingsMenu({ closeMenu }: Menu) {
 	);
 }
 
-function SupportMenu({ closeMenu }: Menu) {
+function _SupportMenu({ closeMenu }: Menu) {
 	return (
 		<div>
 			<Label className="text-xs text-muted-foreground mb-3">Support</Label>
@@ -238,14 +238,14 @@ export function MobileNavigation({
 				<AppMenu closeMenu={closeMenu} />
 				<Separator />
 				<AccountMenu closeMenu={closeMenu} />
-				<Separator />
+				{/* <Separator />
 				<SettingsMenu closeMenu={closeMenu} />
 				<Separator />
 				<LanguageMenu closeMenu={closeMenu} />
 				<Separator />
 				<ResourcesMenu closeMenu={closeMenu} />
 				<Separator />
-				<SupportMenu closeMenu={closeMenu} />
+				<SupportMenu closeMenu={closeMenu} /> */}
 			</SheetContent>
 		</Sheet>
 	);

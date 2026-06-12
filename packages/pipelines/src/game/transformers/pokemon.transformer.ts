@@ -160,7 +160,8 @@ const REGIONAL_DEX_RANGES: Array<[string, number, number]> = [
 	["UNOVA", 494, 649],
 	["KALOS", 650, 721],
 	["ALOLA", 722, 807],
-	["GALAR", 810, 905],
+	["GALAR", 810, 895],
+	["HISUI", 896, 905],
 	["PALDEA", 906, 1025],
 ] as const;
 

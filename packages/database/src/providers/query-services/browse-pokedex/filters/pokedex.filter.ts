@@ -17,7 +17,22 @@ export function pokedexFilter(
 				pokedex as unknown as keyof typeof POKEDEX_REGIONAL_RANGES
 			];
 
-		if (pokedex === "HISUI") return { ref: { contains: "HISUIAN" } };
+		if (pokedex === "HISUI") {
+			const conditions: PokemonModelWhereInput[] = [
+				{ ref: { contains: "HISUIAN" } },
+			];
+			if (range) {
+				const [min, max] = range;
+				conditions.push({
+					formCategory: { not: "REGIONAL_FORM" },
+					pokedexNumber: { gte: min, lte: max },
+				});
+			}
+			return conditions.length === 1
+				? (conditions[0] as PokemonModelWhereInput)
+				: { OR: conditions };
+		}
+
 		if (suffix && range) {
 			const [min, max] = range;
 			return {
