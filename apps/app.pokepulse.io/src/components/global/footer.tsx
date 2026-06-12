@@ -16,7 +16,7 @@ export function GlobalFooter() {
 			>
 				<div className="flex flex-col md:flex-row items-center md:items-start justify-center md:justify-between gap-4 md:self-stretch">
 					<div className="flex flex-col items-start gap-4">
-						<AppLogo />
+						<AppLogo to="/dashboard" />
 						<small className="text-muted text-center">
 							Made with <span className="animate-pulse">❤️</span> for the
 							community by{" "}
