@@ -5,7 +5,7 @@ import { auth } from "@/lib/auth/server";
 import {
 	COOKIE_NAME,
 	verifyAccessCookieValue,
-} from "./app/(features)/(auth)/api/libs/access-cookie";
+} from "./app/(auth)/api/libs/access-cookie";
 
 const NEON_COOKIE = "__Secure-neon-auth.session_token";
 

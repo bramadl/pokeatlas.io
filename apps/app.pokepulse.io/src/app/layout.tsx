@@ -8,8 +8,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { NuqsProvider } from "@/lib/nuqs/nuqs-provider";
 import { QueryProvider } from "@/lib/tanstack/query/query-provider";
 
+import { AuthPopupProvider } from "./(auth)/popup";
 import "./globals.css";
-import { AuthPopupProvider } from "./(features)/(auth)/popup";
 
 const fontSans = Plus_Jakarta_Sans({
 	subsets: ["latin"],

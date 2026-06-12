@@ -5,7 +5,7 @@ import { ListIcon, SignOutIcon } from "@phosphor-icons/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-import { signOut } from "@/app/(features)/(auth)/api/auth/auth.api";
+import { signOut } from "@/app/(auth)/api/auth/auth.api";
 
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Button } from "../ui/button";

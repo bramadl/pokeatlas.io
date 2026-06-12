@@ -1,6 +1,6 @@
 import { Fragment } from "react/jsx-runtime";
 
-import { AuthPopupButton } from "@/app/(features)/(auth)/popup/auth-popup-button";
+import { AuthPopupButton } from "@/app/(auth)/popup/auth-popup-button";
 
 import { Container } from "../ui/container";
 import { Separator } from "../ui/separator";
@@ -40,7 +40,7 @@ export async function GlobalNavigation({ trainer }: GlobalNavigationProps) {
 						/>
 					</Fragment>
 				) : (
-					<AuthPopupButton />
+					<AuthPopupButton className="bg-background text-primary hover:bg-background hover:text-primary" />
 				)}
 			</Container>
 		</header>
