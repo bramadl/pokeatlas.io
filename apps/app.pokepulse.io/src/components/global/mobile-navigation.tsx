@@ -91,7 +91,7 @@ function LogoutButton({ onLoggedOut }: { onLoggedOut: () => void }) {
 		progress.start();
 		await signOut().then(() => {
 			onLoggedOut();
-			router.replace("/");
+			router.refresh();
 		});
 	};
 

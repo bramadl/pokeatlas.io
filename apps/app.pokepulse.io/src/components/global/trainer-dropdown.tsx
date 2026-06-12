@@ -122,7 +122,7 @@ function Logout() {
 	const signOutHandler = async () => {
 		progress.start();
 		await signOut().then(() => {
-			router.replace("/");
+			router.refresh();
 		});
 	};
 

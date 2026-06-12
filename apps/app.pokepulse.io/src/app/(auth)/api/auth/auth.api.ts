@@ -72,5 +72,5 @@ export async function getTrainer() {
 }
 
 export async function signOut() {
-	await auth.signOut();
+	return auth.signOut();
 }
