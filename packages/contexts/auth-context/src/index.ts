@@ -10,6 +10,16 @@ import {
 	type RegisterTrainerHandler,
 	type RegisterTrainerInput,
 	type RegisterTrainerOutput,
+	UpdateBuddyPokemonCommand,
+	type UpdateBuddyPokemonErrors,
+	type UpdateBuddyPokemonHandler,
+	type UpdateBuddyPokemonInput,
+	type UpdateBuddyPokemonOutput,
+	UpdateTeamCommand,
+	type UpdateTeamErrors,
+	type UpdateTeamHandler,
+	type UpdateTeamInput,
+	type UpdateTeamOutput,
 } from "../contracts";
 
 export class AuthContext {
@@ -17,6 +27,8 @@ export class AuthContext {
 		private readonly handlers: {
 			getTrainer: GetTrainerHandler;
 			registerTrainer: RegisterTrainerHandler;
+			updateBuddyPokemon: UpdateBuddyPokemonHandler;
+			updateTeam: UpdateTeamHandler;
 		},
 	) {}
 
@@ -32,6 +44,20 @@ export class AuthContext {
 		return this.handlers.registerTrainer.execute(
 			new RegisterTrainerCommand(input),
 		);
+	}
+
+	public updateBuddyPokemon(
+		input: UpdateBuddyPokemonInput,
+	): Promise<IResult<UpdateBuddyPokemonOutput, UpdateBuddyPokemonErrors>> {
+		return this.handlers.updateBuddyPokemon.execute(
+			new UpdateBuddyPokemonCommand(input),
+		);
+	}
+
+	public updateTeam(
+		input: UpdateTeamInput,
+	): Promise<IResult<UpdateTeamOutput, UpdateTeamErrors>> {
+		return this.handlers.updateTeam.execute(new UpdateTeamCommand(input));
 	}
 }
 

@@ -24,6 +24,8 @@ interface PageProps {
 	searchParams: Promise<SearchParams>;
 }
 
+export const dynamic = "force-dynamic";
+
 export default async function Page({ searchParams }: PageProps) {
 	const [trainer, filters] = await Promise.all([
 		getTrainer(),

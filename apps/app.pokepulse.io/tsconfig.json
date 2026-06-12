@@ -14,6 +14,8 @@
 
       "#progress:application/*": ["../../packages/contexts/progress-context/src/application/*"],
       "#progress:core/*": ["../../packages/contexts/progress-context/src/core/*"],
+      
+      "#providers/*": ["../../packages/database/src/providers/*"],
     },
   },
   "exclude": ["node_modules"],

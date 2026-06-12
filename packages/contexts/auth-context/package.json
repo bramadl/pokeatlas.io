@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@pokepulse/toolkit": "workspace:*",
+    "@context/game": "workspace:*",
     "@context/shared": "workspace:*"
   }
 }

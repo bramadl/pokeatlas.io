@@ -18,12 +18,15 @@ import { SpeciesCompletion } from "./widgets/trainer-progress/species-completion
 import { TrackingCollections } from "./widgets/trainer-progress/tracking-collections";
 import { VariantCollections } from "./widgets/trainer-progress/variant-collections";
 
+export const dynamic = "force-dynamic";
+
 export default async function Dashboard() {
 	const trainer = await getTrainer();
 	if (!trainer) redirect("/");
 
 	const {
 		trainerId,
+		team,
 		user: { name, email, image },
 	} = trainer;
 
@@ -50,6 +53,7 @@ export default async function Dashboard() {
 						trainerId={trainerId}
 						trainerImage={image}
 						trainerName={name}
+						trainerTeam={team}
 					/>
 					<SpeciesCompletion trainerId={trainerId} />
 				</div>

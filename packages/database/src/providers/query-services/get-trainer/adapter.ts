@@ -11,11 +11,23 @@ export class PrismaGetTrainerQueryServiceAdapter
 {
 	public async get(input: GetTrainerInput): Promise<GetTrainerOutput> {
 		const row = await prisma.trainerModel.findUnique({
-			select: { id: true },
+			select: {
+				buddyPokemonId: true,
+				createdAt: true,
+				id: true,
+				team: true,
+				updatedAt: true,
+			},
 			where: { authId: input.authId },
 		});
 
 		if (!row) return null;
-		return { trainerId: row.id };
+		return {
+			buddyPokemonRef: row.buddyPokemonId ?? undefined,
+			joinedAt: row.createdAt,
+			lastUpdatedAt: row.updatedAt,
+			team: row.team ?? undefined,
+			trainerId: row.id,
+		};
 	}
 }

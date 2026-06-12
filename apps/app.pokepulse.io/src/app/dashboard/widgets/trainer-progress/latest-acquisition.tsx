@@ -11,7 +11,6 @@ import Link from "next/link";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
 	Card,
 	CardContent,
@@ -25,6 +24,7 @@ import { cn } from "@/lib/utils";
 import { POKEMON_THEME_MAP } from "../../../pokedex/pokemon/card/pokemon-card.theme";
 import { pokedexFilterKeys } from "../../../pokedex/toolbar";
 import { progressQueries } from "../../api/progress.query";
+import { EmptyWidget } from "../empty-widget";
 
 const STATE_EMOJI: Record<string, string> = {
 	BASE: "⭐",
@@ -53,27 +53,15 @@ export function LatestAcquisition({ trainerId }: { trainerId: string }) {
 
 	if (!data) {
 		return (
-			<Card>
-				<CardContent>
-					<div className="flex flex-col items-center gap-4 py-4 px-8 text-center text-muted-foreground">
-						<div className="flex items-center justify-center size-16 rounded-full border bg-slate-50">
-							<MagnifyingGlassIcon className="size-6" />
-						</div>
-						<div className="flex flex-col gap-1">
-							<p className="font-medium text-xsm">No catches yet</p>
-							<p className="text-xs">
-								Track your first Pokémon and it'll appear here.
-							</p>
-						</div>
-					</div>
-				</CardContent>
-				<Separator />
-				<CardFooter>
-					<Button asChild className="w-full" size="sm" variant="outline">
-						<Link href="/pokedex">Open Pokédex</Link>
-					</Button>
-				</CardFooter>
-			</Card>
+			<EmptyWidget
+				description="Track your first Pokémon and it'll appear here."
+				Icon={MagnifyingGlassIcon}
+				title="No catches yet"
+				withAction={{
+					href: "/pokedex",
+					label: "Open Pokédex",
+				}}
+			/>
 		);
 	}
 

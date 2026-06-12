@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-// import { useMemo } from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -94,7 +93,10 @@ export function HighlightReels({ entries }: HighlightReelsProps) {
 	}
 
 	return (
-		<div className="relative mx-auto flex items-center justify-center h-full">
+		<div
+			className="relative mx-auto flex items-center justify-center"
+			style={{ height: 260, width: "100%" }}
+		>
 			{/* Scattered small sprites */}
 			{scattered.map(({ entry, pos }, i) => (
 				<FloatingSprite

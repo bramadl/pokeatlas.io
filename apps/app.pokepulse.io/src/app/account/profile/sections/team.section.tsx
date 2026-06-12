@@ -1,8 +1,12 @@
 "use client";
 
+import { useProgress } from "@bprogress/next";
+import type { TeamOption } from "@pokepulse/core";
+import { useState, useTransition } from "react";
+
 import { cn } from "@/lib/utils";
 
-export type TrainerTeam = "MYSTIC" | "VALOR" | "INSTINCT" | null;
+import { updateTeam } from "../api/profile.actions";
 
 const TEAMS = [
 	{
@@ -32,26 +36,45 @@ const TEAMS = [
 ] as const;
 
 interface TeamSectionProps {
-	onTeamChange: (team: TrainerTeam) => void;
-	team: TrainerTeam;
+	currentTeam?: string;
+	trainerId: string;
 }
 
-export function TeamSection({ onTeamChange, team }: TeamSectionProps) {
+export function TeamSection({ currentTeam, trainerId }: TeamSectionProps) {
+	const [isPending, startTransaction] = useTransition();
+	const [team, setTeam] = useState<TeamOption | undefined>(
+		currentTeam as TeamOption,
+	);
+
+	const progress = useProgress();
+	const handleSelect = (value: TeamOption) => {
+		const next = team === value ? undefined : value;
+		if (!next) return;
+
+		progress.start();
+		startTransaction(async () => {
+			setTeam(next);
+			await updateTeam(trainerId, next);
+			progress.stop();
+		});
+	};
+
 	return (
-		<div className="grid grid-cols-3 gap-2">
+		<div className="grid grid-cols-3 gap-2 h-full">
 			{TEAMS.map((t) => {
 				const isSelected = team === t.value;
 				return (
 					<button
 						aria-pressed={isSelected}
 						className={cn(
-							"group/team flex flex-col items-center gap-2 rounded-lg border border-border/50 p-3",
-							"transition-all hover:bg-muted/50",
-							isSelected && "ring-1",
+							"group/team flex flex-col items-center justify-center gap-2 rounded-lg border border-border/50 p-3",
+							"transition-all hover:bg-muted/50 disabled:opacity-50 disabled:animate-pulse",
+							isSelected && "border border-primary ring-2 ring-primary/50",
 						)}
 						data-selected={isSelected ? "" : undefined}
+						disabled={isPending}
 						key={t.value}
-						onClick={() => onTeamChange(isSelected ? null : t.value)}
+						onClick={() => handleSelect(t.value)}
 						type="button"
 					>
 						<span

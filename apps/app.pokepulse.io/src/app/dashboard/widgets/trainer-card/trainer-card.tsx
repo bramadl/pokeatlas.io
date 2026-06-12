@@ -3,7 +3,6 @@
 import { ArrowRightIcon } from "@phosphor-icons/react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { useMemo } from "react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -18,17 +17,14 @@ import {
 import { Separator } from "@/components/ui/separator";
 
 import { progressQueries } from "../../api/progress.query";
-import {
-	dayGreeting,
-	type GreetingContext,
-	pickGreeting,
-} from "./trainer-greetings";
+import { dayGreeting, pickGreeting } from "./trainer-greetings";
 
 interface TrainerCardProps {
 	trainerEmail: string;
 	trainerId: string;
 	trainerImage?: string | null;
 	trainerName: string;
+	trainerTeam?: string;
 }
 
 export function TrainerCard({
@@ -36,23 +32,21 @@ export function TrainerCard({
 	trainerId,
 	trainerImage,
 	trainerName,
+	trainerTeam,
 }: TrainerCardProps) {
 	const { data } = useSuspenseQuery({
 		...progressQueries.getSummary({ trainerId }),
 		select: (data) => data.summary.speciesCompletion,
 	});
 
-	const ctx = useMemo<GreetingContext>(
-		() => ({
-			missing: data.total - data.tracked,
-			percentage: data.completionPercentage,
-			tracked: data.tracked,
-			trainerName: trainerName.split(" ")[0] as string,
-		}),
-		[data, trainerName],
-	);
+	const ctx = {
+		missing: data.total - data.tracked,
+		percentage: data.completionPercentage,
+		tracked: data.tracked,
+		trainerName: trainerName.split(" ")[0] as string,
+	};
 
-	const greeting = useMemo(() => pickGreeting(ctx), [ctx]);
+	const greeting = pickGreeting(ctx);
 
 	return (
 		<Card className="bg-linear-to-br from-background to-primary/5 border-primary/10 justify-between">
@@ -73,7 +67,11 @@ export function TrainerCard({
 						</span>
 					</div>
 				</div>
-				<Badge className="text-xs">Team Valor</Badge>
+				<Badge className="text-xs">
+					{trainerTeam
+						? `Team ${trainerTeam.charAt(0).toUpperCase() + trainerTeam.slice(1).toLowerCase()}`
+						: "No team choosen yet"}
+				</Badge>
 			</CardContent>
 			<Separator />
 			<CardHeader>

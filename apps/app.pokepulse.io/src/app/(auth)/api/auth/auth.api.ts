@@ -66,7 +66,7 @@ export async function getTrainer() {
 	if (result.isError() || trainer === null) return null;
 
 	return {
-		trainerId: trainer.trainerId,
+		...trainer,
 		user: { ...data.user, image, name: displayName },
 	};
 }

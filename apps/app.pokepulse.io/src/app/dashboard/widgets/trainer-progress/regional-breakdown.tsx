@@ -53,8 +53,8 @@ export function RegionalBreakdown({ trainerId }: { trainerId: string }) {
 				</CardTitle>
 				<CardDescription>Species completion by region.</CardDescription>
 			</CardHeader>
-			<CardContent className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-				{POKEMON_REGIONS.filter((r) => r !== "UNREGISTERED").map((region) => {
+			<CardContent className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+				{POKEMON_REGIONS.map((region) => {
 					const stat = data[region];
 					if (!stat) return null;
 

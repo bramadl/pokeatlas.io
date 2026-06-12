@@ -11,6 +11,8 @@ import { PokedexSection } from "./sections/pokedex.section";
 import { StatesSection } from "./sections/states.section";
 import { WorkspaceSection } from "./sections/workspace.section";
 
+export const dynamic = "force-dynamic";
+
 export default async function GuidesPage() {
 	const trainer = await getTrainer();
 

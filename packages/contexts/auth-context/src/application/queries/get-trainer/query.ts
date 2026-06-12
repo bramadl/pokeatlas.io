@@ -4,6 +4,10 @@ export interface GetTrainerInput {
 
 export type GetTrainerOutput = {
 	trainerId: string;
+	buddyPokemonRef?: string;
+	team?: string;
+	joinedAt: Date;
+	lastUpdatedAt?: Date;
 } | null;
 
 export class GetTrainerQuery {

@@ -2,6 +2,8 @@ import {
 	AuthContext,
 	GetTrainerHandler,
 	RegisterTrainerHandler,
+	UpdateBuddyPokemonHandler,
+	UpdateTeamHandler,
 } from "@context/auth";
 import {
 	PrismaGetTrainerQueryServiceAdapter,
@@ -37,10 +39,22 @@ export function buildAuthSlice<
 				),
 		)
 
+		.add(
+			"Handler:Command:UpdateBuddyPokemon",
+			(r) => new UpdateBuddyPokemonHandler(r["Adapter:Repository:Trainer"]),
+		)
+
+		.add(
+			"Handler:Command:UpdateTeam",
+			(r) => new UpdateTeamHandler(r["Adapter:Repository:Trainer"]),
+		)
+
 		.add("Context:Auth", (r) => {
 			return new AuthContext({
 				getTrainer: r["Handler:Query:GetTrainer"],
 				registerTrainer: r["Handler:Command:RegisterTrainer"],
+				updateBuddyPokemon: r["Handler:Command:UpdateBuddyPokemon"],
+				updateTeam: r["Handler:Command:UpdateTeam"],
 			});
 		});
 }

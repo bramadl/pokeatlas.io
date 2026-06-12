@@ -1,9 +1,19 @@
-import { Aggregate, DomainError, validator as v } from "@pokepulse/toolkit";
+import type { PokemonRef } from "@context/game";
+import {
+	Aggregate,
+	DomainError,
+	type IResult,
+	Result,
+	validator as v,
+} from "@pokepulse/toolkit";
 
+import type { TeamRef } from "./team";
 import { TrainerRegistered } from "./trainer-registered";
 
 export interface TrainerProps {
 	authId: string;
+	buddyPokemonRef?: PokemonRef;
+	team?: TeamRef;
 }
 
 export class Trainer extends Aggregate<TrainerProps> {
@@ -42,5 +52,15 @@ export class Trainer extends Aggregate<TrainerProps> {
 				}),
 			);
 		}
+	}
+
+	public updateBuddyPokemon(buddyPokemonRef: PokemonRef): IResult<void> {
+		this.set("buddyPokemonRef").to(buddyPokemonRef);
+		return Result.success();
+	}
+
+	public updateTeam(team: TeamRef): IResult<void> {
+		this.set("team").to(team);
+		return Result.success();
 	}
 }

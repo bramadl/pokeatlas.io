@@ -27,16 +27,16 @@ export interface BuddyOption {
 }
 
 interface BuddySectionProps {
-	buddy: BuddyOption | null;
-	onBuddyChange: (buddy: BuddyOption | null) => void;
 	options: BuddyOption[];
+	trainerId: string;
 }
 
 export function BuddySection({
-	buddy,
-	onBuddyChange,
 	options,
+	trainerId: _trainerId,
 }: BuddySectionProps) {
+	// TODO: initialize from real trainer.buddyPokemonId once BE is ready
+	const [buddy, setBuddy] = useState<BuddyOption | null>(null);
 	const [open, setOpen] = useState(false);
 	const [search, setSearch] = useState("");
 
@@ -50,9 +50,11 @@ export function BuddySection({
 
 	const handleSelect = (id: string) => {
 		const selected = options.find((o) => o.id === id) ?? null;
-		// toggle off if same
-		onBuddyChange(selected?.id === buddy?.id ? null : selected);
+		const next = selected?.id === buddy?.id ? null : selected;
+		setBuddy(next);
 		setOpen(false);
+		// TODO: auto-save via server action
+		console.log("Buddy changed:", next?.name);
 	};
 
 	return (
@@ -97,7 +99,7 @@ export function BuddySection({
 						role="combobox"
 						variant="outline"
 					>
-						{buddy ? `Change buddy` : "Choose a buddy"}
+						{buddy ? "Change buddy" : "Choose a buddy"}
 						<CaretUpDownIcon className="ml-2 shrink-0 opacity-50" />
 					</Button>
 				</PopoverTrigger>
