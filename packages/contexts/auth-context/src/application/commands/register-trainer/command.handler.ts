@@ -36,7 +36,12 @@ export class RegisterTrainerHandler
 		const existing = await this.repository.findByAuthId(input.authId);
 		if (existing) throw new TrainerAlreadyExistsError(input.authId);
 
-		const trainer = Trainer.create({ authId: input.authId });
+		const trainer = Trainer.create({
+			authId: input.authId,
+			buddyPokemonRef: undefined,
+			team: undefined,
+		});
+
 		if (trainer.isError()) {
 			return Result.error(trainer.error(), { ...trainer.error() });
 		}
