@@ -3,7 +3,7 @@ model TrainerModel {
 
   authId String? @unique @map("auth_id") @db.Uuid
 
-  buddyPokemonId String? @map("buddy_pokemon_ref") @db.Uuid
+  buddyPokemonId String? @map("buddy_pokemon_ref")
   team           Team?
 
   auth              UserModel?                     @relation(fields: [authId], references: [id], onDelete: Cascade)

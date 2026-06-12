@@ -1,9 +1,15 @@
 "use client";
 
-import { CaretUpDownIcon, CheckIcon } from "@phosphor-icons/react";
+import {
+	CaretUpDownIcon,
+	CheckIcon,
+	SpinnerGapIcon,
+} from "@phosphor-icons/react";
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { Fragment, useMemo, useState, useTransition } from "react";
+import { toast } from "sonner";
 
+import { updateBuddyPokemon } from "@/app/account/profile/api/profile.actions";
 import { Button } from "@/components/ui/button";
 import {
 	Command,
@@ -20,25 +26,27 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 
-export interface BuddyOption {
-	id: string;
-	name: string;
-	spriteUrl: string;
-}
+import type { TrackedPokemonEntry } from "../api/profile.actions";
+
+export type BuddyOption = TrackedPokemonEntry;
 
 interface BuddySectionProps {
+	currentBuddyRef: string | null;
 	options: BuddyOption[];
 	trainerId: string;
 }
 
 export function BuddySection({
+	currentBuddyRef,
 	options,
-	trainerId: _trainerId,
+	trainerId,
 }: BuddySectionProps) {
-	// TODO: initialize from real trainer.buddyPokemonId once BE is ready
-	const [buddy, setBuddy] = useState<BuddyOption | null>(null);
+	const [buddy, setBuddy] = useState<BuddyOption | null>(
+		options.find((o) => o.ref === currentBuddyRef) ?? null,
+	);
 	const [open, setOpen] = useState(false);
 	const [search, setSearch] = useState("");
+	const [isPending, startTransition] = useTransition();
 
 	const filtered = useMemo(
 		() =>
@@ -48,13 +56,24 @@ export function BuddySection({
 		[options, search],
 	);
 
-	const handleSelect = (id: string) => {
-		const selected = options.find((o) => o.id === id) ?? null;
-		const next = selected?.id === buddy?.id ? null : selected;
+	const handleSelect = (ref: string) => {
+		const selected = options.find((o) => o.ref === ref) ?? null;
+		const next = selected?.ref === buddy?.ref ? null : selected;
 		setBuddy(next);
 		setOpen(false);
-		// TODO: auto-save via server action
-		console.log("Buddy changed:", next?.name);
+
+		startTransition(async () => {
+			try {
+				await updateBuddyPokemon(trainerId, next?.ref ?? "");
+				setSearch("");
+				toast.success(
+					next ? `${next.name} is now your buddy!` : "Buddy removed.",
+				);
+			} catch {
+				setBuddy(buddy);
+				toast.error("Failed to update buddy. Please try again.");
+			}
+		});
 	};
 
 	return (
@@ -96,10 +115,20 @@ export function BuddySection({
 					<Button
 						aria-expanded={open}
 						className="w-full justify-between"
+						disabled={isPending}
 						role="combobox"
 						variant="outline"
 					>
-						{buddy ? "Change buddy" : "Choose a buddy"}
+						{isPending ? (
+							<Fragment>
+								<SpinnerGapIcon className="animate-spin" />
+								Setting up your buddy
+							</Fragment>
+						) : buddy ? (
+							"Change buddy"
+						) : (
+							"Choose a buddy"
+						)}
 						<CaretUpDownIcon className="ml-2 shrink-0 opacity-50" />
 					</Button>
 				</PopoverTrigger>
@@ -115,9 +144,9 @@ export function BuddySection({
 							<CommandGroup>
 								{filtered.slice(0, 50).map((option) => (
 									<CommandItem
-										key={option.id}
-										onSelect={() => handleSelect(option.id)}
-										value={option.id}
+										key={option.ref}
+										onSelect={() => handleSelect(option.ref)}
+										value={option.ref}
 									>
 										<div className="relative size-8 shrink-0">
 											<Image
@@ -132,7 +161,7 @@ export function BuddySection({
 										<CheckIcon
 											className={cn(
 												"ml-auto shrink-0",
-												buddy?.id === option.id ? "opacity-100" : "opacity-0",
+												buddy?.ref === option.ref ? "opacity-100" : "opacity-0",
 											)}
 										/>
 									</CommandItem>

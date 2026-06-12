@@ -14,12 +14,12 @@ import {
 import { Container } from "@/components/ui/container";
 import { getQueryClient } from "@/lib/tanstack/query/query-client";
 
+import { getTrackedPokemon } from "./api/profile.actions";
 import { BuddySection } from "./sections/buddy.section";
 import { IdentitySection } from "./sections/identity.section";
 import { TeamSection } from "./sections/team.section";
 import { AchievementTimeline } from "./ui/achievement-timeline";
 import { HighlightReels } from "./ui/highlight-reels";
-import { MOCK_BUDDY_OPTIONS, MOCK_REEL_ENTRIES } from "./ui/mock.data";
 
 export const dynamic = "force-dynamic";
 
@@ -27,17 +27,20 @@ export default async function AccountProfilePage() {
 	const trainer = await getTrainer();
 	if (!trainer) redirect("/");
 
-	const {
-		buddyPokemonRef: _,
-		joinedAt,
-		lastUpdatedAt,
-		team,
-		trainerId,
-		user,
-	} = trainer;
+	const { buddyPokemonRef, joinedAt, lastUpdatedAt, team, trainerId, user } =
+		trainer;
 
-	const queryClient = getQueryClient();
-	await queryClient.prefetchQuery(progressQueries.getSummary({ trainerId }));
+	const [queryClient, trackedPokemon] = await Promise.all([
+		(async () => {
+			const qc = getQueryClient();
+			await qc.prefetchQuery(progressQueries.getSummary({ trainerId }));
+			return qc;
+		})(),
+		getTrackedPokemon(trainerId),
+	]);
+
+	// Shuffle once on the server — reels are "randomly drawn" per page load
+	const reelEntries = [...trackedPokemon].sort(() => Math.random() - 0.5);
 
 	return (
 		<HydrationBoundary state={dehydrate(queryClient)}>
@@ -71,8 +74,8 @@ export default async function AccountProfilePage() {
 							</CardHeader>
 							<CardContent>
 								<BuddySection
-									// currentBuddyRef={buddyPokemonRef}
-									options={MOCK_BUDDY_OPTIONS}
+									currentBuddyRef={buddyPokemonRef ?? null}
+									options={trackedPokemon}
 									trainerId={trainerId}
 								/>
 							</CardContent>
@@ -101,8 +104,8 @@ export default async function AccountProfilePage() {
 									tracked Pokémon.
 								</CardDescription>
 							</CardHeader>
-							<CardContent className="h-full">
-								<HighlightReels entries={MOCK_REEL_ENTRIES} />
+							<CardContent className="max-h-80 h-full">
+								<HighlightReels entries={reelEntries} />
 							</CardContent>
 						</Card>
 
@@ -113,7 +116,7 @@ export default async function AccountProfilePage() {
 									Your trainer journey, from first catch to legend.
 								</CardDescription>
 							</CardHeader>
-							<CardContent>
+							<CardContent className="max-h-80 h-full">
 								<AchievementTimeline trainerId={trainerId} />
 							</CardContent>
 						</Card>

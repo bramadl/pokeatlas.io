@@ -34,7 +34,7 @@ export function AchievementTimeline({ trainerId }: AchievementTimelineProps) {
 	}
 
 	return (
-		<div className="flex-1 overflow-y-auto px-1 max-h-60">
+		<div className="flex-1 overflow-y-auto px-1 h-full">
 			<div className="flex flex-col">
 				{achievements.map((achievement, i, achievements) => {
 					const meta = ACHIEVEMENT_META[achievement.type];

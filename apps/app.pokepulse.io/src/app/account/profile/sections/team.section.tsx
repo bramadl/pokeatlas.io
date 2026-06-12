@@ -3,6 +3,7 @@
 import { useProgress } from "@bprogress/next";
 import type { TeamOption } from "@pokepulse/core";
 import { useState, useTransition } from "react";
+import { toast } from "sonner";
 
 import { cn } from "@/lib/utils";
 
@@ -41,21 +42,34 @@ interface TeamSectionProps {
 }
 
 export function TeamSection({ currentTeam, trainerId }: TeamSectionProps) {
-	const [isPending, startTransaction] = useTransition();
+	const [isPending, startTransition] = useTransition();
 	const [team, setTeam] = useState<TeamOption | undefined>(
-		currentTeam as TeamOption,
+		currentTeam as TeamOption | undefined,
 	);
 
 	const progress = useProgress();
-	const handleSelect = (value: TeamOption) => {
-		const next = team === value ? undefined : value;
-		if (!next) return;
 
+	const handleSelect = (value: TeamOption) => {
+		const previous = team;
+		const next = team === value ? undefined : value;
+
+		setTeam(next);
 		progress.start();
-		startTransaction(async () => {
-			setTeam(next);
-			await updateTeam(trainerId, next);
-			progress.stop();
+
+		startTransition(async () => {
+			try {
+				await updateTeam(trainerId, next);
+				toast.success(
+					next
+						? `Go Team ${next.charAt(0) + next.slice(1).toLowerCase()}!`
+						: "Team cleared.",
+				);
+			} catch {
+				setTeam(previous);
+				toast.error("Failed to update team. Please try again.");
+			} finally {
+				progress.stop();
+			}
 		});
 	};
 
