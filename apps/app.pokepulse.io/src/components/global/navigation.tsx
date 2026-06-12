@@ -21,7 +21,7 @@ export async function GlobalNavigation({ trainer }: GlobalNavigationProps) {
 	return (
 		<header className="sticky top-0 h-16 bg-primary text-primary-foreground z-10">
 			<Container className="flex items-center justify-between h-full" padded>
-				<AppLogo />
+				<AppLogo to={trainer === null ? "/" : "/dashboard"} />
 				{trainer !== null ? (
 					<Fragment>
 						<div className="hidden md:flex items-center gap-2 lg:gap-4">

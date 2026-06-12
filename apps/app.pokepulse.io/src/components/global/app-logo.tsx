@@ -1,8 +1,8 @@
 import Link from "next/link";
 
-export function AppLogo() {
+export function AppLogo({ to = "/" }: { to: string }) {
 	return (
-		<Link href="/">
+		<Link href={to}>
 			<span className="mr-2">
 				Poké<strong>Pulse</strong>
 			</span>
