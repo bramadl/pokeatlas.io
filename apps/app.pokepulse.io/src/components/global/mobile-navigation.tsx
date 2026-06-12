@@ -107,7 +107,7 @@ function MenuHeader() {
 	return (
 		<div className="py-2">
 			<SheetTitle>
-				<AppLogo />
+				<AppLogo to="/dashboard" />
 			</SheetTitle>
 			<SheetDescription className="sr-only">
 				Track your Pokémon GO collection progress in one place.
